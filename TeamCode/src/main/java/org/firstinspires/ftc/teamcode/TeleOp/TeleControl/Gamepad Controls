@@ -1,0 +1,29 @@
+BUTTONS
+
+BOOLEANS
+A - sample intake FSM / wall grab FSM
+B - sample transfer FSM / raise specimen FSM
+Y - sample outtake FSM / score specimen FSM
+X - slow mode
+rightBumper - drive towards basket
+leftBumper - specimen mode
+dLeft - move intake slides in (DONE)
+dRight - move intake slides out (DONE)
+dUp - claw open/close
+dDown - field centric mode
+leftStickButton - low basket mode
+rightStickButton - vertical slide manual mode
+back button - reset robot
+start button - reset encoders
+
+DOUBLES
+rightTrigger - intake spin in / vertical slides up
+leftTrigger - intake spin out / vertical slides down
+leftStickX - strafe
+leftStickY - forward/back
+rightStickX - spin
+rightStickY - spin (in field centric)
+touchPadX -
+touchPadY -
+
+
