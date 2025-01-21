@@ -47,6 +47,20 @@ public class Robot {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
+    public Robot(HardwareMap map, Telemetry t){
+        hardwareMap = map;
+        telemetry = t;
+
+        outtakeSystem = new OuttakeSystem(hardwareMap);
+        intakeSystem = new IntakeSystem(hardwareMap);
+        visionSystem = new VisionSystem(hardwareMap);
+        driveSystem = new DriveSystem(hardwareMap);
+
+        subsystems = new ArrayList<>(Arrays.asList(outtakeSystem, intakeSystem, visionSystem, driveSystem));
+
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+    }
+
 
     //Methods
     public double getVoltage() {
