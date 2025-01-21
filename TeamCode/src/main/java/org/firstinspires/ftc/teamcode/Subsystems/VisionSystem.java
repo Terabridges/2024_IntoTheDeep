@@ -69,12 +69,24 @@ public class VisionSystem implements Subsystem {
         }
     }
 
+    public boolean isColor(String color){
+        return getColorVal().equals(color);
+    }
+
+    public boolean isSomething(){
+        return !getColorVal().equals("none");
+    }
+
     public void detectColor(){
         colors = intakeColorSensor.getNormalizedColors();
     }
 
     public void setLightColor(String chosenColor) {
         lightOne.setPosition(getColorPWN(chosenColor));
+    }
+
+    public void setLookForBasket(){
+
     }
 
     //Interface Methods

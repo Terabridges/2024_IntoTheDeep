@@ -54,6 +54,10 @@ public class Robot {
         return voltageSensor.getVoltage();
     }
 
+    public void rumble(int milliseconds){
+        gp1.rumble(milliseconds);
+    }
+
 
     //Interface Methods
     public void update() {

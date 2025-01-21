@@ -21,17 +21,21 @@ public class OuttakeSystem implements Subsystem {
     public AbsoluteAnalogEncoder outtakeRightSwivelEnc;
 
     //SOFTWARE
+    private int servoOffset = 0;
+    private int motorOffset = 0;
+    public boolean highBasketMode = true;
+
     //Positions
-    public double CLAW_OPEN;
-    public double CLAW_CLOSE;
-    public double WRIST_PERP;
-    public double WRIST_PAR;
-    public int OUTTAKE_SWIVEL_UP;
-    public int OUTTAKE_SWIVEL_DOWN;
-    public int OUTTAKE_SLIDES_HIGH;
-    public int OUTTAKE_SLIDES_LOW;
-    public int OUTTAKE_SLIDES_DOWN;
-    public int OUTTAKE_SLIDES_REST;
+    private double CLAW_OPEN;
+    private double CLAW_CLOSE;
+    private double WRIST_PERP;
+    private double WRIST_PAR;
+    private int OUTTAKE_SWIVEL_UP;
+    private int OUTTAKE_SWIVEL_DOWN;
+    private int OUTTAKE_SLIDES_HIGH;
+    private int OUTTAKE_SLIDES_LOW;
+    private int OUTTAKE_SLIDES_DOWN;
+    private int OUTTAKE_SLIDES_REST;
 
     //Targets
     public int outtakeSlidesTarget;
@@ -40,8 +44,8 @@ public class OuttakeSystem implements Subsystem {
     public double wristTarget;
 
     //Max
-    public double OUTTAKE_SLIDES_MAX_POWER = 1.0;
-    public double OUTTAKE_SWIVEL_MAX_POWER = 1.0;
+    private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
+    private double OUTTAKE_SWIVEL_MAX_POWER = 1.0;
 
     //PIDF
 
@@ -54,6 +58,7 @@ public class OuttakeSystem implements Subsystem {
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
         outtakeClaw = map.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
+        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0);
     }
 
     //METHODS
@@ -121,6 +126,23 @@ public class OuttakeSystem implements Subsystem {
         wristTarget = WRIST_PERP;
     }
 
+    //isPositions
+    public boolean isSlidesDown(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
+    }
+
+    public boolean isSlidesRest(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
+    }
+
+    public boolean isSlidesHigh(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_HIGH) <= motorOffset;
+    }
+
+    public boolean isSlidesLow(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
+    }
+
     //PIDF
     private int setOuttakeSlidesPIDF(int target) {
         return 0;
@@ -139,6 +161,7 @@ public class OuttakeSystem implements Subsystem {
         wristPar();
     }
 
+    //TODO MAKE REGULAR SERVOS ONLY SET ONCE
     @Override
     public void update(){
         outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));

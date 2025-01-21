@@ -18,26 +18,28 @@ public class IntakeSystem implements Subsystem {
     public CRServo intakeLeftSwivel;
     public DcMotor intakeSpin;
     public AnalogInput intakeRightSwivelAnalog;
-    public AnalogInput intakeRightLinearAnalog;
+    public AnalogInput intakeRightSlidesAnalog;
     public AbsoluteAnalogEncoder intakeRightSwivelEnc;
-    public AbsoluteAnalogEncoder intakeRightLinearEnc;
+    public AbsoluteAnalogEncoder intakeRightSlidesEnc;
 
     //SOFTWARE
     public boolean usePIDFIntakeSlides = true;
     public boolean usePIDFIntakeSwivel = true;
+    private int servoOffset = 0;
+    private int motorOffset = 0;
 
     //Positions
-    public double INTAKE_SPIN_IN = -0.4;
-    public double INTAKE_SPIN_OUT = 0.4;
-    public double INTAKE_SPIN_STOP = 0;
-    public int INTAKE_SLIDES_EXTEND = 227;
-    public int INTAKE_SLIDES_RETRACT = 190;
-    public int INTAKE_SWIVEL_TRANSFER;
-    public int INTAKE_SWIVEL_DOWN;
-    public int INTAKE_SWIVEL_REST;
-    public double INTAKE_SLIDES_MANUAL_OUT = 0.3;
-    public double INTAKE_SLIDES_MANUAL_IN = -0.3;
-    public double INTAKE_SLIDES_MANUAL_STOP = 0;
+    private double INTAKE_SPIN_IN = -0.4;
+    private double INTAKE_SPIN_OUT = 0.4;
+    private double INTAKE_SPIN_STOP = 0;
+    private int INTAKE_SLIDES_EXTEND = 227;
+    private int INTAKE_SLIDES_RETRACT = 190;
+    private int INTAKE_SWIVEL_TRANSFER;
+    private int INTAKE_SWIVEL_DOWN;
+    private int INTAKE_SWIVEL_REST;
+    private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
+    private double INTAKE_SLIDES_MANUAL_IN = -0.3;
+    private double INTAKE_SLIDES_MANUAL_STOP = 0;
 
     //Targets
     public int intakeSlidesTarget;
@@ -47,9 +49,9 @@ public class IntakeSystem implements Subsystem {
     public double intakeSwivelManualPower;
 
     //Max
-    public double INTAKE_SLIDES_MAX_POWER = 1.0;
-    public double INTAKE_SWIVEL_MAX_POWER = 1.0;
-    public double INTAKE_SPIN_MAX_POWER = 1.0;
+    private double INTAKE_SLIDES_MAX_POWER = 1.0;
+    private double INTAKE_SWIVEL_MAX_POWER = 1.0;
+    private double INTAKE_SPIN_MAX_POWER = 1.0;
 
     //PIDF
 
@@ -63,7 +65,9 @@ public class IntakeSystem implements Subsystem {
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightLinearAnalog = map.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
+        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
 
     }
 
@@ -127,6 +131,20 @@ public class IntakeSystem implements Subsystem {
     public void intakeSlidesSetManualOut(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;}
 
     public void intakeSlidesSetManualStop(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;}
+
+    //isPositions
+
+    public boolean isIntakeExtended(){
+        return Math.abs(intakeRightSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= servoOffset;
+    }
+
+    public boolean isSwivelRetracted(){
+        return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
+    }
+
+    public boolean isSwivelTransfer(){
+        return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_TRANSFER) <= servoOffset;
+    }
 
     //PIDF
     private int setIntakeSlidesPIDF(int target) {
