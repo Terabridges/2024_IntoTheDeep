@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
@@ -15,7 +16,7 @@ public class IntakeSystem implements Subsystem {
     public CRServo intakeRightSlide;
     public CRServo intakeRightSwivel;
     public CRServo intakeLeftSwivel;
-    public CRServo intakeSpin;
+    public DcMotor intakeSpin;
     public AnalogInput intakeRightSwivelAnalog;
     public AnalogInput intakeRightLinearAnalog;
     public AbsoluteAnalogEncoder intakeRightSwivelEnc;
@@ -60,7 +61,7 @@ public class IntakeSystem implements Subsystem {
         intakeRightSlide = map.get(CRServo.class, "intake_right_linear");
         intakeLeftSwivel = map.get(CRServo.class, "intake_left_swivel");
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
-        intakeSpin = map.get(CRServo.class, "intake_spin");
+        intakeSpin = map.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightLinearAnalog = map.get(AnalogInput.class, "intake_right_linear_analog");
 
