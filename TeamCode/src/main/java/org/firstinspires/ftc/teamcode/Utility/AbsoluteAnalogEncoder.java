@@ -12,12 +12,8 @@ public class AbsoluteAnalogEncoder {
     private final double analogRange;
     private boolean inverted;
 
-    public AbsoluteAnalogEncoder(AnalogInput enc){
-        this(enc, DEFAULT_RANGE);
-    }
-    public AbsoluteAnalogEncoder(AnalogInput enc, double aRange){
-        this(enc,aRange, 0);
-    }
+    public AbsoluteAnalogEncoder(AnalogInput enc){this(enc, DEFAULT_RANGE);}
+    public AbsoluteAnalogEncoder(AnalogInput enc, double aRange){this(enc,aRange, 0);}
     public AbsoluteAnalogEncoder(AnalogInput enc, double aRange, double off){
         encoder = enc;
         analogRange = aRange;
