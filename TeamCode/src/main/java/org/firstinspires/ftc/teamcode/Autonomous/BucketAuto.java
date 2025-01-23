@@ -57,6 +57,7 @@ public class BucketAuto extends LinearOpMode
     enum scoreStates
     {
         GO_TO_SCORE,
+        //RAISE_OUTTAKE, (If you want to split up movement + raising into two.)
         DUNK,
         OPEN_CLAW,
         CLOSE_CLAW,
@@ -66,6 +67,12 @@ public class BucketAuto extends LinearOpMode
 
     enum pickupStates
     {
+        GO_TO_PICKUP,
+        EXTEND_INTAKE,
+        FORWARD,
+        RETRACT_INTAKE,
+        TRANSFER,
+        STOP
 
     }
 
@@ -98,14 +105,14 @@ public class BucketAuto extends LinearOpMode
             r.update();
             telemetry.update();
 
-            /*
-            if (main.getStateEnum() == main.STOP)
+            main.update();
+
+            if (main.getStateString().equals("STOP"))
             {
                 main.stop();
                 main.reset();
                 return;
             }
-            */
         }
     }
 
@@ -119,9 +126,19 @@ public class BucketAuto extends LinearOpMode
         StateMachine main = new StateMachineBuilder()
                 .state(mainStates.SCORE)
                 .onEnter(() -> score.start())
-                .loop( () -> score.update())
-                .transition(() -> score.getStateString().equals("STOP"))
-                .onExit(() -> score.reset())
+                .loop(() -> score.update())
+                .transition(() -> curSample == 4, mainStates.STOP)
+                .transition(() -> score.getStateString().equals("STOP"), mainStates.PICKUP)
+                .onExit(() -> {
+                    score.reset();
+                    curSample++;
+                })
+
+                .state(mainStates.PICKUP)
+                .onEnter(() -> pickup.start())
+                .loop(() -> pickup.update())
+                .transition(() -> pickup.getStateString().equals("STOP"), mainStates.SCORE)
+                .onExit(() -> pickup.reset())
 
                 .build();
 
@@ -138,9 +155,7 @@ public class BucketAuto extends LinearOpMode
                         (follower.getPose().getX() > (scorePose.getX() - 1) && follower.getPose().getY() > (scorePose.getY() - 1)))
 
                 .state(scoreStates.DUNK)
-                .onEnter(() -> {
-                    o.outtakeSwivelUp();
-                })
+                .onEnter(() -> o.outtakeSwivelUp())
                 .transition(() -> o.isSwivelUp())
 
                 .state(scoreStates.OPEN_CLAW)
@@ -158,12 +173,25 @@ public class BucketAuto extends LinearOpMode
                 .transition(() -> o.isSwivelDown())
 
                 .state(scoreStates.LOWER_OUTTAKE)
-                .onEnter(() -> {
-                    o.outtakeSlidesDown();
-                })
+                .onEnter(() -> o.outtakeSlidesDown())
                 .transition(() -> o.isSlidesDown())
 
                 .state(scoreStates.STOP)
+
+                .build();
+
+        StateMachine pickup = new StateMachineBuilder()
+                .state(pickupStates.GO_TO_PICKUP)
+
+                .state(pickupStates.EXTEND_INTAKE)
+
+                .state(pickupStates.FORWARD)
+
+                .state(pickupStates.RETRACT_INTAKE)
+
+                .state(pickupStates.TRANSFER)
+
+                .state(pickupStates.STOP)
 
                 .build();
     }
