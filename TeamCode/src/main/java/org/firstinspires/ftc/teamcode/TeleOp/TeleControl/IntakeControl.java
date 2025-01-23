@@ -13,13 +13,12 @@ public class IntakeControl implements Control{
     //Software
     IntakeSystem intake;
     Gamepad gp1;
-    boolean manualIntake = true;
     Robot robot;
-    EdgeDetector runIntakeRE_SSM = new EdgeDetector(() -> intakeFSM());
     EdgeDetector manualSlidesInRE = new EdgeDetector(() -> intake.intakeSlidesSetManualIn());
     EdgeDetector manualSlidesInFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
     EdgeDetector manualSlidesOutRE = new EdgeDetector(() -> intake.intakeSlidesSetManualOut());
     EdgeDetector manualSlidesOutFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
+
 
     //Constructor
     public IntakeControl(IntakeSystem intake, Gamepad gp1) {
@@ -32,18 +31,12 @@ public class IntakeControl implements Control{
         this.robot = robot;
     }
 
-
-    //Methods
-    public void intakeFSM(){
-
-    }
-
-
     //Interface Methods
     @Override
     public void update(){
+
         //Set Spin with Triggers
-        if (manualIntake) {
+        if (intake.manualIntake) {
             if (gp1.right_trigger > 0.1) {
                 intake.intakeSpinTarget = gp1.right_trigger;
             }
@@ -52,9 +45,6 @@ public class IntakeControl implements Control{
                 intake.intakeSpinTarget = -gp1.right_trigger;
             }
         }
-
-        //Intake FSM with A
-        runIntakeRE_SSM.update(gp1.a);
 
         //dPadLeft pulls intake slides in
         manualSlidesInRE.update(gp1.dpad_left);

@@ -25,6 +25,7 @@ public class IntakeSystem implements Subsystem {
     //SOFTWARE
     public boolean usePIDFIntakeSlides = true;
     public boolean usePIDFIntakeSwivel = true;
+    public boolean manualIntake = true;
     private int servoOffset = 0;
     private int motorOffset = 0;
 
