@@ -30,9 +30,9 @@ import com.pedropathing.util.Timer;
 public class BucketAuto extends LinearOpMode
 {
     //Subsystems
-    Robot r = new Robot(hardwareMap, telemetry);
-    IntakeSystem i = new IntakeSystem(hardwareMap);
-    OuttakeSystem o = new OuttakeSystem(hardwareMap);
+    Robot r;
+    IntakeSystem i;
+    OuttakeSystem o;
 
     //State Factory
     StateMachine main;
@@ -77,6 +77,10 @@ public class BucketAuto extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+        r = new Robot(hardwareMap, telemetry);
+        i = new IntakeSystem(hardwareMap);
+        o = new OuttakeSystem(hardwareMap);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         r.toInit();
