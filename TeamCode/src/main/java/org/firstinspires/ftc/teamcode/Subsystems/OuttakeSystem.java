@@ -142,6 +142,15 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
     }
 
+    public boolean isSwivelUp() {
+        return true;
+        //Fix this //////////////////////////////////////////////////////////
+    }
+    public boolean isSwivelDown() {
+        return true;
+        //Fix this //////////////////////////////////////////////////////////
+    }
+
     //PIDF
     private int setOuttakeSlidesPIDF(int target) {
         return 0;
