@@ -17,14 +17,6 @@ public class EdgeDetector {
         isFallingDetector = isFalling;
     }
 
-    public EdgeDetector(boolean isFalling) {
-        isFallingDetector = isFalling;
-    }
-
-    public EdgeDetector() {
-        this(true);
-    }
-
     public void update(boolean cond) {
         if (cond && !isPressed) { //Rising Edge
             if (!isFallingDetector) {
@@ -49,11 +41,6 @@ public class EdgeDetector {
     public void reset() {
         isPressed = false;
         isRunning = false;
-    }
-
-    //TODO make rising edge detector with boolean
-    public void RE(boolean button){
-
     }
 
     @FunctionalInterface

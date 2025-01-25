@@ -24,6 +24,7 @@ public class OuttakeSystem implements Subsystem {
     private int servoOffset = 0;
     private int motorOffset = 0;
     public boolean highBasketMode = true;
+    public boolean manualOuttake = false;
 
     //Positions
     private double CLAW_OPEN;
@@ -37,11 +38,9 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_DOWN;
     private int OUTTAKE_SLIDES_REST;
 
-    //Targets
+    //Targets (for CR Servos)
     public int outtakeSlidesTarget;
     public int outtakeSwivelTarget;
-    public double clawTarget;
-    public double wristTarget;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -111,19 +110,19 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public void openClaw() {
-        clawTarget = CLAW_OPEN;
+        setClaw(CLAW_OPEN);
     }
 
     public void closeClaw() {
-        clawTarget = CLAW_CLOSE;
+        setClaw((CLAW_CLOSE));
     }
 
     public void wristPar() {
-        wristTarget = WRIST_PAR;
+        setWrist(WRIST_PAR);
     }
 
     public void wristPerp() {
-        wristTarget = WRIST_PERP;
+        setWrist(WRIST_PERP);
     }
 
     //isPositions
@@ -170,13 +169,10 @@ public class OuttakeSystem implements Subsystem {
         wristPar();
     }
 
-    //TODO MAKE REGULAR SERVOS ONLY SET ONCE
     @Override
     public void update(){
         outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
-        setClaw(clawTarget);
-        setWrist(wristTarget);
     }
 
 }

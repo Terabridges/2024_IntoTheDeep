@@ -32,11 +32,13 @@ public class StateMachines {
         FINISHED
     }
 
-    //TODO make gamepad buttons rising edge detectors
+    //TODO if needed make gamepad buttons rising edge detectors
+
     public static StateMachine getIntakeMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
         VisionSystem vision = robot.visionSystem;
         Gamepad gp1 = robot.gp1;
+
         return new StateMachineBuilder()
 
                 .state(intakeStates.EXTEND)
@@ -114,7 +116,7 @@ public class StateMachines {
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> outtake.openClaw())
-                .transitionTimed(1, outtakeStates.OUTTAKE_RESET)
+                .transitionTimed(0.5, outtakeStates.OUTTAKE_RESET)
 
                 .state(outtakeStates.OUTTAKE_RESET)
                 .onEnter( () -> {
@@ -126,5 +128,4 @@ public class StateMachines {
                 .state(outtakeStates.FINISHED)
                 .build();
     }
-
 }

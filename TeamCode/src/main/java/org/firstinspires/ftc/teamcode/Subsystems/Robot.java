@@ -58,6 +58,16 @@ public class Robot {
         gp1.rumble(milliseconds);
     }
 
+    public void setManualIntakeTrue(){
+        intakeSystem.manualIntake = true;
+        outtakeSystem.manualOuttake = false;
+    }
+
+    public void setManualSlidesTrue(){
+        outtakeSystem.manualOuttake = true;
+        intakeSystem.manualIntake = false;
+    }
+
 
     //Interface Methods
     public void update() {
