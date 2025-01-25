@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
 
 import com.sfdev.assembly.state.StateMachine;
 import com.sfdev.assembly.state.StateMachineBuilder;
@@ -33,6 +34,7 @@ public class BucketAuto extends LinearOpMode
     Robot r;
     IntakeSystem i;
     OuttakeSystem o;
+    VisionSystem v;
 
     //State Factory
     StateMachine main;
@@ -44,7 +46,7 @@ public class BucketAuto extends LinearOpMode
     public Pose startPose = new Pose();
     public Pose scorePose = new Pose();
 
-    public PathChain from0, from1, from2, from3;
+    public PathChain from0, from1, from2, from3, pickup0, pickup1, pickup2, pickup3;
 
     //Enums
     enum mainStates
@@ -69,9 +71,9 @@ public class BucketAuto extends LinearOpMode
     {
         GO_TO_PICKUP,
         EXTEND_INTAKE,
-        FORWARD,
         RETRACT_INTAKE,
         TRANSFER,
+        FAILED_PICKUP,
         STOP
 
     }
@@ -80,6 +82,7 @@ public class BucketAuto extends LinearOpMode
     private ElapsedTime runtime = new ElapsedTime();
     int curSample = 0;
     double dropTime = 0.2;
+    double pickupTime = 0.8;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -87,6 +90,7 @@ public class BucketAuto extends LinearOpMode
         r = new Robot(hardwareMap, telemetry);
         i = new IntakeSystem(hardwareMap);
         o = new OuttakeSystem(hardwareMap);
+        v = new VisionSystem(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -151,8 +155,7 @@ public class BucketAuto extends LinearOpMode
                     else if (curSample == 3){follower.followPath(from3);}
                     o.outtakeSlidesHigh();
                 })
-                .transition(() -> o.isSlidesHigh() &&
-                        (follower.getPose().getX() > (scorePose.getX() - 1) && follower.getPose().getY() > (scorePose.getY() - 1)))
+                .transition(() -> o.isSlidesHigh() && !follower.isBusy())
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> o.outtakeSwivelUp())
@@ -182,14 +185,31 @@ public class BucketAuto extends LinearOpMode
 
         StateMachine pickup = new StateMachineBuilder()
                 .state(pickupStates.GO_TO_PICKUP)
+                .onEnter(() -> {
+                    if (curSample == 0){follower.followPath(pickup0);}
+                    else if (curSample == 1){follower.followPath(pickup1);}
+                    else if (curSample == 2){follower.followPath(pickup2);}
+                    else if (curSample == 3){follower.followPath(pickup3);}
+                })
+                .transition(() -> !follower.isBusy())
+                .onExit(() -> i.intakeSlidesExtend())
 
                 .state(pickupStates.EXTEND_INTAKE)
-
-                .state(pickupStates.FORWARD)
+                .onEnter(() -> {
+                    i.intakeSpinIn();
+                    //Slowly drive forward
+                })
+                .transition(() -> v.isSomething())
+                .transition(() -> runtime.seconds() > pickupTime, pickupStates.FAILED_PICKUP)
+                .onExit(() -> i.intakeStopSpin())
 
                 .state(pickupStates.RETRACT_INTAKE)
+                .onEnter(() -> i.intakeSlidesRetract())
+                .transition(() -> i.isIntakeRetracted())
 
                 .state(pickupStates.TRANSFER)
+                //.onEnter(() -> TRANSFER HERE JOSH)
+                //.transition(() -> TRANSFER DONE)
 
                 .state(pickupStates.STOP)
 
