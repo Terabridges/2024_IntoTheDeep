@@ -139,6 +139,11 @@ public class IntakeSystem implements Subsystem {
         return Math.abs(intakeRightSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= servoOffset;
     }
 
+    public boolean isIntakeRetracted(){
+        return true;
+        // FIX THIS //////////////////////////////////
+    }
+
     public boolean isSwivelRetracted(){
         return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
     }
