@@ -27,6 +27,11 @@ public class Robot {
     public VisionSystem visionSystem;
     public DriveSystem driveSystem;
 
+    //Other
+    public boolean intakeInput;
+    public boolean transferInput;
+    public boolean outtakeInput;
+
     //Subsystem List
     public List<Subsystem> subsystems;
 
@@ -66,6 +71,18 @@ public class Robot {
     public void setManualSlidesTrue(){
         outtakeSystem.manualOuttake = true;
         intakeSystem.manualIntake = false;
+    }
+
+    public boolean checkIntakeInput(){
+        return intakeInput;
+    }
+
+    public boolean checkTransferInput(){
+        return transferInput;
+    }
+
+    public boolean checkOuttakeInput(){
+        return outtakeInput;
     }
 
 

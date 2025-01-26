@@ -32,8 +32,6 @@ public class StateMachines {
         FINISHED
     }
 
-    //TODO if needed make gamepad buttons rising edge detectors
-
     public static StateMachine getIntakeMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
         VisionSystem vision = robot.visionSystem;
@@ -51,7 +49,7 @@ public class StateMachines {
                     robot.rumble(500);
 
                 })
-                .transition( () -> gp1.x, intakeStates.RETRACT, () -> intake.intakeSwivelRest())
+                .transition( () -> robot.checkIntakeInput(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
 
                 .state(intakeStates.RETRACT)
                 .transition( () -> intake.isSwivelRetracted(), intakeStates.FINISHED, () -> intake.intakeSlidesRetract())
@@ -83,7 +81,7 @@ public class StateMachines {
                 .state(transferStates.OUTTAKE_RESET)
                 .onEnter( () -> outtake.outtakeSlidesRest())
                 .transition( () -> !vision.isSomething(), transferStates.INTAKE_RESET, () -> robot.rumble(500))
-                .transition( () -> gp1.x, transferStates.INTAKE_RESET)
+                .transition( () -> robot.transferInput, transferStates.INTAKE_RESET)
 
                 .state(transferStates.INTAKE_RESET)
                 .transition( () -> outtake.isSlidesRest(), transferStates.FINISHED, () -> intake.intakeSwivelRest())
@@ -111,8 +109,7 @@ public class StateMachines {
 
                 .state(outtakeStates.DROP_WAIT)
                 .onEnter( () -> vision.setLookForBasket())
-                .transition( () -> gp1.y, outtakeStates.SCORE_SAMPLE)
-                .transition( () -> gp1.x, outtakeStates.OUTTAKE_RESET)
+                .transition( () -> robot.checkTransferInput(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> outtake.openClaw())
