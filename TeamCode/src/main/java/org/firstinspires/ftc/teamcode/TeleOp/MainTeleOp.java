@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Disabled
-@TeleOp(name="TeleOp", group="TeleOp")
+@TeleOp(name="MainTeleOp", group="TeleOp")
 public class MainTeleOp extends LinearOpMode {
 
     public HashMap<String, String> gamepadMap = null;
@@ -54,12 +54,12 @@ public class MainTeleOp extends LinearOpMode {
         transferMachine = StateMachines.getTransferMachine(robot);
         outtakeMachine = StateMachines.getOuttakeMachine(robot);
 
-        //driveControl = new DriveControl(robot, gamepad1);
+        driveControl = new DriveControl(robot, gamepad1);
         intakeControl = new IntakeControl(robot, gamepad1);
         outtakeControl = new OuttakeControl(robot, gamepad1);
         //visionControl = new VisionControl(robot, gamepad1);
 
-        controls = new ArrayList<>(Arrays.asList(intakeControl, outtakeControl));
+        controls = new ArrayList<>(Arrays.asList(intakeControl, outtakeControl, driveControl));
 
         StateMachine globalMachine = new StateMachineBuilder()
 
@@ -131,7 +131,7 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
-    public void isEndGame(Runtime runtime) {
+    public void pleasePark(Runtime runtime) {
 
     }
 }

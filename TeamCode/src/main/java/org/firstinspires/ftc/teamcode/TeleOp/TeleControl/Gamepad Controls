@@ -5,13 +5,13 @@ A - sample intake FSM (DONE) / wall grab FSM
 B - sample transfer FSM (DONE) / raise specimen FSM
 Y - sample outtake FSM (DONE) / score specimen FSM
 X - alt input for FSMs (DONE)
-rightBumper - slow mode
+rightBumper - slow mode (DONE)
 leftBumper - specimen mode
 dLeft - move intake slides in (DONE)
 dRight - move intake slides out (DONE)
 dUp - claw open/close (DONE)
-dDown - field centric mode
-leftStickButton - low basket mode
+dDown - drive to basket
+leftStickButton - low basket mode (DONE)
 rightStickButton - vertical slide manual mode (DONE)
 back button - reset robot
 start button - reset encoders
@@ -19,10 +19,10 @@ start button - reset encoders
 DOUBLES
 rightTrigger - intake spin in (DONE) / vertical slides up (DONE)
 leftTrigger - intake spin out (DONE) / vertical slides down (DONE)
-leftStickX - strafe
-leftStickY - forward/back
-rightStickX - spin
-rightStickY - spin (in field centric)
+leftStickX - strafe (DONE)
+leftStickY - forward/back (DONE)
+rightStickX - spin (DONE)
+rightStickY - spin (in field centric) (DONE)
 touchPadX -
 touchPadY -
 

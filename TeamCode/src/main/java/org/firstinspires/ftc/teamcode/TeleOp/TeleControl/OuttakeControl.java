@@ -18,7 +18,7 @@ public class OuttakeControl implements Control {
     EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
     EdgeDetector slidesManualFalseRE = new EdgeDetector( () -> robot.setManualIntakeTrue());
-
+    EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
@@ -32,7 +32,9 @@ public class OuttakeControl implements Control {
     }
 
     //Methods
-
+    public void toggleLowBasketMode(){
+        outtake.highBasketMode = !outtake.highBasketMode;
+    }
 
     //Interface Methods
     @Override
@@ -63,6 +65,8 @@ public class OuttakeControl implements Control {
             slidesManualRE.update(gp1.right_stick_button);
         }
 
+        //Basket Mode Toggle
+        basketMode.update(gp1.left_stick_button);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -19,8 +20,8 @@ public class VisionSystem implements Subsystem {
 
     //Hardware
     public RevColorSensorV3 intakeColorSensor;
-    public DistanceSensor leftBackDistance;
-    public DistanceSensor rightBackDistance;
+    public AnalogInput leftBackDistance;
+    public AnalogInput rightBackDistance;
     public TouchSensor magLimitSwitch;
     public Servo lightOne;
 
@@ -33,18 +34,25 @@ public class VisionSystem implements Subsystem {
     public List<AprilTagDetection> detections;
     public List<VisionProcessor> processors;
     HardwareMap hardwareMap;
+    public double leftBackDistanceVal;
+    public double rightBackDistanceVal;
 
 
     //Constructor
     public VisionSystem(HardwareMap map) {
         intakeColorSensor = map.get(RevColorSensorV3.class, "intake_color_sensor");
-        leftBackDistance = map.get(DistanceSensor.class, "left_back_distance");
-        rightBackDistance = map.get(DistanceSensor.class, "right_back_distance");
+        leftBackDistance = map.get(AnalogInput.class, "left_back_distance");
+        rightBackDistance = map.get(AnalogInput.class, "right_back_distance");
         magLimitSwitch = map.get(TouchSensor.class, "limit_switch");
         lightOne = map.get(Servo.class, "light_one");
     }
 
     //Methods
+    public void getDistances(){
+        leftBackDistanceVal = (leftBackDistance.getVoltage()*48.7)-4.9;
+        rightBackDistanceVal = (rightBackDistance.getVoltage()*48.7)-4.9;
+    }
+
     public double getColorPWN(String color){
         if (color.equals("red")){
             return 0.279;
@@ -141,5 +149,6 @@ public class VisionSystem implements Subsystem {
     public void update(){
         detectColor();
         setLightColor(getColorVal());
+        getDistances();
     }
 }
