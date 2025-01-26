@@ -31,6 +31,7 @@ public class Robot {
     public boolean intakeInput;
     public boolean transferInput;
     public boolean outtakeInput;
+    public String currentState = "none";
 
     //Subsystem List
     public List<Subsystem> subsystems;

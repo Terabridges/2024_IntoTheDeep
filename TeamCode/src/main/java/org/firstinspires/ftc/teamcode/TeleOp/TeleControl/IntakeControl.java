@@ -18,6 +18,9 @@ public class IntakeControl implements Control{
     EdgeDetector manualSlidesInFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
     EdgeDetector manualSlidesOutRE = new EdgeDetector(() -> intake.intakeSlidesSetManualOut());
     EdgeDetector manualSlidesOutFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
+    EdgeDetector intakeInput = new EdgeDetector(() -> setIntakeInput());
+    EdgeDetector transferInput = new EdgeDetector(() -> setTransferInput());
+    EdgeDetector outtakeInput = new EdgeDetector(() -> setOuttakeInput());
 
 
     //Constructor
@@ -29,6 +32,19 @@ public class IntakeControl implements Control{
     public IntakeControl(Robot robot, Gamepad gp1) {
         this(robot.intakeSystem, gp1);
         this.robot = robot;
+    }
+
+    //Methods
+    public void setIntakeInput(){
+        if (robot.currentState.equals("intake")) {robot.intakeInput = true;}
+    }
+
+    public void setTransferInput(){
+        if (robot.currentState.equals("transfer")) {robot.transferInput = true;}
+    }
+
+    public void setOuttakeInput(){
+        if (robot.currentState.equals("outtake")) {robot.outtakeInput = true;}
     }
 
     //Interface Methods
@@ -53,6 +69,11 @@ public class IntakeControl implements Control{
         //dPadRight pushes intake slides out
         manualSlidesOutRE.update(gp1.dpad_right);
         manualSlidesOutFE.update(gp1.dpad_right);
+
+        //Inputs
+        intakeInput.update(gp1.x);
+        transferInput.update(gp1.x);
+        outtakeInput.update(gp1.x);
     }
 
     @Override

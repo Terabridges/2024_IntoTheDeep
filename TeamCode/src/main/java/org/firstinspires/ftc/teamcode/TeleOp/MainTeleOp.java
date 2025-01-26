@@ -74,6 +74,7 @@ public class MainTeleOp extends LinearOpMode {
                 .onEnter( () -> {
                     intakeMachine.reset();
                     intakeMachine.start();
+                    robot.currentState = "intake";
                 })
                 .loop( () -> intakeMachine.update())
                 .onExit( () -> intakeMachine.stop())
@@ -85,6 +86,7 @@ public class MainTeleOp extends LinearOpMode {
                 .onEnter( () -> {
                     transferMachine.reset();
                     transferMachine.start();
+                    robot.currentState = "transfer";
                 })
                 .loop( () -> transferMachine.update())
                 .onExit( () -> transferMachine.stop())
@@ -96,6 +98,7 @@ public class MainTeleOp extends LinearOpMode {
                 .onEnter( () -> {
                     outtakeMachine.reset();
                     outtakeMachine.start();
+                    robot.currentState = "outtake";
                 })
                 .loop( () -> outtakeMachine.update())
                 .onExit( () -> outtakeMachine.stop())

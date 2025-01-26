@@ -143,12 +143,10 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public boolean isSwivelUp() {
-        return true;
-        //Fix this //////////////////////////////////////////////////////////
+        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
     }
     public boolean isSwivelDown() {
-        return true;
-        //Fix this //////////////////////////////////////////////////////////
+        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
     }
 
     //PIDF

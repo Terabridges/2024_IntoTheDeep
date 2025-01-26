@@ -35,7 +35,6 @@ public class StateMachines {
     public static StateMachine getIntakeMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
         VisionSystem vision = robot.visionSystem;
-        Gamepad gp1 = robot.gp1;
 
         return new StateMachineBuilder()
 
@@ -52,6 +51,7 @@ public class StateMachines {
                 .transition( () -> robot.checkIntakeInput(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
 
                 .state(intakeStates.RETRACT)
+                .onEnter( () -> robot.intakeInput = false )
                 .transition( () -> intake.isSwivelRetracted(), intakeStates.FINISHED, () -> intake.intakeSlidesRetract())
 
                 .state(intakeStates.FINISHED)
@@ -62,7 +62,6 @@ public class StateMachines {
         IntakeSystem intake = robot.intakeSystem;
         OuttakeSystem outtake = robot.outtakeSystem;
         VisionSystem vision = robot.visionSystem;
-        Gamepad gp1 = robot.gp1;
         return new StateMachineBuilder()
 
                 .state(transferStates.INTAKE_TRANSFER)
@@ -84,6 +83,7 @@ public class StateMachines {
                 .transition( () -> robot.transferInput, transferStates.INTAKE_RESET)
 
                 .state(transferStates.INTAKE_RESET)
+                .onEnter( () -> robot.transferInput = false)
                 .transition( () -> outtake.isSlidesRest(), transferStates.FINISHED, () -> intake.intakeSwivelRest())
 
                 .state(transferStates.FINISHED)
@@ -93,7 +93,6 @@ public class StateMachines {
     public static StateMachine getOuttakeMachine(Robot robot){
         OuttakeSystem outtake = robot.outtakeSystem;
         VisionSystem vision = robot.visionSystem;
-        Gamepad gp1 = robot.gp1;
         return new StateMachineBuilder()
 
                 .state(outtakeStates.OUTTAKE_RISE)
@@ -109,10 +108,13 @@ public class StateMachines {
 
                 .state(outtakeStates.DROP_WAIT)
                 .onEnter( () -> vision.setLookForBasket())
-                .transition( () -> robot.checkTransferInput(), outtakeStates.SCORE_SAMPLE)
+                .transition( () -> robot.checkOuttakeInput(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
-                .onEnter( () -> outtake.openClaw())
+                .onEnter( () -> {
+                    outtake.openClaw();
+                    robot.outtakeInput = false;
+                })
                 .transitionTimed(0.5, outtakeStates.OUTTAKE_RESET)
 
                 .state(outtakeStates.OUTTAKE_RESET)
