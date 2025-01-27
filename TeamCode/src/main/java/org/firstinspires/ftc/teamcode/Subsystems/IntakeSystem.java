@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,8 +44,6 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
 
     //Targets
-    public int intakeSlidesTarget;
-    public int intakeSwivelTarget;
     public double intakeSpinTarget = 0;
     public double intakeSlidesManualPower;
     public double intakeSwivelManualPower;
@@ -55,6 +54,26 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SPIN_MAX_POWER = 1.0;
 
     //PIDF
+
+    private double ticks_in_degree = 144.0 / 180.0;
+
+    //First PID for intake slides
+    private PIDController intakeSlidesController;
+    public double p = 0.005, i = 0.02, d = 0.00004;
+    public double f = 0.06;
+    public int intakeSlidesTarget;
+    double intakeSlidesPos;
+    double pid, targetIntakeSlidesAngle, ff, currentIntakeSlidesAngle, intakeSlidesPower;
+
+    //Second PID for intake swivel
+    private PIDController intakeSwivelController;
+    public double p2 = 0.005, i2 = 0.02, d2 = 0.00004;
+    public double f2 = 0.06;
+    public int intakeSwivelTarget;
+    double intakeSwivelPos;
+    double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
+
+
 
 
 
@@ -151,13 +170,30 @@ public class IntakeSystem implements Subsystem {
         return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_TRANSFER) <= servoOffset;
     }
 
-    //PIDF
-    private int setIntakeSlidesPIDF(int target) {
-        return 0;
+    public double setIntakeSlidesPIDF(int target) {
+        intakeSlidesController.setPID(p, i, d);
+        intakeSlidesPos = intakeRightSlidesEnc.getCurrentPosition();
+        pid = intakeSlidesController.calculate(intakeSlidesPos, target);
+        targetIntakeSlidesAngle = target;
+        ff = (Math.sin(Math.toRadians(targetIntakeSlidesAngle))) * f;
+        currentIntakeSlidesAngle = Math.toRadians((intakeSlidesPos) / ticks_in_degree);
+
+        intakeSlidesPower = pid + ff;
+
+        return intakeSlidesPower;
     }
 
-    private int setIntakeSwivelPIDF(int target) {
-        return 0;
+    public double setIntakeSwivelPIDF(int target) {
+        intakeSwivelController.setPID(p2, i2, d2);
+        intakeSwivelPos = intakeRightSwivelEnc.getCurrentPosition();
+        pid2 = intakeSwivelController.calculate(intakeSwivelPos, target);
+        targetIntakeSwivelAngle = target;
+        ff2 = (Math.sin(Math.toRadians(targetIntakeSwivelAngle))) * f2;
+        currentIntakeSwivelAngle = Math.toRadians((intakeSwivelPos) / ticks_in_degree);
+
+        intakeSwivelPower = pid2 + ff2;
+
+        return intakeSwivelPower;
     }
 
     //Interface Methods

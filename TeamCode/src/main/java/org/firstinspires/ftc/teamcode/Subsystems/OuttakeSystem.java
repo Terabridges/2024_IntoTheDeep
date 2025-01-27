@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,15 +39,28 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_DOWN;
     private int OUTTAKE_SLIDES_REST;
 
-    //Targets (for CR Servos)
-    public int outtakeSlidesTarget;
-    public int outtakeSwivelTarget;
-
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
     private double OUTTAKE_SWIVEL_MAX_POWER = 1.0;
 
     //PIDF
+    private double ticks_in_degree = 144.0 / 180.0;
+
+    //Third PID for outtake slides
+    private PIDController outtakeSlidesController;
+    public double p3 = 0.005, i3 = 0.02, d3 = 0.00004;
+    public double f3 = 0.06;
+    public int outtakeSlidesTarget;
+    double outtakeSlidesPos;
+    double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
+
+    //Fourth PID for outtake swivel
+    private PIDController outtakeSwivelController;
+    public double p4 = 0.005, i4 = 0.02, d4 = 0.00004;
+    public double f4 = 0.06;
+    public int outtakeSwivelTarget;
+    double outtakeSwivelPos;
+    double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
     //Constructor
     public OuttakeSystem(HardwareMap map) {
@@ -150,12 +164,30 @@ public class OuttakeSystem implements Subsystem {
     }
 
     //PIDF
-    private int setOuttakeSlidesPIDF(int target) {
-        return 0;
+    public double setOuttakeSlidesPIDF(int target) {
+        outtakeSlidesController.setPID(p3, i3, d3);
+        outtakeSlidesPos = outtakeTopVertical.getCurrentPosition();
+        pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
+        targetOuttakeSlidesAngle = target;
+        ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
+        currentOuttakeSlidesAngle = Math.toRadians((outtakeSlidesPos) / ticks_in_degree);
+
+        outtakeSlidesPower = pid3 + ff3;
+
+        return outtakeSlidesPower;
     }
 
-    private int setOuttakeSwivelPIDF(int target) {
-        return 0;
+    public double setOuttakeSwivelPIDF(int target) {
+        outtakeSwivelController.setPID(p4, i4, d4);
+        outtakeSwivelPos = outtakeRightSwivelEnc.getCurrentPosition();
+        pid4 = outtakeSwivelController.calculate(outtakeSwivelPos, target);
+        targetOuttakeSwivelAngle = target;
+        ff4 = (Math.sin(Math.toRadians(targetOuttakeSwivelAngle))) * f4;
+        currentOuttakeSwivelAngle = Math.toRadians((outtakeSwivelPos) / ticks_in_degree);
+
+        outtakeSwivelPower = pid4 + ff4;
+
+        return outtakeSwivelPower;
     }
 
     //Interface Methods
