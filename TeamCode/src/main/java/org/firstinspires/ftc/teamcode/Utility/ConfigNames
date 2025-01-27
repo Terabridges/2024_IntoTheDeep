@@ -1,2 +1,34 @@
 CONFIG NAMES
 
+Motor Left Front: "left_front" - Expansion Hub Motor 1
+Motor Left Back: "left_back" - Expansion Hub Motor 0
+Motor Right Front: "right_front" - CHub Motor 0
+Motor Right Back: "right_back" - Chub motor 1
+I2C: "pinpoint" - Chub I2C 0
+
+CRServo Intake left slide: "intake_left_linear" - Chub Servo 0
+CRServo Intake right slide: "intake_right_linear" - Expansion hub Servo 0
+CRServo Intake left swivel: "intake_left_swivel" - Chub Servo 1
+CRServo Intake right swivel: "intake_right_swivel" - Chub Servo 2
+DcMotor Intake Spinner: "intake_spin" - Chub Motor 3
+Analog Intake right slide: "intake_right_linear_analog" - Expansion Hub Analog 0
+Analog Intake right swivel: "intake_right_swivel_analog" - CHub Analog 1
+
+DcMotor Winch top: "outtake_top_vertical" - Chub Motor 2
+DcMotor Winch bottom: "outtake_bottom_vertical" - Expansion Hub Motor 2
+CRServo Deposit left swivel: "outtake_left_swivel"
+CRServo Deposit right swivel: "outtake_right_swivel"
+Servo Wrist: "outtake_wrist"
+Servo Claw: "outtake_claw"
+Analog Right Swivel: "outtake_right_swivel_analog" - Expansion Hub Analog 1
+
+I2C Intake Color Sensor: "intake_color_sensor" - Chub I2C 1
+Analog Left Back Distance: "left_back_distance"
+Analog Right Back Distance: "right_back_distance"
+Digital IO Mag Limit Switch: "limit_switch" - Expansion Hub Digital 0
+Servo Light: "light_one" - Expansion Hub Servo 2
+
+PWM Servo: "intake_sweeper" - Chub Servo 3
+
+Camera Front: "front_webcam"
+Camera Back: "back_webcam"
