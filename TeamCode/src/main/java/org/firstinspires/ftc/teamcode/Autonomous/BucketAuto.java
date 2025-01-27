@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 import com.sfdev.assembly.state.StateMachine;
 import com.sfdev.assembly.state.StateMachineBuilder;
@@ -42,9 +44,20 @@ public class BucketAuto extends LinearOpMode
     StateMachine pickup;
 
     //Pedro
+
+    public double robotWidth = 13.117; //Front to back
+    public double robotHeight = 13.413; //Side to side
+    public double botCenterX = robotWidth/2;
+    public double botCenterY = robotHeight/2;
+
     private Follower follower;
-    public Pose startPose = new Pose();
-    public Pose scorePose = new Pose();
+    public Pose startPose = new Pose(botCenterX, 96+botCenterY, Math.toRadians(180));
+    public Pose scorePose = new Pose(24-2, 120+2, Math.toRadians(135));
+
+    public Pose firstSample = new Pose(46.5, 120.5 , Math.toRadians(0));
+    public Pose secondSample = new Pose(46.5, 130.5 , Math.toRadians(0));
+    public Pose thirdSample = new Pose(46.5, 140.5 , Math.toRadians(0));
+    Pose[] samples = {firstSample, secondSample, thirdSample};
 
     public PathChain from0, from1, from2, from3, pickup0, pickup1, pickup2, pickup3;
 
@@ -96,6 +109,10 @@ public class BucketAuto extends LinearOpMode
 
         r.toInit();
 
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
+
         buildPaths();
         buildStateMachines();
 
@@ -107,9 +124,10 @@ public class BucketAuto extends LinearOpMode
         while (opModeIsActive())
         {
             r.update();
-            telemetry.update();
-
+            follower.update();
             main.update();
+
+            telemetry.update();
 
             if (main.getStateString().equals("STOP"))
             {
@@ -127,7 +145,7 @@ public class BucketAuto extends LinearOpMode
 
     public void buildStateMachines()
     {
-        StateMachine main = new StateMachineBuilder()
+        main = new StateMachineBuilder()
                 .state(mainStates.SCORE)
                 .onEnter(() -> score.start())
                 .loop(() -> score.update())
@@ -146,7 +164,7 @@ public class BucketAuto extends LinearOpMode
 
                 .build();
 
-        StateMachine score = new StateMachineBuilder()
+        score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
                     if (curSample == 0){follower.followPath(from0);}
@@ -183,7 +201,7 @@ public class BucketAuto extends LinearOpMode
 
                 .build();
 
-        StateMachine pickup = new StateMachineBuilder()
+        pickup = new StateMachineBuilder()
                 .state(pickupStates.GO_TO_PICKUP)
                 .onEnter(() -> {
                     if (curSample == 0){follower.followPath(pickup0);}
