@@ -18,6 +18,9 @@ public class IntakeControl implements Control{
     EdgeDetector manualSlidesInFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
     EdgeDetector manualSlidesOutRE = new EdgeDetector(() -> intake.intakeSlidesSetManualOut());
     EdgeDetector manualSlidesOutFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
+    EdgeDetector intakeSweeperRE = new EdgeDetector(() -> intake.intakeSweeperOut());
+    EdgeDetector intakeSweeperFE = new EdgeDetector(() -> intake.intakeSweeperIn(), true);
+
     EdgeDetector intakeInput = new EdgeDetector(() -> setIntakeInput());
     EdgeDetector transferInput = new EdgeDetector(() -> setTransferInput());
     EdgeDetector outtakeInput = new EdgeDetector(() -> setOuttakeInput());
@@ -69,6 +72,10 @@ public class IntakeControl implements Control{
         //dPadRight pushes intake slides out
         manualSlidesOutRE.update(gp1.dpad_right);
         manualSlidesOutFE.update(gp1.dpad_right);
+
+        //dPadDown holds intake sweeper out when held
+        intakeSweeperRE.update(gp1.dpad_down);
+        intakeSweeperFE.update(gp1.dpad_down);
 
         //Inputs
         intakeInput.update(gp1.x);

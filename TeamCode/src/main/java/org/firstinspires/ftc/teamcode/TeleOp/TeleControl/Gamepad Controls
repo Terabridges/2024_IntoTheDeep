@@ -10,7 +10,7 @@ leftBumper - specimen mode
 dLeft - move intake slides in (DONE)
 dRight - move intake slides out (DONE)
 dUp - claw open/close (DONE)
-dDown - drive to basket
+dDown - hold to hold sweeper out (DONE)
 leftStickButton - low basket mode (DONE)
 rightStickButton - vertical slide manual mode (DONE)
 back button - reset robot

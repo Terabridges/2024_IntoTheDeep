@@ -28,16 +28,16 @@ public class IntakeTuner extends LinearOpMode {
 
     //First PID for intake slides
     private PIDController intakeSlidesController;
-    public static double p = 0.005, i = 0.02, d = 0.00004;
-    public static double f = 0.06;
+    public static double p = 0.0, i = 0.0, d = 0.0;
+    public static double f = 0.0;
     public static int intakeSlidesTarget;
     double intakeSlidesPos;
     double pid, targetIntakeSlidesAngle, ff, currentIntakeSlidesAngle, intakeSlidesPower;
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public static double p2 = 0.005, i2 = 0.02, d2 = 0.00004;
-    public static double f2 = 0.06;
+    public static double p2 = 0.0, i2 = 0.0, d2 = 0.0;
+    public static double f2 = 0.0;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
@@ -84,6 +84,8 @@ public class IntakeTuner extends LinearOpMode {
                 telemetry.addData("Swivel Target", intakeSwivelTarget);
                 telemetry.addData("Swivel Pos", intakeRightSwivelEnc.getCurrentPosition());
             }
+
+            telemetry.update();
         }
     }
 

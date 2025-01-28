@@ -1,16 +1,20 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
+import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
+@Config
 public class TestOpMode extends LinearOpMode {
 
     public CRServo intakeLeftSlide;
@@ -38,6 +42,14 @@ public class TestOpMode extends LinearOpMode {
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
 
+    public static double CLAW_OPEN = 0.65;
+    public static double CLAW_CLOSE = 0.52;
+    public static double WRIST_UP = 0.59;
+    public static double WRIST_DOWN = 0.25;
+
+    public boolean clawOpen = false;
+    public boolean wristUp = false;
+
     public enum Mode {
         INTAKE,
         OUTTAKE,
@@ -49,8 +61,10 @@ public class TestOpMode extends LinearOpMode {
     public void runOpMode(){
 
         intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_linear");
+        intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_linear");
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
+        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
@@ -59,7 +73,9 @@ public class TestOpMode extends LinearOpMode {
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
         outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
+        outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = hardwareMap.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = hardwareMap.get(Servo.class, "outtake_wrist");
         outtakeClaw = hardwareMap.get(Servo.class, "outtake_claw");
@@ -67,6 +83,8 @@ public class TestOpMode extends LinearOpMode {
         outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0);
         leftBack = hardwareMap.get(DcMotor.class, "left_back");
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack = hardwareMap.get(DcMotor.class, "right_back");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
 
@@ -139,7 +157,16 @@ public class TestOpMode extends LinearOpMode {
                 }
             }
 
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
+                outtakeClaw.setPosition((clawOpen ? CLAW_CLOSE : CLAW_OPEN));
+            }
+
+            if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper){
+                outtakeClaw.setPosition((wristUp ? WRIST_DOWN : WRIST_UP));
+            }
+
             telemetry.addData("Current Mode: ", mode);
+            telemetry.update();
         }
 
 

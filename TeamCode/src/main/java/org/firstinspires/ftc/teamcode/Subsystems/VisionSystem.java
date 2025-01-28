@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -20,8 +21,8 @@ public class VisionSystem implements Subsystem {
 
     //Hardware
     public RevColorSensorV3 intakeColorSensor;
-    public AnalogInput leftBackDistance;
-    public AnalogInput rightBackDistance;
+//    public I2cDevice leftBackDistance;
+//    public I2cDevice rightBackDistance;
     public TouchSensor magLimitSwitch;
     public Servo lightOne;
 
@@ -41,17 +42,17 @@ public class VisionSystem implements Subsystem {
     //Constructor
     public VisionSystem(HardwareMap map) {
         intakeColorSensor = map.get(RevColorSensorV3.class, "intake_color_sensor");
-        leftBackDistance = map.get(AnalogInput.class, "left_back_distance");
-        rightBackDistance = map.get(AnalogInput.class, "right_back_distance");
+//        leftBackDistance = map.get(I2cDevice.class, "left_back_distance");
+//        rightBackDistance = map.get(I2cDevice.class, "right_back_distance");
         magLimitSwitch = map.get(TouchSensor.class, "limit_switch");
         lightOne = map.get(Servo.class, "light_one");
     }
 
     //Methods
-    public void getDistances(){
-        leftBackDistanceVal = (leftBackDistance.getVoltage()*48.7)-4.9;
-        rightBackDistanceVal = (rightBackDistance.getVoltage()*48.7)-4.9;
-    }
+//    public void getDistances(){
+//        leftBackDistanceVal = (leftBackDistance.getVoltage()*48.7)-4.9;
+//        rightBackDistanceVal = (rightBackDistance.getVoltage()*48.7)-4.9;
+//    }
 
     public double getColorPWN(String color){
         if (color.equals("red")){
@@ -149,6 +150,6 @@ public class VisionSystem implements Subsystem {
     public void update(){
         detectColor();
         setLightColor(getColorVal());
-        getDistances();
+        //getDistances();
     }
 }

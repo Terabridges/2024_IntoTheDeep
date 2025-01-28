@@ -28,19 +28,21 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Third PID for outtake slides
     private PIDController outtakeSlidesController;
-    public double p3 = 0.005, i3 = 0.02, d3 = 0.00004;
-    public double f3 = 0.06;
-    public int outtakeSlidesTarget;
+    public static double p3 = 0.0, i3 = 0.0, d3 = 0.0;
+    public static double f3 = 0.0;
+    public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
     double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
 
     //Fourth PID for outtake swivel
     private PIDController outtakeSwivelController;
-    public double p4 = 0.005, i4 = 0.02, d4 = 0.00004;
-    public double f4 = 0.06;
-    public int outtakeSwivelTarget;
+    public static double p4 = 0.0, i4 = 0.0, d4 = 0.0;
+    public static double f4 = 0.0;
+    public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
+
+    public boolean runSlides = true;
 
     @Override
     public void runOpMode() {
@@ -64,6 +66,63 @@ public class OuttakeTuner extends LinearOpMode {
 
         while (opModeIsActive()){
 
+            if (gamepad1.a){
+                runSlides = !runSlides;
+            }
+
+            if (runSlides) {
+                outtakeSlidesSetPower(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+            } else {
+                outtakeSwivelSetPower(setOuttakeSwivelPIDF(outtakeSwivelTarget));
+            }
+
+            telemetry.addData("Running Slides: ", runSlides);
+
+            if (runSlides) {
+                telemetry.addData("Linear Slides Target", outtakeSlidesTarget);
+                telemetry.addData("Linear Slides Pos", outtakeTopVertical.getCurrentPosition());
+            } else {
+                telemetry.addData("Swivel Target", outtakeSwivelTarget);
+                telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
+            }
+
+            telemetry.update();
+
         }
+    }
+
+    public double setOuttakeSlidesPIDF(int target) {
+        outtakeSlidesController.setPID(p3, i3, d3);
+        outtakeSlidesPos = outtakeTopVertical.getCurrentPosition();
+        pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
+        targetOuttakeSlidesAngle = target;
+        ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
+        currentOuttakeSlidesAngle = Math.toRadians((outtakeSlidesPos) / ticks_in_degree);
+
+        outtakeSlidesPower = pid3 + ff3;
+
+        return outtakeSlidesPower;
+    }
+
+    public double setOuttakeSwivelPIDF(int target) {
+        outtakeSwivelController.setPID(p4, i4, d4);
+        outtakeSwivelPos = outtakeRightSwivelEnc.getCurrentPosition();
+        pid4 = outtakeSwivelController.calculate(outtakeSwivelPos, target);
+        targetOuttakeSwivelAngle = target;
+        ff4 = (Math.sin(Math.toRadians(targetOuttakeSwivelAngle))) * f4;
+        currentOuttakeSwivelAngle = Math.toRadians((outtakeSwivelPos) / ticks_in_degree);
+
+        outtakeSwivelPower = pid4 + ff4;
+
+        return outtakeSwivelPower;
+    }
+
+    public void outtakeSlidesSetPower(double pow){
+        outtakeTopVertical.setPower(pow);
+        outtakeBottomVertical.setPower(pow);
+    }
+    public void outtakeSwivelSetPower(double pow){
+        outtakeLeftSwivel.setPower(pow);
+        outtakeRightSwivel.setPower(pow);
     }
 }

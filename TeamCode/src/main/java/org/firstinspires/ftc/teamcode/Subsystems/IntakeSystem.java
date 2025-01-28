@@ -5,7 +5,9 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -18,6 +20,7 @@ public class IntakeSystem implements Subsystem {
     public CRServo intakeRightSwivel;
     public CRServo intakeLeftSwivel;
     public DcMotor intakeSpin;
+    public Servo intakeSweeper;
     public AnalogInput intakeRightSwivelAnalog;
     public AnalogInput intakeRightSlidesAnalog;
     public AbsoluteAnalogEncoder intakeRightSwivelEnc;
@@ -42,6 +45,8 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
+    private double INTAKE_SWEEPER_OUT;
+    private double INTAKE_SWEEPER_IN;
 
     //Targets
     public double intakeSpinTarget = 0;
@@ -86,9 +91,12 @@ public class IntakeSystem implements Subsystem {
         intakeSpin = map.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeSweeper = map.get(Servo.class, "intake_sweeper");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
 
+        intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     //METHODS
@@ -112,6 +120,8 @@ public class IntakeSystem implements Subsystem {
         if(pow < -INTAKE_SPIN_MAX_POWER) pow = -INTAKE_SPIN_MAX_POWER;
         intakeSpin.setPower(pow);
     }
+
+    public void setSweeper(double pos) {intakeSweeper.setPosition(pos);}
 
     //Other Methods
     public void intakeSlidesExtend() {
@@ -151,6 +161,10 @@ public class IntakeSystem implements Subsystem {
     public void intakeSlidesSetManualOut(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;}
 
     public void intakeSlidesSetManualStop(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;}
+
+    public void intakeSweeperOut(){setSweeper(INTAKE_SWEEPER_OUT);}
+
+    public void intakeSweeperIn(){setSweeper(INTAKE_SWEEPER_IN);}
 
     //isPositions
 

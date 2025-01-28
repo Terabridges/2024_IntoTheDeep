@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -72,6 +73,9 @@ public class OuttakeSystem implements Subsystem {
         outtakeClaw = map.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
         outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0);
+
+        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     //METHODS
