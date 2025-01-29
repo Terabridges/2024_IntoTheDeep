@@ -119,8 +119,8 @@ public class MainTeleOp extends LinearOpMode {
             robot.update();
             globalMachine.update();
             gpDetec.update();
-            telemetry.update();
             ControlsUpdate();
+            telemetry.update();
         }
 
     }

@@ -60,9 +60,9 @@ public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode(){
 
-        intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_linear");
+        intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_slide");
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_linear");
+        intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
         intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");

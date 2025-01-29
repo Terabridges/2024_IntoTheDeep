@@ -84,8 +84,8 @@ public class IntakeSystem implements Subsystem {
 
     //Constructor
     public IntakeSystem(HardwareMap map) {
-        intakeLeftSlide = map.get(CRServo.class, "intake_left_linear");
-        intakeRightSlide = map.get(CRServo.class, "intake_right_linear");
+        intakeLeftSlide = map.get(CRServo.class, "intake_left_slide");
+        intakeRightSlide = map.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = map.get(CRServo.class, "intake_left_swivel");
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");

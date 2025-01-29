@@ -24,7 +24,7 @@ public class VisionSystem implements Subsystem {
 //    public I2cDevice leftBackDistance;
 //    public I2cDevice rightBackDistance;
     public TouchSensor magLimitSwitch;
-    public Servo lightOne;
+    public Servo rightLight;
 
     //Software
     NormalizedRGBA colors;
@@ -45,7 +45,7 @@ public class VisionSystem implements Subsystem {
 //        leftBackDistance = map.get(I2cDevice.class, "left_back_distance");
 //        rightBackDistance = map.get(I2cDevice.class, "right_back_distance");
         magLimitSwitch = map.get(TouchSensor.class, "limit_switch");
-        lightOne = map.get(Servo.class, "light_one");
+        rightLight = map.get(Servo.class, "right_light");
     }
 
     //Methods
@@ -91,7 +91,7 @@ public class VisionSystem implements Subsystem {
     }
 
     public void setLightColor(String chosenColor) {
-        lightOne.setPosition(getColorPWN(chosenColor));
+        rightLight.setPosition(getColorPWN(chosenColor));
     }
 
     public void setLookForBasket(){
