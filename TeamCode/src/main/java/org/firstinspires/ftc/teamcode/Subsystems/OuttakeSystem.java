@@ -35,10 +35,10 @@ public class OuttakeSystem implements Subsystem {
     private double WRIST_PAR;
     private int OUTTAKE_SWIVEL_UP;
     private int OUTTAKE_SWIVEL_DOWN;
-    private int OUTTAKE_SLIDES_HIGH;
-    private int OUTTAKE_SLIDES_LOW;
-    private int OUTTAKE_SLIDES_DOWN;
-    private int OUTTAKE_SLIDES_REST;
+    private int OUTTAKE_SLIDES_HIGH = -3400;
+    private int OUTTAKE_SLIDES_LOW = -1600;
+    private int OUTTAKE_SLIDES_DOWN = 0;
+    private int OUTTAKE_SLIDES_REST = -600;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -65,8 +65,8 @@ public class OuttakeSystem implements Subsystem {
 
     //Constructor
     public OuttakeSystem(HardwareMap map) {
-        outtakeTopVertical = map.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeTopVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeBottomVertical = map.get(DcMotor.class, "outtake_top_vertical");
         outtakeLeftSwivel = map.get(CRServo.class, "outtake_left_swivel");
         outtakeRightSwivel = map.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = map.get(Servo.class, "outtake_wrist");

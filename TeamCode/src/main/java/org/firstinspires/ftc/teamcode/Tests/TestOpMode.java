@@ -73,8 +73,8 @@ public class TestOpMode extends LinearOpMode {
         intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
-        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
         outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -168,6 +168,12 @@ public class TestOpMode extends LinearOpMode {
             }
 
             telemetry.addData("Current Mode: ", mode);
+            telemetry.addData("Outtake swivel abs pos", outtakeRightSwivelEnc.getCurrentPosition());
+            telemetry.addData("Intake swivel abs pos", intakeRightSwivelEnc.getCurrentPosition());
+            telemetry.addData("Intake slides abs pos", intakeRightSlidesEnc.getCurrentPosition());
+            telemetry.addData("Outtake swivel pos", outtakeRightSwivelAnalog.getVoltage());
+            telemetry.addData("Intake swivel pos", intakeRightSwivelAnalog.getVoltage());
+            telemetry.addData("Intake slides pos", intakeRightSlidesAnalog.getVoltage());
             telemetry.update();
         }
 

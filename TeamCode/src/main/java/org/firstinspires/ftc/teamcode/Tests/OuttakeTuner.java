@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
+@TeleOp(name="OuttakeTuner", group="Test")
 @Config
 public class OuttakeTuner extends LinearOpMode {
 
@@ -47,8 +49,8 @@ public class OuttakeTuner extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
         outtakeRightSwivel = hardwareMap.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = hardwareMap.get(Servo.class, "outtake_wrist");
@@ -83,6 +85,7 @@ public class OuttakeTuner extends LinearOpMode {
                 telemetry.addData("Linear Slides Pos", outtakeTopVertical.getCurrentPosition());
             } else {
                 telemetry.addData("Swivel Target", outtakeSwivelTarget);
+                telemetry.addData("Power", outtakeRightSwivel.getPower());
                 telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
             }
 

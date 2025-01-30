@@ -5,12 +5,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
+@TeleOp(name="IntakeTuner", group="Test")
 @Config
 public class IntakeTuner extends LinearOpMode {
 
@@ -46,13 +48,13 @@ public class IntakeTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_linear");
-        intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_linear");
+        intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_slide");
+        intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
 
