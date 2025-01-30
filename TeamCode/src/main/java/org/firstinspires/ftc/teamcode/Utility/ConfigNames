@@ -12,7 +12,7 @@ CRServo Intake left swivel: "intake_left_swivel" - Chub Servo 1
 CRServo Intake right swivel: "intake_right_swivel" - Chub Servo 2
 DcMotor Intake Spinner: "intake_spin" - Chub Motor 3
 Analog Intake right slide: "intake_right_linear_analog" - Expansion Hub Analog 2
-Analog Intake right swivel: "intake_right_swivel_analog" - CHub Analog 1
+Analog Intake right swivel: "intake_right_swivel_analog" - CHub Analog 3
 
 DcMotor Winch top: "outtake_top_vertical" - Chub Motor 2
 DcMotor Winch bottom: "outtake_bottom_vertical" - Expansion Hub Motor 2
@@ -23,8 +23,8 @@ Servo Claw: "outtake_claw"
 Analog Right Swivel: "outtake_right_swivel_analog" - Expansion Hub Analog 3
 
 I2C Intake Color Sensor: "intake_color_sensor" - Chub I2C 1
-Analog Left Back Distance: "left_back_distance"
-Analog Right Back Distance: "right_back_distance"
+Analog Left Back Distance: "left_back_distance" - Chub Analog 0/1
+Analog Right Back Distance: "right_back_distance" - Expansion Hub Analog 0/1
 Digital IO Mag Limit Switch: "limit_switch" - Expansion Hub Digital 0
 Servo Light: "light_one" - Expansion Hub Servo 2
 
