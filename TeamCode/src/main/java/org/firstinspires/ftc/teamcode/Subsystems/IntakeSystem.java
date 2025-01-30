@@ -90,7 +90,7 @@ public class IntakeSystem implements Subsystem {
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);

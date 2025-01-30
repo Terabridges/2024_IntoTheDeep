@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
+@TeleOp(name="TestOpMode", group="Test")
 @Config
 public class TestOpMode extends LinearOpMode {
 
@@ -68,7 +70,7 @@ public class TestOpMode extends LinearOpMode {
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_linear_analog");
+        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
