@@ -40,6 +40,7 @@ public class TestOpMode extends LinearOpMode {
     public DcMotor leftBack;
     public DcMotor rightFront;
     public DcMotor rightBack;
+    public Servo intakeSweeper;
 
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
@@ -48,9 +49,12 @@ public class TestOpMode extends LinearOpMode {
     public static double CLAW_CLOSE = 0.52;
     public static double WRIST_UP = 0.59;
     public static double WRIST_DOWN = 0.25;
+    public static double SWEEPER_OUT = 0.6;
+    public static double SWEEPER_IN = 0.2;
 
     public boolean clawOpen = false;
     public boolean wristUp = false;
+    public boolean sweeperOut = false;
 
     public enum Mode {
         INTAKE,
@@ -70,8 +74,6 @@ public class TestOpMode extends LinearOpMode {
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
-        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
         outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
@@ -89,6 +91,7 @@ public class TestOpMode extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack = hardwareMap.get(DcMotor.class, "right_back");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        intakeSweeper = hardwareMap.get(Servo.class, "intake_sweeper");
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -161,10 +164,17 @@ public class TestOpMode extends LinearOpMode {
 
             if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
                 outtakeClaw.setPosition((clawOpen ? CLAW_CLOSE : CLAW_OPEN));
+                clawOpen = !clawOpen;
             }
 
             if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper){
-                outtakeClaw.setPosition((wristUp ? WRIST_DOWN : WRIST_UP));
+                outtakeWrist.setPosition((wristUp ? WRIST_DOWN : WRIST_UP));
+                wristUp = !wristUp;
+            }
+
+            if (currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button){
+                intakeSweeper.setPosition((sweeperOut ? SWEEPER_IN : SWEEPER_OUT));
+                sweeperOut = !sweeperOut;
             }
 
             telemetry.addData("Current Mode: ", mode);
