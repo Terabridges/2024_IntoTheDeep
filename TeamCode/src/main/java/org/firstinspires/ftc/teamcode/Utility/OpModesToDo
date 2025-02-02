@@ -1,0 +1,5 @@
+Sampling I2C to see times
+Servo hub configuration
+
+If see an april tag, get pose according to april tag in respect to camera. record current pose by pedro,
+then move to pose of camera. find difference between pose of camera and pose of pedro using this.
