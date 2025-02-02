@@ -32,21 +32,22 @@ public class IntakeSystem implements Subsystem {
     public boolean manualIntake = true;
     private int servoOffset = 0;
     private int motorOffset = 0;
+    public double intakeSwivelGearRatio = 40.0/48.0;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.4;
     private double INTAKE_SPIN_OUT = 0.4;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 227;
-    private int INTAKE_SLIDES_RETRACT = 190;
-    private int INTAKE_SWIVEL_TRANSFER;
-    private int INTAKE_SWIVEL_DOWN;
-    private int INTAKE_SWIVEL_REST;
+    private int INTAKE_SLIDES_EXTEND = 90;
+    private int INTAKE_SLIDES_RETRACT = 30;
+    private int INTAKE_SWIVEL_TRANSFER = 120;
+    private int INTAKE_SWIVEL_DOWN = 290;
+    private int INTAKE_SWIVEL_REST = 200;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
-    private double INTAKE_SWEEPER_OUT;
-    private double INTAKE_SWEEPER_IN;
+    private double INTAKE_SWEEPER_OUT = 0.55;
+    private double INTAKE_SWEEPER_IN = 0.2;
 
     //Targets
     public double intakeSpinTarget = 0;
@@ -64,36 +65,35 @@ public class IntakeSystem implements Subsystem {
 
     //First PID for intake slides
     private PIDController intakeSlidesController;
-    public double p = 0.005, i = 0.02, d = 0.00004;
-    public double f = 0.06;
-    public int intakeSlidesTarget;
+    public static double p = 0.009, i = 0.03, d = 0.00008;
+    public static double f = 0.0;
+    public static int intakeSlidesTarget;
     double intakeSlidesPos;
     double pid, targetIntakeSlidesAngle, ff, currentIntakeSlidesAngle, intakeSlidesPower;
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public double p2 = 0.005, i2 = 0.02, d2 = 0.00004;
-    public double f2 = 0.06;
-    public int intakeSwivelTarget;
+    public static double p2 = 0.0045, i2 = 0.02, d2 = 0.00007;
+    public static double f2 = 0.04;
+    public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
-
-
-
 
 
     //Constructor
     public IntakeSystem(HardwareMap map) {
         intakeLeftSlide = map.get(CRServo.class, "intake_left_slide");
+        intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSlide = map.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = map.get(CRServo.class, "intake_left_swivel");
+        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
-        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
-        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
+        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
+        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0, intakeSwivelGearRatio);
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);

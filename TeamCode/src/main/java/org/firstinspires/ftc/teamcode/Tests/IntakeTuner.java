@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -30,7 +31,7 @@ public class IntakeTuner extends LinearOpMode {
 
     //First PID for intake slides
     private PIDController intakeSlidesController;
-    public static double p = 0.0, i = 0.0, d = 0.0;
+    public static double p = 0.009, i = 0.03, d = 0.00008;
     public static double f = 0.0;
     public static int intakeSlidesTarget;
     double intakeSlidesPos;
@@ -38,25 +39,29 @@ public class IntakeTuner extends LinearOpMode {
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public static double p2 = 0.0, i2 = 0.0, d2 = 0.0;
-    public static double f2 = 0.0;
+    public static double p2 = 0.0045, i2 = 0.02, d2 = 0.00007;
+    public static double f2 = 0.04;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = true;
+    public static double intakeSwivelOffset = 120;
+    public double intakeSwivelGearRatio = 40.0/48.0;
 
     @Override
     public void runOpMode() {
         intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_slide");
+        intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
+        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
-        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, 0);
-        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
+        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
+        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -86,6 +91,8 @@ public class IntakeTuner extends LinearOpMode {
                 telemetry.addData("Swivel Target", intakeSwivelTarget);
                 telemetry.addData("Swivel Pos", intakeRightSwivelEnc.getCurrentPosition());
             }
+
+            telemetry.addData("swivel ff", ff2);
 
             telemetry.update();
         }
