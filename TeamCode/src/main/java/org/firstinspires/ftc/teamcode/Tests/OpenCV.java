@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -24,7 +24,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @TeleOp(name = "OpenCV Testing")
 public class OpenCV extends LinearOpMode {
@@ -49,6 +48,7 @@ public class OpenCV extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         FtcDashboard.getInstance().startCameraStream(controlHubCam, 30);
+        telemetry.addData("Initialization", "is a success");
 
         waitForStart();
 
@@ -70,7 +70,6 @@ public class OpenCV extends LinearOpMode {
     }
 
     class YellowBlockDetectionPipeline extends OpenCvPipeline {
-
         @Override
         public Mat processFrame(Mat input) {
 
@@ -87,6 +86,7 @@ public class OpenCV extends LinearOpMode {
 
             // checks if yellow contour is detected, otherwise do nothing
             if (largestContour != null){
+                telemetry.addData("Object found", "!");
                 Imgproc.drawContours(input, contours, contours.indexOf(largestContour), new Scalar(255, 0, 0), 2);
 
                 //calculate the width of the bounding box
@@ -155,9 +155,14 @@ public class OpenCV extends LinearOpMode {
         }
 
     }
+
+
     // This helper function does distance calculation: (Real Width * Focal) / Width of Pixels
     public static double getDistance(double width){
         double distance = (objectWidthInRealWorld * focalLength) / width;
         return distance;
     }
+
+
+
 }
