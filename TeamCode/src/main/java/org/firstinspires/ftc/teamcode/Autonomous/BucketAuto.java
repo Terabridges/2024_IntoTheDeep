@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.pathgen.PathBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,13 +21,10 @@ import com.sfdev.assembly.state.StateMachineBuilder;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
-import com.pedropathing.util.Timer;
 
 @Config
 @Autonomous(name="BucketAuto", group="Auto")
@@ -44,22 +42,23 @@ public class BucketAuto extends LinearOpMode
     StateMachine pickup;
 
     //Pedro
-
-    public double robotWidth = 13.117; //Front to back
-    public double robotHeight = 13.413; //Side to side
-    public double botCenterX = robotWidth/2;
-    public double botCenterY = robotHeight/2;
-
     private Follower follower;
-    public Pose startPose = new Pose(botCenterX, 96+botCenterY, Math.toRadians(180));
-    public Pose scorePose = new Pose(24-2, 120+2, Math.toRadians(135));
 
-    public Pose firstSample = new Pose(46.5, 120.5 , Math.toRadians(0));
-    public Pose secondSample = new Pose(46.5, 130.5 , Math.toRadians(0));
-    public Pose thirdSample = new Pose(46.5, 140.5 , Math.toRadians(0));
-    Pose[] samples = {firstSample, secondSample, thirdSample};
+    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 96+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
+    Pose scorePose = new Pose(24-2, 120+2, Math.toRadians(315));
 
-    public PathChain from0, from1, from2, from3, pickup0, pickup1, pickup2, pickup3;
+    Pose firstSampleStart;
+    Pose secondSampleStart;
+    Pose thirdSampleStart;
+    Pose firstSampleEnd;
+    Pose secondSampleEnd;
+    Pose thirdSampleEnd;
+
+
+    Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
+    Pose[] scoreFrom = {startPose, firstSampleEnd, secondSampleEnd, thirdSampleEnd};
+
+    private PathChain goToScore, goToSample, intakeSample, failedIntake;
 
     //Enums
     enum mainStates
@@ -82,6 +81,7 @@ public class BucketAuto extends LinearOpMode
 
     enum pickupStates
     {
+        END_CHECK,
         GO_TO_PICKUP,
         EXTEND_INTAKE,
         RETRACT_INTAKE,
@@ -92,10 +92,9 @@ public class BucketAuto extends LinearOpMode
     }
 
     //Other
-    private ElapsedTime runtime = new ElapsedTime();
+    public ElapsedTime runtime = new ElapsedTime();
     int curSample = 0;
-    double dropTime = 0.2;
-    double pickupTime = 0.8;
+    boolean failedPickup = false;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -116,18 +115,20 @@ public class BucketAuto extends LinearOpMode
         buildPaths();
         buildStateMachines();
 
+        //Press Start
         waitForStart();
         runtime.reset();
 
         main.start();
 
+        //Main Loop
         while (opModeIsActive())
         {
             r.update();
             follower.update();
             main.update();
 
-            telemetry.update();
+            telemetry();
 
             if (main.getStateString().equals("STOP"))
             {
@@ -140,7 +141,38 @@ public class BucketAuto extends LinearOpMode
 
     public void buildPaths()
     {
-
+        goToScore =
+                new PathBuilder()
+                        .addPath(
+                                new BezierLine(
+                                        new Point(scoreFrom[curSample]),
+                                        new Point(scorePose)))
+                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), scorePose.getHeading())
+                        .build();
+        goToSample =
+                new PathBuilder()
+                        .addPath(
+                                new BezierLine(
+                                        new Point(scorePose),
+                                        new Point(samples[curSample])))
+                        .setLinearHeadingInterpolation(scorePose.getHeading(), samples[curSample].getHeading())
+                        .build();
+        intakeSample =
+                new PathBuilder()
+                        .addPath(
+                                new BezierLine(
+                                        new Point(samples[curSample]),
+                                        new Point(scoreFrom[curSample])))
+                        .setLinearHeadingInterpolation(samples[curSample].getHeading(), scoreFrom[curSample].getHeading())
+                        .build();
+        failedIntake =
+                new PathBuilder()
+                        .addPath(
+                                new BezierLine(
+                                        new Point(scoreFrom[curSample]),
+                                        new Point(samples[curSample+1])))
+                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), samples[curSample+1].getHeading())
+                        .build();
     }
 
     public void buildStateMachines()
@@ -149,7 +181,6 @@ public class BucketAuto extends LinearOpMode
                 .state(mainStates.SCORE)
                 .onEnter(() -> score.start())
                 .loop(() -> score.update())
-                .transition(() -> curSample == 4, mainStates.STOP)
                 .transition(() -> score.getStateString().equals("STOP"), mainStates.PICKUP)
                 .onExit(() -> {
                     score.reset();
@@ -159,78 +190,111 @@ public class BucketAuto extends LinearOpMode
                 .state(mainStates.PICKUP)
                 .onEnter(() -> pickup.start())
                 .loop(() -> pickup.update())
-                .transition(() -> pickup.getStateString().equals("STOP"), mainStates.SCORE)
-                .onExit(() -> pickup.reset())
+                .transition(() -> curSample >= 4, mainStates.STOP) //TD: Park here
+                .transition(() -> pickup.getStateString().equals("STOP") && !failedPickup, mainStates.SCORE)
+                .transition(() -> pickup.getStateString().equals("STOP") && failedPickup, mainStates.PICKUP)
+                .onExit(() -> {
+                    pickup.reset();
+                    failedPickup = false;
+                })
+
+                .state(mainStates.STOP)
 
                 .build();
 
         score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
-                    if (curSample == 0){follower.followPath(from0);}
-                    else if (curSample == 1){follower.followPath(from1);}
-                    else if (curSample == 2){follower.followPath(from2);}
-                    else if (curSample == 3){follower.followPath(from3);}
+                    buildPaths();
+                    follower.followPath(goToScore);
                     o.outtakeSlidesHigh();
                 })
-                .transition(() -> o.isSlidesHigh() && !follower.isBusy())
+                .transition(() -> o.isSlidesHigh() && !follower.isBusy(), scoreStates.DUNK)
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> o.outtakeSwivelUp())
-                .transition(() -> o.isSwivelUp())
+                .transition(() -> o.isSwivelUp(), scoreStates.OPEN_CLAW)
 
                 .state(scoreStates.OPEN_CLAW)
                 .onEnter(() -> {
                     o.openClaw();
                     runtime.reset();
                 })
-                .transition(() -> runtime.seconds() > dropTime)
+                .transition(() -> runtime.seconds() > AConstants.DROP_TIME, scoreStates.CLOSE_CLAW)
 
                 .state(scoreStates.CLOSE_CLAW)
                 .onEnter(() -> {
                     o.closeClaw();
                     o.outtakeSwivelDown();
                 })
-                .transition(() -> o.isSwivelDown())
+                .transition(() -> o.isSwivelDown(), scoreStates.LOWER_OUTTAKE)
 
                 .state(scoreStates.LOWER_OUTTAKE)
                 .onEnter(() -> o.outtakeSlidesDown())
-                .transition(() -> o.isSlidesDown())
+                .transition(() -> o.isSlidesDown(), scoreStates.STOP)
 
                 .state(scoreStates.STOP)
 
                 .build();
 
         pickup = new StateMachineBuilder()
+                .state(pickupStates.END_CHECK)
+                .transition(() -> curSample >= 4, pickupStates.STOP)
+                .transition(() -> curSample < 4, pickupStates.GO_TO_PICKUP)
+
                 .state(pickupStates.GO_TO_PICKUP)
                 .onEnter(() -> {
-                    if (curSample == 0){follower.followPath(pickup0);}
-                    else if (curSample == 1){follower.followPath(pickup1);}
-                    else if (curSample == 2){follower.followPath(pickup2);}
-                    else if (curSample == 3){follower.followPath(pickup3);}
+                    buildPaths();
+                    follower.followPath(goToSample);
                 })
-                .transition(() -> !follower.isBusy())
+                .transition(() -> !follower.isBusy(), pickupStates.EXTEND_INTAKE)
                 .onExit(() -> i.intakeSlidesExtend())
 
                 .state(pickupStates.EXTEND_INTAKE)
                 .onEnter(() -> {
                     i.intakeSpinIn();
-                    //Slowly drive forward
+                    buildPaths();
+                    follower.followPath(intakeSample);
                 })
-                .transition(() -> v.isSomething())
-                .transition(() -> runtime.seconds() > pickupTime, pickupStates.FAILED_PICKUP)
+                .transition(() -> v.isSomething() && !follower.isBusy(), pickupStates.RETRACT_INTAKE)
+                .transition(() -> !v.isSomething() && !follower.isBusy(), pickupStates.FAILED_PICKUP)
                 .onExit(() -> i.intakeStopSpin())
 
                 .state(pickupStates.RETRACT_INTAKE)
                 .onEnter(() -> i.intakeSlidesRetract())
-                .transition(() -> i.isIntakeRetracted())
+                .transition(() -> i.isIntakeRetracted(), pickupStates.TRANSFER)
 
                 .state(pickupStates.TRANSFER)
                 //.onEnter(() -> TRANSFER HERE JOSH)
-                //.transition(() -> TRANSFER DONE)
+                //.transition(() -> TRANSFER DONE, pickupStates.STOP)
+
+                .state(pickupStates.FAILED_PICKUP)
+                .onEnter(() ->
+                {
+                    if (curSample < 3)
+                    {
+                        failedPickup = true;
+                        buildPaths();
+                        follower.followPath(failedIntake);
+                    }
+                })
+                .transition(() -> !follower.isBusy(), pickupStates.STOP)
+                .onExit(() -> curSample++)
 
                 .state(pickupStates.STOP)
 
                 .build();
+    }
+
+    public void telemetry()
+    {
+        telemetry.addData("main state", main.getStateString());
+        telemetry.addData("pickup state", pickup.getStateString());
+        telemetry.addData("score state", score.getStateString());
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("see something", v.isSomething());
+        telemetry.update();
     }
 }
