@@ -154,24 +154,24 @@ public class BucketAuto extends LinearOpMode
                         .addPath(
                                 new BezierLine(
                                         new Point(scorePose),
-                                        new Point(samples[curSample])))
-                        .setLinearHeadingInterpolation(scorePose.getHeading(), samples[curSample].getHeading())
+                                        new Point(samples[curSample-1])))
+                        .setLinearHeadingInterpolation(scorePose.getHeading(), samples[curSample-1].getHeading())
                         .build();
         intakeSample =
                 new PathBuilder()
                         .addPath(
                                 new BezierLine(
-                                        new Point(samples[curSample]),
+                                        new Point(samples[curSample-1]),
                                         new Point(scoreFrom[curSample])))
-                        .setLinearHeadingInterpolation(samples[curSample].getHeading(), scoreFrom[curSample].getHeading())
+                        .setLinearHeadingInterpolation(samples[curSample-1].getHeading(), scoreFrom[curSample].getHeading())
                         .build();
         failedIntake =
                 new PathBuilder()
                         .addPath(
                                 new BezierLine(
                                         new Point(scoreFrom[curSample]),
-                                        new Point(samples[curSample+1])))
-                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), samples[curSample+1].getHeading())
+                                        new Point(samples[curSample])))
+                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), samples[curSample].getHeading())
                         .build();
     }
 
