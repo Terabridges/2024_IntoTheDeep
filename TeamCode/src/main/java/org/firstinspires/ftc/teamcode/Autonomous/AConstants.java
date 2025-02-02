@@ -7,7 +7,7 @@ public class AConstants {
     public static final double ROBOT_HEIGHT = 13.413; //Side to side
     public static final double BOT_CENTER_X = ROBOT_WIDTH /2;
     public static final double BOT_CENTER_Y = ROBOT_HEIGHT /2;
-    public static final double INTAKE_LENGTH = 10; //Length intake extends from bot center to end of intake in inches
+    public static final double INTAKE_LENGTH = 27; //Length intake extends from bot center to end of intake in inches
 
     public static final double DROP_TIME = 0.2;
     public static final double PICKUP_TIME = 0.8;
