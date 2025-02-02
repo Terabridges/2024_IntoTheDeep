@@ -34,7 +34,7 @@ public class StateMachines {
 
     public static StateMachine getIntakeMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
-        VisionSystem vision = robot.visionSystem;
+        //VisionSystem vision = robot.visionSystem;
 
         return new StateMachineBuilder()
 
@@ -43,11 +43,11 @@ public class StateMachines {
                 .transition( () -> intake.isIntakeExtended(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
-                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
-                    intake.intakeSwivelRest();
-                    robot.rumble(500);
-
-                })
+//                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
+//                    intake.intakeSwivelRest();
+//                    robot.rumble(500);
+//
+//                })
                 .transition( () -> robot.checkIntakeInput(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
 
                 .state(intakeStates.RETRACT)
@@ -61,7 +61,7 @@ public class StateMachines {
     public static StateMachine getTransferMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
         OuttakeSystem outtake = robot.outtakeSystem;
-        VisionSystem vision = robot.visionSystem;
+        //VisionSystem vision = robot.visionSystem;
         return new StateMachineBuilder()
 
                 .state(transferStates.INTAKE_TRANSFER)
@@ -79,7 +79,7 @@ public class StateMachines {
 
                 .state(transferStates.OUTTAKE_RESET)
                 .onEnter( () -> outtake.outtakeSlidesRest())
-                .transition( () -> !vision.isSomething(), transferStates.INTAKE_RESET, () -> robot.rumble(500))
+                //.transition( () -> !vision.isSomething(), transferStates.INTAKE_RESET, () -> robot.rumble(500))
                 .transition( () -> robot.transferInput, transferStates.INTAKE_RESET)
 
                 .state(transferStates.INTAKE_RESET)
@@ -92,7 +92,7 @@ public class StateMachines {
 
     public static StateMachine getOuttakeMachine(Robot robot){
         OuttakeSystem outtake = robot.outtakeSystem;
-        VisionSystem vision = robot.visionSystem;
+        //VisionSystem vision = robot.visionSystem;
         return new StateMachineBuilder()
 
                 .state(outtakeStates.OUTTAKE_RISE)
@@ -107,7 +107,7 @@ public class StateMachines {
                 .transition( () -> ((outtake.highBasketMode && outtake.isSlidesHigh()) || (!outtake.highBasketMode && outtake.isSlidesLow())), outtakeStates.DROP_WAIT)
 
                 .state(outtakeStates.DROP_WAIT)
-                .onEnter( () -> vision.setLookForBasket())
+                //.onEnter( () -> vision.setLookForBasket())
                 .transition( () -> robot.checkOuttakeInput(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)

@@ -30,4 +30,6 @@
             <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
+    <Webcam name="Webcam 1" serialNumber="99CCA760" />
+    <Webcam name="Webcam 2" serialNumber="4D4D06E0" />
 </Robot>
