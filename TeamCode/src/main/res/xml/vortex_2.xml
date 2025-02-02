@@ -26,6 +26,7 @@
             <ContinuousRotationServo name="intake_right_swivel" port="2" />
             <Servo name="intake_sweeper" port="3" />
             <AnalogInput name="intake_right_swivel_analog" port="3" />
+            <RevColorSensorV3 name="intake_color_sensor" port="0" bus="1" />
             <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

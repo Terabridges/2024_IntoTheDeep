@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
@@ -30,7 +31,7 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Third PID for outtake slides
     private PIDController outtakeSlidesController;
-    public static double p3 = 0.0, i3 = 0.0, d3 = 0.0;
+    public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
     public static double f3 = 0.0;
     public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
@@ -38,25 +39,29 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Fourth PID for outtake swivel
     private PIDController outtakeSwivelController;
-    public static double p4 = 0.0, i4 = 0.0, d4 = 0.0;
+    public static double p4 = 0.0025, i4 = 0.001, d4 = 0.00005;
     public static double f4 = 0.0;
     public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
     public boolean runSlides = true;
+    public static double outtakeSwivelOffset = 180;
+    public double outtakeSwivelGearRatio = 40.0 / 30.0;
 
     @Override
     public void runOpMode() {
 
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
         outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
+        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
+        outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = hardwareMap.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = hardwareMap.get(Servo.class, "outtake_wrist");
         outtakeClaw = hardwareMap.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0);
+        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -85,7 +90,7 @@ public class OuttakeTuner extends LinearOpMode {
                 telemetry.addData("Linear Slides Pos", outtakeTopVertical.getCurrentPosition());
             } else {
                 telemetry.addData("Swivel Target", outtakeSwivelTarget);
-                telemetry.addData("Power", outtakeRightSwivel.getPower());
+                telemetry.addData("Swivel Voltage", outtakeRightSwivelAnalog.getVoltage());
                 telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
             }
 

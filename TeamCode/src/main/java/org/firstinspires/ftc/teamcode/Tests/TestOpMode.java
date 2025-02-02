@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
@@ -74,7 +76,9 @@ public class TestOpMode extends LinearOpMode {
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 0);
+        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog);
+        intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
+        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
         outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
         outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -84,7 +88,7 @@ public class TestOpMode extends LinearOpMode {
         outtakeWrist = hardwareMap.get(Servo.class, "outtake_wrist");
         outtakeClaw = hardwareMap.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0);
+        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog);
         leftBack = hardwareMap.get(DcMotor.class, "left_back");
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -184,6 +188,7 @@ public class TestOpMode extends LinearOpMode {
             telemetry.addData("Outtake swivel pos", outtakeRightSwivelAnalog.getVoltage());
             telemetry.addData("Intake swivel pos", intakeRightSwivelAnalog.getVoltage());
             telemetry.addData("Intake slides pos", intakeRightSlidesAnalog.getVoltage());
+            telemetry.addData("Is Right Bumper", gamepad1.right_bumper);
             telemetry.update();
         }
 

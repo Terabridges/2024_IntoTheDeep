@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-@Disabled
 @TeleOp(name="MainTeleOp", group="TeleOp")
 public class MainTeleOp extends LinearOpMode {
 
