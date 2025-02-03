@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+import android.util.Size;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -13,9 +15,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
+import org.firstinspires.ftc.vision.VisionPortal;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 @TeleOp(name="TestOpMode", group="Test")
 @Config
@@ -57,6 +62,10 @@ public class TestOpMode extends LinearOpMode {
     public boolean clawOpen = false;
     public boolean wristUp = false;
     public boolean sweeperOut = false;
+    public boolean USING_WEBCAM = true;
+
+    final int RESOLUTION_WIDTH = 640;
+    final int RESOLUTION_HEIGHT = 480;
 
     public enum Mode {
         INTAKE,
@@ -64,6 +73,9 @@ public class TestOpMode extends LinearOpMode {
         SPIN,
         DRIVE
     }
+
+    //VisionPortal portal;
+    VisionPortal portal2;
 
     @Override
     public void runOpMode(){
@@ -100,6 +112,19 @@ public class TestOpMode extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Mode mode = Mode.INTAKE;
+
+        if (USING_WEBCAM)
+        {
+//            portal = new VisionPortal.Builder()
+//                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+//                    .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
+//                    .build();
+
+            portal2 = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                    .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
+                    .build();
+        }
 
         waitForStart();
 
@@ -180,6 +205,8 @@ public class TestOpMode extends LinearOpMode {
                 intakeSweeper.setPosition((sweeperOut ? SWEEPER_IN : SWEEPER_OUT));
                 sweeperOut = !sweeperOut;
             }
+
+
 
             telemetry.addData("Current Mode: ", mode);
             telemetry.addData("Outtake swivel abs pos", outtakeRightSwivelEnc.getCurrentPosition());

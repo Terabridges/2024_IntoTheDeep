@@ -49,7 +49,7 @@ public class OuttakeSystem implements Subsystem {
     private double ticks_in_degree = 144.0 / 180.0;
 
     //Third PID for outtake slides
-    private PIDController outtakeSlidesController;
+    public PIDController outtakeSlidesController;
     public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
     public static double f3 = 0.0;
     public static int outtakeSlidesTarget;
@@ -57,7 +57,7 @@ public class OuttakeSystem implements Subsystem {
     double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
 
     //Fourth PID for outtake swivel
-    private PIDController outtakeSwivelController;
+    public PIDController outtakeSwivelController;
     public static double p4 = 0.0025, i4 = 0.001, d4 = 0.00005;
     public static double f4 = 0.0;
     public static int outtakeSwivelTarget;
@@ -75,10 +75,13 @@ public class OuttakeSystem implements Subsystem {
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
         outtakeClaw = map.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 0, outtakeSwivelGearRatio);
+        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 180, outtakeSwivelGearRatio);
 
         outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        outtakeSlidesController = new PIDController(p3, i3, d3);
+        outtakeSwivelController = new PIDController(p4, i4, d4);
     }
 
     //METHODS

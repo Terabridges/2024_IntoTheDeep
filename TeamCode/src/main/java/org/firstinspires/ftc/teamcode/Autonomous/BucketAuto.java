@@ -45,15 +45,14 @@ public class BucketAuto extends LinearOpMode
     private Follower follower;
 
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 96+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
-    Pose scorePose = new Pose(24-2, 120+2, Math.toRadians(315));
+    Pose scorePose = new Pose(24-6, 120+6, Math.toRadians(315));
 
-    Pose firstSampleStart;
-    Pose secondSampleStart;
-    Pose thirdSampleStart;
-    Pose firstSampleEnd;
-    Pose secondSampleEnd;
-    Pose thirdSampleEnd;
-
+    Pose firstSampleStart = new Pose(AConstants.START_X, AConstants.FIRST_SAMPLE.getY(), Math.toRadians(0));
+    Pose secondSampleStart = new Pose(AConstants.START_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
+    Pose thirdSampleStart = new Pose(AConstants.START_X, 144-AConstants.BOT_CENTER_Y-3, Math.toRadians(15));
+    Pose firstSampleEnd = new Pose(AConstants.END_X, AConstants.FIRST_SAMPLE.getY(), Math.toRadians(0));
+    Pose secondSampleEnd = new Pose(AConstants.END_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
+    Pose thirdSampleEnd = new Pose(AConstants.END_X, 144-AConstants.BOT_CENTER_Y-3, Math.toRadians(15));
 
     Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
     Pose[] scoreFrom = {startPose, firstSampleEnd, secondSampleEnd, thirdSampleEnd};

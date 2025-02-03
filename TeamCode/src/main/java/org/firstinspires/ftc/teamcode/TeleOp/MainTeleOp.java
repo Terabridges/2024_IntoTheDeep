@@ -38,7 +38,7 @@ public class MainTeleOp extends LinearOpMode {
     public DriveControl driveControl;
     public IntakeControl intakeControl;
     public OuttakeControl outtakeControl;
-    public VisionControl visionControl;
+    //public VisionControl visionControl;
     public List<Control> controls;
 
     //Run OpMode
