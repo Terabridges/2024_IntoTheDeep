@@ -40,7 +40,7 @@ public class NetZoneAlignTest extends LinearOpMode {
         follower = new Follower(hardwareMap);
 
         waitForStart();
-        ServoController
+        
         while (opModeIsActive()) {
         }
     }
