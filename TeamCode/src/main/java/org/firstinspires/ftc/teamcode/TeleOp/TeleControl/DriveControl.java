@@ -76,7 +76,7 @@ public class DriveControl implements Control {
 
     @Override
     public void addTelemetry(Telemetry telemetry){
-
+        telemetry.addData("SPEED", (useSlowMode ? "SLOW" : "FAST"));
     }
 
 }

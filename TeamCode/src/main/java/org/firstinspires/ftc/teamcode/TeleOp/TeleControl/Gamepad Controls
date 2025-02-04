@@ -13,7 +13,7 @@ dUp - claw open/close (DONE)
 dDown - hold to hold sweeper out (DONE)
 leftStickButton - low basket mode (DONE)
 rightStickButton - vertical slide manual mode (DONE)
-back button - reset robot
+back button - reset states (DONE)
 start button - reset encoders
 
 DOUBLES

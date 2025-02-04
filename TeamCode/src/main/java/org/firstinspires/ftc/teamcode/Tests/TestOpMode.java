@@ -52,10 +52,10 @@ public class TestOpMode extends LinearOpMode {
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
 
-    public static double CLAW_OPEN = 0.65;
-    public static double CLAW_CLOSE = 0.52;
-    public static double WRIST_UP = 0.59;
-    public static double WRIST_DOWN = 0.25;
+    public static double CLAW_OPEN = 0.77;
+    public static double CLAW_CLOSE = 0.43;
+    public static double WRIST_UP = 0.93;
+    public static double WRIST_DOWN = 0.65;
     public static double SWEEPER_OUT = 0.6;
     public static double SWEEPER_IN = 0.2;
 

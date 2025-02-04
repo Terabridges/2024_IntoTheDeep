@@ -23,23 +23,25 @@ public class OuttakeSystem implements Subsystem {
     public AbsoluteAnalogEncoder outtakeRightSwivelEnc;
 
     //SOFTWARE
-    private int servoOffset = 0;
-    private int motorOffset = 0;
+    private int servoOffset = 15;
+    private int motorOffset = 50;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
 
     //Positions
-    private double CLAW_OPEN = 0.65;
-    private double CLAW_CLOSE = 0.27;
+    private double CLAW_OPEN = 0.77;
+    private double CLAW_CLOSE = 0.43;
     private double WRIST_DOWN = 0.4;
-    private double WRIST_UP = 0.3;
-    private int OUTTAKE_SWIVEL_UP = 350;
-    private int OUTTAKE_SWIVEL_DOWN = 120;
+    private double WRIST_TRANSFER = 0.15;
+    private double WRIST_UP = 0.95;
+    private int OUTTAKE_SWIVEL_UP = 345;
+    private int OUTTAKE_SWIVEL_DOWN = 123;
+    private int OUTTAKE_SWIVEL_TRANSFER = 158;
     private int OUTTAKE_SLIDES_HIGH = -3400;
     private int OUTTAKE_SLIDES_LOW = -1600;
     private int OUTTAKE_SLIDES_DOWN = 0;
-    private int OUTTAKE_SLIDES_REST = -600;
+    private int OUTTAKE_SLIDES_REST = -800;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -133,6 +135,8 @@ public class OuttakeSystem implements Subsystem {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_DOWN;
     }
 
+    public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}
+
     public void openClaw() {
         setClaw(CLAW_OPEN);
     }
@@ -148,6 +152,8 @@ public class OuttakeSystem implements Subsystem {
     public void wristDown() {
         setWrist(WRIST_DOWN);
     }
+
+    public void wristTransfer() {setWrist(WRIST_TRANSFER);}
 
     //isPositions
     public boolean isSlidesDown(){
@@ -203,6 +209,7 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
+        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeSlidesRest();
         outtakeSwivelDown();
         closeClaw();

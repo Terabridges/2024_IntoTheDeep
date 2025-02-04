@@ -28,9 +28,6 @@ public class Robot {
     public DriveSystem driveSystem;
 
     //Other
-    public boolean intakeInput;
-    public boolean transferInput;
-    public boolean outtakeInput;
     public String currentState = "none";
 
     //Subsystem List
@@ -73,19 +70,6 @@ public class Robot {
         outtakeSystem.manualOuttake = true;
         intakeSystem.manualIntake = false;
     }
-
-    public boolean checkIntakeInput(){
-        return intakeInput;
-    }
-
-    public boolean checkTransferInput(){
-        return transferInput;
-    }
-
-    public boolean checkOuttakeInput(){
-        return outtakeInput;
-    }
-
 
     //Interface Methods
     public void update() {

@@ -71,7 +71,7 @@ public class OuttakeControl implements Control {
 
     @Override
     public void addTelemetry(Telemetry telemetry){
-
+        telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
     }
 
 }

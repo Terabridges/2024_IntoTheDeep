@@ -21,10 +21,6 @@ public class IntakeControl implements Control{
     EdgeDetector intakeSweeperRE = new EdgeDetector(() -> intake.intakeSweeperOut());
     EdgeDetector intakeSweeperFE = new EdgeDetector(() -> intake.intakeSweeperIn(), true);
 
-    EdgeDetector intakeInput = new EdgeDetector(() -> setIntakeInput());
-    EdgeDetector transferInput = new EdgeDetector(() -> setTransferInput());
-    EdgeDetector outtakeInput = new EdgeDetector(() -> setOuttakeInput());
-
 
     //Constructor
     public IntakeControl(IntakeSystem intake, Gamepad gp1) {
@@ -38,17 +34,6 @@ public class IntakeControl implements Control{
     }
 
     //Methods
-    public void setIntakeInput(){
-        if (robot.currentState.equals("intake")) {robot.intakeInput = true;}
-    }
-
-    public void setTransferInput(){
-        if (robot.currentState.equals("transfer")) {robot.transferInput = true;}
-    }
-
-    public void setOuttakeInput(){
-        if (robot.currentState.equals("outtake")) {robot.outtakeInput = true;}
-    }
 
     //Interface Methods
     @Override
@@ -61,7 +46,7 @@ public class IntakeControl implements Control{
             }
 
             if (gp1.left_trigger > 0.1) {
-                intake.intakeSpinTarget = -gp1.right_trigger;
+                intake.intakeSpinTarget = -gp1.left_trigger;
             }
         }
 
@@ -76,11 +61,6 @@ public class IntakeControl implements Control{
         //dPadDown holds intake sweeper out when held
         intakeSweeperRE.update(gp1.dpad_down);
         intakeSweeperFE.update(gp1.dpad_down);
-
-        //Inputs
-        intakeInput.update(gp1.x);
-        transferInput.update(gp1.x);
-        outtakeInput.update(gp1.x);
     }
 
     @Override

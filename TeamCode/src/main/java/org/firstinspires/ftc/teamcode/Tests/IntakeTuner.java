@@ -39,14 +39,14 @@ public class IntakeTuner extends LinearOpMode {
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public static double p2 = 0.0045, i2 = 0.02, d2 = 0.00007;
+    public static double p2 = 0.0035, i2 = 0.02, d2 = 0.00009;
     public static double f2 = 0.04;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = true;
-    public static double intakeSwivelOffset = 120;
+    public static double intakeSwivelOffset = 87; //120
     public double intakeSwivelGearRatio = 40.0/48.0;
 
     @Override
