@@ -35,8 +35,8 @@ public class IntakeSystem implements Subsystem {
     public double intakeSwivelGearRatio = 40.0/48.0;
 
     //Positions
-    private double INTAKE_SPIN_IN = -0.4;
-    private double INTAKE_SPIN_OUT = 0.4;
+    private double INTAKE_SPIN_IN = -0.75;
+    private double INTAKE_SPIN_OUT = 0.75;
     private double INTAKE_SPIN_STOP = 0;
     private int INTAKE_SLIDES_EXTEND = 90;
     private int INTAKE_SLIDES_RETRACT = 35;
@@ -57,7 +57,6 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
-    private double INTAKE_SPIN_MAX_POWER = 1.0;
 
     //PIDF
 
@@ -119,8 +118,6 @@ public class IntakeSystem implements Subsystem {
     }
 
     public void intakeSetSpin(double pow) {
-        if(pow > INTAKE_SPIN_MAX_POWER) pow = INTAKE_SPIN_MAX_POWER;
-        if(pow < -INTAKE_SPIN_MAX_POWER) pow = -INTAKE_SPIN_MAX_POWER;
         intakeSpin.setPower(pow);
     }
 

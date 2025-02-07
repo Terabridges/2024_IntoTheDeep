@@ -32,12 +32,13 @@ public class OuttakeSystem implements Subsystem {
     //Positions
     private double CLAW_OPEN = 0.77;
     private double CLAW_CLOSE = 0.43;
-    private double WRIST_DOWN = 0.4;
-    private double WRIST_TRANSFER = 0.15;
-    private double WRIST_UP = 0.95;
+    private double WRIST_DOWN = 0.68;
+    private double WRIST_TRANSFER = 0.3;
+    private double WRIST_UP = 0.98;
     private int OUTTAKE_SWIVEL_UP = 345;
+    private int OUTTAKE_SWIVEL_MID = 275;
     private int OUTTAKE_SWIVEL_DOWN = 123;
-    private int OUTTAKE_SWIVEL_TRANSFER = 158;
+    private int OUTTAKE_SWIVEL_TRANSFER = 161;
     private int OUTTAKE_SLIDES_HIGH = -3400;
     private int OUTTAKE_SLIDES_LOW = -1600;
     private int OUTTAKE_SLIDES_DOWN = 0;
@@ -133,6 +134,10 @@ public class OuttakeSystem implements Subsystem {
 
     public void outtakeSwivelDown() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_DOWN;
+    }
+
+    public void outtakeSwivelMid() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
     }
 
     public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}

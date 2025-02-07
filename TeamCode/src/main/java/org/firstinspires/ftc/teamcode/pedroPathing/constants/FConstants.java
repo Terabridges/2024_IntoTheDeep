@@ -36,11 +36,11 @@ public class FConstants {
         FollowerConstants.useSecondaryHeadingPID = true;
         FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
 
-        FollowerConstants.drivePIDFCoefficients.setCoefficients(0.013,0,0.00001,0.6,0);
+        FollowerConstants.drivePIDFCoefficients.setCoefficients(0.006,0,0.00001,0.6,0);
         FollowerConstants.useSecondaryDrivePID = true;
-        FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.1,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID
+        FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.02,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 4;
+        FollowerConstants.zeroPowerAccelerationMultiplier = 3.8;
         FollowerConstants.centripetalScaling = 0.0005;
 
         FollowerConstants.pathEndTimeoutConstraint = 500;
