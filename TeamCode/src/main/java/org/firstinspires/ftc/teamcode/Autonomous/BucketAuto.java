@@ -54,12 +54,11 @@ public class BucketAuto extends LinearOpMode
     Pose firstSampleEnd = new Pose(AConstants.END_X, AConstants.FIRST_SAMPLE.getY(), Math.toRadians(0));
     Pose secondSampleEnd = new Pose(AConstants.END_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
     Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY(), Math.toRadians(31));
-    Pose placeHolder = new Pose(0, 0, 0);
 
-    Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart, placeHolder};
-    Pose[] scoreFrom = {startPose, firstSampleEnd, secondSampleEnd, thirdSampleEnd};
+    Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
+    Pose[] scoreFrom = {firstSampleEnd, secondSampleEnd, thirdSampleEnd};
 
-    private PathChain goToScore, goToSample, intakeSample, failedIntake;
+    private PathChain goToScore, goToScorePreload, goToSample, intakeSample, failedIntake;
 
     //Enums
     enum mainStates
@@ -98,7 +97,7 @@ public class BucketAuto extends LinearOpMode
 
     //Other
     public ElapsedTime runtime = new ElapsedTime();
-    int curSample = 0;
+    int curSample = -1;
     boolean failedPickup = false;
 
     @Override
@@ -157,6 +156,14 @@ public class BucketAuto extends LinearOpMode
                                         new Point(scorePose)))
                         .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), scorePose.getHeading())
                         .build();
+        goToScorePreload =
+                new PathBuilder()
+                        .addPath(
+                                new BezierLine(
+                                        new Point(startPose),
+                                        new Point(scorePose)))
+                        .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+                        .build();
         goToSample =
                 new PathBuilder()
                         .addPath(
@@ -189,18 +196,17 @@ public class BucketAuto extends LinearOpMode
                 .state(mainStates.SCORE)
                 .onEnter(() -> score.start())
                 .loop(() -> score.update())
+                .transition(() -> curSample > 2 && score.getStateString().equals("STOP"), mainStates.STOP) //TD: Park here
                 .transition(() -> score.getStateString().equals("STOP"), mainStates.PICKUP)
                 .onExit(() -> score.reset())
 
                 .state(mainStates.PICKUP)
                 .onEnter(() -> pickup.start())
                 .loop(() -> pickup.update())
-                .transition(() -> curSample >= 4, mainStates.STOP) //TD: Park here
                 .transition(() -> pickup.getStateString().equals("STOP") && !failedPickup, mainStates.SCORE)
                 .transition(() -> pickup.getStateString().equals("STOP") && failedPickup, mainStates.PICKUP)
                 .onExit(() -> {
                     pickup.reset();
-                    curSample++;
                     failedPickup = false;
                 })
 
@@ -212,7 +218,10 @@ public class BucketAuto extends LinearOpMode
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
                     buildPaths();
-                    follower.followPath(goToScore, true);
+                    if (curSample >= 0)
+                        follower.followPath(goToScore, true);
+                    else
+                        follower.followPath(goToScorePreload, true);
                     o.outtakeSlidesHigh();
                     o.outtakeSwivelMid();
                 })
@@ -220,18 +229,14 @@ public class BucketAuto extends LinearOpMode
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {
-                    runtime.reset();
                     o.outtakeSwivelUp();
                     o.wristUp();
                 })
                 .transition(() -> o.isSwivelUp(), scoreStates.OPEN_CLAW)
 
                 .state(scoreStates.OPEN_CLAW)
-                .onEnter(() -> {
-                    runtime.reset();
-                    o.openClaw();
-                })
-                .transition(() -> runtime.seconds() > AConstants.DROP_TIME, scoreStates.CLOSE_CLAW)
+                .onEnter(() -> o.openClaw())
+                .transitionTimed(AConstants.DROP_TIME, scoreStates.CLOSE_CLAW)
 
                 .state(scoreStates.CLOSE_CLAW)
                 .onEnter(() -> {
@@ -246,14 +251,11 @@ public class BucketAuto extends LinearOpMode
                 .transition(() -> o.isSlidesRest(), scoreStates.STOP)
 
                 .state(scoreStates.STOP)
+                .onEnter(() -> curSample++)
 
                 .build();
 
         pickup = new StateMachineBuilder()
-                .state(pickupStates.END_CHECK)
-                //.transition(() -> curSample >= 4, pickupStates.STOP)
-                .transition(() -> curSample < 4, pickupStates.GO_TO_PICKUP)
-
                 .state(pickupStates.GO_TO_PICKUP)
                 .onEnter(() -> {
                     buildPaths();
@@ -304,7 +306,7 @@ public class BucketAuto extends LinearOpMode
                 .onExit(() -> o.closeClaw())
 
                 .state(pickupStates.TRANSFER_TIMER)
-                .transitionTimed(0.15, pickupStates.TRANSFER_RESET_O)
+                .transitionTimed(0.1, pickupStates.TRANSFER_RESET_O)
 
                 .state(pickupStates.TRANSFER_RESET_O)
                 .onEnter(() -> o.outtakeSlidesRest())
@@ -316,13 +318,13 @@ public class BucketAuto extends LinearOpMode
                     o.outtakeSwivelDown();
                     o.wristDown();
                 })
-                .transitionTimed(0.15, pickupStates.STOP)
+                .transitionTimed(0.1, pickupStates.STOP)
                 //TRANSFER END
 
                 .state(pickupStates.FAILED_PICKUP)
                 .onEnter(() ->
                 {
-                    if (curSample < 3)
+                    if (curSample < 2)
                     {
                         failedPickup = true;
                         buildPaths();
@@ -330,7 +332,6 @@ public class BucketAuto extends LinearOpMode
                     }
                 })
                 .transition(() -> !follower.isBusy(), pickupStates.STOP)
-                .onExit(() -> curSample++)
 
                 .state(pickupStates.STOP)
 
