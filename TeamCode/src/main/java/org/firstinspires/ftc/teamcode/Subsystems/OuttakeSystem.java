@@ -189,6 +189,10 @@ public class OuttakeSystem implements Subsystem {
 
     public void wristGrab() {setWrist(WRIST_GRAB);}
 
+    public void resetSlideEncoders() {
+        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     //isPositions
     public boolean isSlidesDown(){
         return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;

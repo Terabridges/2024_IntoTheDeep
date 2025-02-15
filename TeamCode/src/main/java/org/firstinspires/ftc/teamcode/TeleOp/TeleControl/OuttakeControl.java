@@ -18,6 +18,7 @@ public class OuttakeControl implements Control {
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
     EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
     EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
+    EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetSlideEncoders());
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
@@ -66,6 +67,9 @@ public class OuttakeControl implements Control {
         } else {
             clawOpenRE.update(gp1.right_bumper);
         }
+
+        //Reset slide encoders with start button
+        resetEncodersRE.update(gp1.start);
     }
 
     @Override

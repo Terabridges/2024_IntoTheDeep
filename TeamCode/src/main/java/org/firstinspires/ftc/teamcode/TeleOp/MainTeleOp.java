@@ -75,7 +75,7 @@ public class MainTeleOp extends LinearOpMode {
     public DriveControl driveControl;
     public IntakeControl intakeControl;
     public OuttakeControl outtakeControl;
-    //public VisionControl visionControl;
+    public VisionControl visionControl;
     public List<Control> controls;
 
     public Gamepad currentGamepad1;
@@ -96,9 +96,9 @@ public class MainTeleOp extends LinearOpMode {
         driveControl = new DriveControl(robot, gamepad1);
         intakeControl = new IntakeControl(robot, gamepad1);
         outtakeControl = new OuttakeControl(robot, gamepad1);
-        //visionControl = new VisionControl(robot, gamepad1);
+        visionControl = new VisionControl(robot, gamepad1);
 
-        controls = new ArrayList<>(Arrays.asList(intakeControl, outtakeControl, driveControl));
+        controls = new ArrayList<>(Arrays.asList(intakeControl, outtakeControl, driveControl, visionControl));
 
         currentGamepad1 = new Gamepad();
         previousGamepad1 = new Gamepad();

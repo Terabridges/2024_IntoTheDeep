@@ -30,10 +30,10 @@ public class VisionSystem implements Subsystem {
     NormalizedRGBA colors;
     private boolean camInited = false;
 
-    public VisionPortal vp;
-    public VisionPortal.Builder vpBuilder;
-    public List<AprilTagDetection> detections;
-    public List<VisionProcessor> processors;
+//    public VisionPortal vp;
+//    public VisionPortal.Builder vpBuilder;
+//    public List<AprilTagDetection> detections;
+//    public List<VisionProcessor> processors;
     HardwareMap hardwareMap;
     public double leftBackDistanceVal;
     public double rightBackDistanceVal;
@@ -101,48 +101,48 @@ public class VisionSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit() {
-        if (!camInited) {
-            initProcessors();
-            vp = vpBuilder.build();
-
-            vp.resumeStreaming();
-            camInited = true;
-        }
+//        if (!camInited) {
+//            initProcessors();
+//            vp = vpBuilder.build();
+//
+//            vp.resumeStreaming();
+//            camInited = true;
+//        }
     }
 
-    private void initProcessors() {
-        if(camInited) return;
-        for (VisionProcessor processor : processors) {
-            vpBuilder.addProcessors(processor);
-        }
-    }
+//    private void initProcessors() {
+//        if(camInited) return;
+//        for (VisionProcessor processor : processors) {
+//            vpBuilder.addProcessors(processor);
+//        }
+//    }
 
-    private void addProcessors(VisionProcessor... processors) {
-        if (camInited) return;
-        for (VisionProcessor processor : processors) {
-            vpBuilder.addProcessor(processor);
-        }
-    }
+//    private void addProcessors(VisionProcessor... processors) {
+//        if (camInited) return;
+//        for (VisionProcessor processor : processors) {
+//            vpBuilder.addProcessor(processor);
+//        }
+//    }
 
-    public void addAprilTag() {
-        addProcessors(new AprilTagProcessor.Builder().setDrawAxes(true).build());
-    }
+//    public void addAprilTag() {
+//        addProcessors(new AprilTagProcessor.Builder().setDrawAxes(true).build());
+//    }
 
-    private VisionPortal.Builder vpBuilderFront() {
+//    private VisionPortal.Builder vpBuilderFront() {
+//
+//        // Create a VisionPortal builder
+//        return new VisionPortal.Builder()
+//                .setCamera(hardwareMap.get(WebcamName.class, "front_camera"));
+//
+//    }
 
-        // Create a VisionPortal builder
-        return new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "front_camera"));
-
-    }
-
-    private VisionPortal.Builder vpBuilderBack() {
-
-        // Create a VisionPortal builder
-        return new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "back_camera"));
-
-    }
+//    private VisionPortal.Builder vpBuilderBack() {
+//
+//        // Create a VisionPortal builder
+//        return new VisionPortal.Builder()
+//                .setCamera(hardwareMap.get(WebcamName.class, "back_camera"));
+//
+//    }
 
 
 
