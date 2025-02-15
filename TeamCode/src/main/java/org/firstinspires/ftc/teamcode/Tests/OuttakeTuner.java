@@ -45,8 +45,8 @@ public class OuttakeTuner extends LinearOpMode {
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
-    public boolean runSlides = true;
-    public static double outtakeSwivelOffset = 180;
+    public boolean runSlides = false;
+    public static double outtakeSwivelOffset = 180.0;
     public double outtakeSwivelGearRatio = 40.0 / 30.0;
 
     @Override

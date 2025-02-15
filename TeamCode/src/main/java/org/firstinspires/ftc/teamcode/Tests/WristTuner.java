@@ -63,7 +63,7 @@ public class WristTuner extends LinearOpMode {
                 outtakeWrist.setPosition(WRIST_TARGET);
             }
 
-            intakeSetSwivel(setIntakeSwivelPIDF(intakeSwivelTarget));
+            //intakeSetSwivel(setIntakeSwivelPIDF(intakeSwivelTarget));
         }
 
     }

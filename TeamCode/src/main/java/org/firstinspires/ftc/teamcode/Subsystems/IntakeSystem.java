@@ -33,6 +33,7 @@ public class IntakeSystem implements Subsystem {
     private int servoOffset = 15;
     private int motorOffset = 50;
     public double intakeSwivelGearRatio = 40.0/48.0;
+    private double intakeSwivelOffset = 87.0;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.75;
@@ -93,7 +94,7 @@ public class IntakeSystem implements Subsystem {
         intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
-        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 87, intakeSwivelGearRatio);
+        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);

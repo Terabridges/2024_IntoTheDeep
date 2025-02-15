@@ -29,6 +29,7 @@ public class OuttakeSystem implements Subsystem {
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
     public boolean isClawOpen = false;
+    private double outtakeSwivelOffset = 180.0;
 
     //Positions
     private double CLAW_OPEN = 0.77;
@@ -85,7 +86,7 @@ public class OuttakeSystem implements Subsystem {
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
         outtakeClaw = map.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 180, outtakeSwivelGearRatio);
+        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
 
         outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
