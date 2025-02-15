@@ -40,13 +40,14 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SPIN_STOP = 0;
     private int INTAKE_SLIDES_EXTEND = 90;
     private int INTAKE_SLIDES_RETRACT = 35;
+    private int INTAKE_SLIDES_PULL = 28;
     private int INTAKE_SWIVEL_TRANSFER = 125;
     private int INTAKE_SWIVEL_REST = 135;
     private int INTAKE_SWIVEL_DOWN = 287;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
-    private double INTAKE_SWEEPER_OUT = 0.55;
+    private double INTAKE_SWEEPER_OUT = 0.65;
     private double INTAKE_SWEEPER_IN = 0.2;
 
     //Targets
@@ -132,9 +133,9 @@ public class IntakeSystem implements Subsystem {
         intakeSlidesTarget = INTAKE_SLIDES_RETRACT;
     }
 
-    public void intakeSwivelDown(){
-        intakeSwivelTarget = INTAKE_SWIVEL_DOWN;
-    }
+    public void intakeSlidesPull(){intakeSlidesTarget = INTAKE_SLIDES_PULL;}
+
+    public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 
     public void intakeSwivelRest(){
         intakeSwivelTarget = INTAKE_SWIVEL_REST;
@@ -156,11 +157,21 @@ public class IntakeSystem implements Subsystem {
         intakeSpinTarget = INTAKE_SPIN_STOP;
     }
 
-    public void intakeSlidesSetManualIn(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_IN;}
+    public void intakeSlidesSetManualIn(){
+        usePIDFIntakeSlides = false;
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_IN;
+    }
 
-    public void intakeSlidesSetManualOut(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;}
+    public void intakeSlidesSetManualOut(){
+        usePIDFIntakeSlides = false;
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;
+    }
 
-    public void intakeSlidesSetManualStop(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;}
+    public void intakeSlidesSetManualStop(){
+        usePIDFIntakeSlides = true;
+        setIntakeSlidesPIDF((int)intakeRightSlidesEnc.getCurrentPosition());
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;
+    }
 
     public void intakeSweeperOut(){setSweeper(INTAKE_SWEEPER_OUT);}
 

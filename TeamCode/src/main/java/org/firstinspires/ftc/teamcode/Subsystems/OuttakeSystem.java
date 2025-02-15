@@ -28,6 +28,7 @@ public class OuttakeSystem implements Subsystem {
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
+    public boolean isClawOpen = false;
 
     //Positions
     private double CLAW_OPEN = 0.77;
@@ -35,14 +36,20 @@ public class OuttakeSystem implements Subsystem {
     private double WRIST_DOWN = 0.68;
     private double WRIST_TRANSFER = 0.3;
     private double WRIST_UP = 0.98;
+    private double WRIST_GRAB;
     private int OUTTAKE_SWIVEL_UP = 345;
     private int OUTTAKE_SWIVEL_MID = 275;
     private int OUTTAKE_SWIVEL_DOWN = 123;
     private int OUTTAKE_SWIVEL_TRANSFER = 161;
+    private int OUTTAKE_SWIVEL_GRAB;
     private int OUTTAKE_SLIDES_HIGH = -3400;
     private int OUTTAKE_SLIDES_LOW = -1600;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -800;
+    private int OUTTAKE_SLIDES_GRAB_1;
+    private int OUTTAKE_SLIDES_GRAB_2;
+    private int OUTTAKE_SLIDES_SCORE_1;
+    private int OUTTAKE_SLIDES_SCORE_2;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -128,6 +135,22 @@ public class OuttakeSystem implements Subsystem {
         outtakeSlidesTarget = OUTTAKE_SLIDES_REST;
     }
 
+    public void outtakeSlidesGrab1() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_GRAB_1;
+    }
+
+    public void outtakeSlidesGrab2() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_GRAB_2;
+    }
+
+    public void outtakeSlidesScore1() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_1;
+    }
+
+    public void outtakeSlidesScore2() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_2;
+    }
+
     public void outtakeSwivelUp() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_UP;
     }
@@ -138,6 +161,10 @@ public class OuttakeSystem implements Subsystem {
 
     public void outtakeSwivelMid() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
+    }
+
+    public void outtakeSwivelGrab() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_GRAB;
     }
 
     public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}
@@ -160,6 +187,8 @@ public class OuttakeSystem implements Subsystem {
 
     public void wristTransfer() {setWrist(WRIST_TRANSFER);}
 
+    public void wristGrab() {setWrist(WRIST_GRAB);}
+
     //isPositions
     public boolean isSlidesDown(){
         return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
@@ -171,6 +200,14 @@ public class OuttakeSystem implements Subsystem {
 
     public boolean isSlidesHigh(){
         return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_HIGH) <= motorOffset;
+    }
+
+    public boolean isSlidesGrab1(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
+    }
+
+    public boolean isSlidesScore2(){
+        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
     }
 
     public boolean isSlidesLow(){

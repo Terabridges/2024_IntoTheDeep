@@ -13,12 +13,11 @@ public class OuttakeControl implements Control {
     OuttakeSystem outtake;
     Gamepad gp1;
     Robot robot;
-    boolean isClawOpen = false;
-    EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
-    EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
     EdgeDetector slidesManualFalseRE = new EdgeDetector( () -> robot.setManualIntakeTrue());
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
+    EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
+    EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
@@ -51,13 +50,6 @@ public class OuttakeControl implements Control {
             }
         }
 
-        //Claw open/close with dpad up
-        if (isClawOpen){
-            clawCloseRE.update(gp1.dpad_up);
-        } else {
-            clawOpenRE.update(gp1.dpad_up);
-        }
-
         //Outtake manual with right stick
         if (outtake.manualOuttake){
             slidesManualFalseRE.update(gp1.right_stick_button);
@@ -67,6 +59,13 @@ public class OuttakeControl implements Control {
 
         //Basket Mode Toggle
         basketMode.update(gp1.left_stick_button);
+
+        //Claw open/close with right bumper
+        if (outtake.isClawOpen){
+            clawCloseRE.update(gp1.right_bumper);
+        } else {
+            clawOpenRE.update(gp1.right_bumper);
+        }
     }
 
     @Override

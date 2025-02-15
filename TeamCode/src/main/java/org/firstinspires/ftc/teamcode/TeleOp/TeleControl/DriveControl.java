@@ -14,8 +14,9 @@ public class DriveControl implements Control {
     DriveSystem driveSystem;
     public Robot robot;
     public Gamepad gp1;
-    public double speed = 1.0;
+    public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
+    public double speed = FAST_MULT;
     boolean useSlowMode = false;
     boolean manualDrive = true;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
@@ -41,8 +42,8 @@ public class DriveControl implements Control {
     @Override
     public void update(){
 
-        slowModeRE.update(gp1.right_bumper);
-        speed = (useSlowMode) ? SLOW_MULT : 1.0;
+        slowModeRE.update(gp1.dpad_up);
+        speed = (useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(manualDrive){
             double max;
@@ -67,6 +68,10 @@ public class DriveControl implements Control {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
+            leftFrontPower *= speed;
+            rightFrontPower *= speed;
+            leftBackPower *= speed;
+            rightBackPower *= speed;
             driveSystem.leftFront.setPower(leftFrontPower);
             driveSystem.rightFront.setPower(rightFrontPower);
             driveSystem.leftBack.setPower(leftBackPower);
