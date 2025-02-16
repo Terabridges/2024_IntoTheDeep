@@ -1,0 +1,51 @@
+CONFIG NAMES
+----------------------------------
+    [[EXPANSION HUB]]
+{MOTORS}
+"left_back" - 0
+"left_front" - 1
+(ENC) "outtake_bottom_vertical" - 2
+
+{SERVOS}
+(CR) "intake_right_slide" - 4
+"right_light" - 2
+
+{ANALOG}
+"intake_right_slide_analog" - 2
+"outtake_right_swivel_analog" - 3
+----------------------------------
+    [[SERVO HUB]]
+{SERVOS}
+(CR) "outtake_right_swivel" - 0
+(CR) "outtake_left_swivel" - 1
+"outtake_claw" - 4
+"outtake_wrist" - 5
+----------------------------------
+    [[CONTROL HUB]]
+{MOTORS}
+"right_front" - 0
+"right_back" - 1
+"outtake_top_vertical" - 2
+"intake_spin" - 3
+
+{SERVOS}
+(CR) "intake_left_slide" - 5
+(CR) "intake_left_swivel" - 1
+(CR) "intake_right_swivel" - 2
+"intake_sweeper" - 3
+
+{ANALOG}
+"intake_right_swivel_analog" - 3
+
+{I2C}
+"intake_color_sensor" - port0, bus1
+"pinpoint" - port0, bus0
+----------------------------------
+    [[USB DEVICES]]
+"Webcam_1"
+"Webcam_2"
+----------------------------------
+
+
+
+

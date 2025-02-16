@@ -52,9 +52,9 @@ public class OuttakeTuner extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
-        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
+        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = hardwareMap.get(CRServo.class, "outtake_right_swivel");
@@ -87,7 +87,7 @@ public class OuttakeTuner extends LinearOpMode {
 
             if (runSlides) {
                 telemetry.addData("Linear Slides Target", outtakeSlidesTarget);
-                telemetry.addData("Linear Slides Pos", outtakeTopVertical.getCurrentPosition());
+                telemetry.addData("Linear Slides Pos", outtakeBottomVertical.getCurrentPosition());
             } else {
                 telemetry.addData("Swivel Target", outtakeSwivelTarget);
                 telemetry.addData("Swivel Voltage", outtakeRightSwivelAnalog.getVoltage());
@@ -101,7 +101,7 @@ public class OuttakeTuner extends LinearOpMode {
 
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
-        outtakeSlidesPos = outtakeTopVertical.getCurrentPosition();
+        outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
         ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;

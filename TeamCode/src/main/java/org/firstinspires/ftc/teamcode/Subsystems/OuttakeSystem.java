@@ -19,8 +19,8 @@ public class OuttakeSystem implements Subsystem {
     public CRServo outtakeRightSwivel;
     public Servo outtakeWrist;
     public Servo outtakeClaw;
-    public AnalogInput outtakeRightSwivelAnalog;
-    public AbsoluteAnalogEncoder outtakeRightSwivelEnc;
+    public AnalogInput outtakeSwivelAnalog;
+    public AbsoluteAnalogEncoder outtakeSwivelEnc;
 
     //SOFTWARE
     private int servoOffset = 15;
@@ -77,18 +77,16 @@ public class OuttakeSystem implements Subsystem {
 
     //Constructor
     public OuttakeSystem(HardwareMap map) {
-        outtakeTopVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
-        outtakeBottomVertical = map.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical = map.get(DcMotor.class, "outtake_top_vertical");
+        outtakeBottomVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
         outtakeLeftSwivel = map.get(CRServo.class, "outtake_left_swivel");
-        outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = map.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
         outtakeClaw = map.get(Servo.class, "outtake_claw");
-        outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
+        outtakeSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
+        outtakeSwivelEnc = new AbsoluteAnalogEncoder(outtakeSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
 
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         outtakeSlidesController = new PIDController(p3, i3, d3);
@@ -191,45 +189,45 @@ public class OuttakeSystem implements Subsystem {
     public void wristGrab() {setWrist(WRIST_GRAB);}
 
     public void resetSlideEncoders() {
-        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     //isPositions
     public boolean isSlidesDown(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
     }
 
     public boolean isSlidesRest(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
     }
 
     public boolean isSlidesHigh(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_HIGH) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_HIGH) <= motorOffset;
     }
 
     public boolean isSlidesGrab1(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
     }
 
     public boolean isSlidesScore2(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
     }
 
     public boolean isSlidesLow(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
     }
 
     public boolean isSwivelUp() {
-        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
     }
     public boolean isSwivelDown() {
-        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
     }
 
     //PIDF
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
-        outtakeSlidesPos = outtakeTopVertical.getCurrentPosition();
+        outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
         ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
@@ -242,7 +240,7 @@ public class OuttakeSystem implements Subsystem {
 
     public double setOuttakeSwivelPIDF(int target) {
         outtakeSwivelController.setPID(p4, i4, d4);
-        outtakeSwivelPos = outtakeRightSwivelEnc.getCurrentPosition();
+        outtakeSwivelPos = outtakeSwivelEnc.getCurrentPosition();
         pid4 = outtakeSwivelController.calculate(outtakeSwivelPos, target);
         targetOuttakeSwivelAngle = target;
         ff4 = (Math.sin(Math.toRadians(targetOuttakeSwivelAngle))) * f4;
@@ -256,7 +254,7 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeSlidesRest();
         outtakeSwivelDown();
         closeClaw();
