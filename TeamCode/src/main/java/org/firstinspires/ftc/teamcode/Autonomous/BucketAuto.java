@@ -223,7 +223,7 @@ public class BucketAuto extends LinearOpMode
                     else
                         follower.followPath(goToScorePreload, true);
                     o.outtakeSlidesHigh();
-                    o.outtakeSwivelMid();
+                    //o.outtakeSwivelMid();
                 })
                 .transition(() -> o.isSlidesHigh() && !follower.isBusy(), scoreStates.DUNK)
 
