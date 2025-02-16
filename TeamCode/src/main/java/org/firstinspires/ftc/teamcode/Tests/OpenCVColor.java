@@ -47,8 +47,21 @@ import java.util.List;
 @TeleOp(name = "OpenCvColor")
 public class OpenCVColor extends LinearOpMode
 {
-    @Override
+    // initializes the width of the camera as well as its x and y direction
+    double cX1 = 0;
+    double cX2 = 0;
+    double width = 0;
+    double theta = 0;
 
+    // initializes camera and constants for camera resolution
+    private static final int CAMERA_WIDTH = 320;
+    private static final int CAMERA_HEIGHT = 240;
+
+    // will be used to calculate distance
+    public static final double objectWidthInRealWorld = 38.1; // this is the width of the sample, change if incorrect
+    public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
+
+    @Override
     public void runOpMode()
     {
         ColorBlobLocatorProcessor colorLocatorBlue = new ColorBlobLocatorProcessor.Builder()
@@ -80,12 +93,13 @@ public class OpenCVColor extends LinearOpMode
                 .addProcessor(colorLocatorBlue)
                 .addProcessor(colorLocatorRed)
                 .addProcessor(colorLocatorYellow)
-                .setCameraResolution(new Size(320, 240))
+                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();
 
+        // use to speed up debugging
         //telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         //telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
 
@@ -93,16 +107,16 @@ public class OpenCVColor extends LinearOpMode
         while (opModeIsActive() || opModeInInit())
         {
             portal.resumeLiveView();
-            telemetry.addData("preview on/off", "... Camera Stream\n");
+            //telemetry.addData("preview on/off", "... Camera Stream\n");
 
             // Read the current list
             List<ColorBlobLocatorProcessor.Blob> blobsBlue = colorLocatorBlue.getBlobs();
             List<ColorBlobLocatorProcessor.Blob> blobsRed = colorLocatorRed.getBlobs();
             List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
 
-            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsBlue);  // filter out very small blobs.
-            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsRed);
-            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsYellow);
+            ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsBlue);  // filter out very small blobs.
+            ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsRed);
+            ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsYellow);
 
             telemetry.addLine(" Area Density Aspect  Center");
 
@@ -110,30 +124,45 @@ public class OpenCVColor extends LinearOpMode
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
             {
                 RotatedRect boxFit = b.getBoxFit();
+                /*
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                if (b.getDensity() > 0.9)
-                {
+                double dist = getDistance(boxFit.size.width);
+                telemetry.addData("distance", dist);
+                telemetry.addData("angle", boxFit.angle);
+                if (b.getContourArea() > 4000) {
+                    telemetry.addData("Area", b.getContourArea());
                     telemetry.addData("Blue is detected", "!");
                 }
+                */
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
             {
                 RotatedRect boxFit = b.getBoxFit();
+                /*
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                if (b.getDensity() > 0.9)
+                double dist = getDistance(boxFit.size.width);
+                telemetry.addData("distance", dist);
+                telemetry.addData("angle", boxFit.angle);
+                if (b.getContourArea() > 4000) {
+                    telemetry.addData("Area", b.getContourArea());
                     telemetry.addData("Red is detected", "!");
+                }
+                */
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsYellow)
             {
                 RotatedRect boxFit = b.getBoxFit();
-                telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
-                        b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                if (b.getDensity() > 0.9)
-                {
+             //   telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
+              //          b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
+                double dist = getDistance(boxFit.size.width);
+                telemetry.addData("distance", dist);
+                telemetry.addData("angle", boxFit.angle);
+                if (b.getContourArea() > 4000) {
+                    telemetry.addData("Area", b.getContourArea());
                     telemetry.addData("Yellow is detected", "!");
                 }
             }
@@ -141,5 +170,10 @@ public class OpenCVColor extends LinearOpMode
             telemetry.update();
             sleep(50);
         }
+    }
+    public static double getDistance(double width)
+    {
+        double distance = (objectWidthInRealWorld * focalLength)/width;
+        return distance;
     }
 }

@@ -156,7 +156,6 @@ public class OpenCV extends LinearOpMode {
 
     }
 
-
     // This helper function does distance calculation: (Real Width * Focal) / Width of Pixels
     public static double getDistance(double width){
         double distance = (objectWidthInRealWorld * focalLength) / width;
