@@ -39,7 +39,7 @@ public class OuttakeSystem implements Subsystem {
     private double WRIST_UP = 0.98;
     private double WRIST_GRAB;
     private int OUTTAKE_SWIVEL_UP = 345;
-    private int OUTTAKE_SWIVEL_MID = 275;
+    private int OUTTAKE_SWIVEL_MID = 300;
     private int OUTTAKE_SWIVEL_DOWN = 123;
     private int OUTTAKE_SWIVEL_TRANSFER = 161;
     private int OUTTAKE_SWIVEL_GRAB;

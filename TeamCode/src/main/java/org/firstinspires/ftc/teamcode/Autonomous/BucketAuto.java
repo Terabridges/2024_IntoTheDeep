@@ -244,11 +244,7 @@ public class BucketAuto extends LinearOpMode
                     o.outtakeSwivelDown();
                     o.wristTransfer();
                 })
-                .transition(() -> o.isSwivelDown(), scoreStates.LOWER_OUTTAKE)
-
-                .state(scoreStates.LOWER_OUTTAKE)
-                .onEnter(() -> o.outtakeSlidesRest())
-                .transition(() -> o.isSlidesRest(), scoreStates.STOP)
+                .transition(() -> o.isSwivelDown(), scoreStates.STOP)
 
                 .state(scoreStates.STOP)
                 .onEnter(() -> curSample++)
@@ -259,9 +255,10 @@ public class BucketAuto extends LinearOpMode
                 .state(pickupStates.GO_TO_PICKUP)
                 .onEnter(() -> {
                     buildPaths();
+                    o.outtakeSlidesRest();
                     follower.followPath(goToSample, true);
                 })
-                .transition(() -> !follower.isBusy(), pickupStates.EXTEND_INTAKE)
+                .transition(() -> !follower.isBusy() && o.isSlidesRest(), pickupStates.EXTEND_INTAKE)
 
                 .state(pickupStates.EXTEND_INTAKE)
                 .onEnter(() -> {
