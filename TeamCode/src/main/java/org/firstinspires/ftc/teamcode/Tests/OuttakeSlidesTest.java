@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-@TeleOp(name="TestOpMode", group="Test")
+@TeleOp(name="SlidesTest", group="Test")
 @Config
 public class OuttakeSlidesTest extends LinearOpMode {
     public DcMotor outtakeTopVertical;
@@ -18,14 +18,15 @@ public class OuttakeSlidesTest extends LinearOpMode {
 
     public enum Mode {
         BOTH,
-        INDIVIDUAL
+        TOP,
+        BOTTOM
     }
 
     @Override
     public void runOpMode() {
-        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
-        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
+        outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Mode mode = Mode.BOTH;
 
@@ -40,17 +41,23 @@ public class OuttakeSlidesTest extends LinearOpMode {
                     outtakeBottomVertical.setPower(gamepad1.left_stick_y);
                     outtakeTopVertical.setPower(gamepad1.left_stick_y);
                     break;
-                case INDIVIDUAL:
+                case TOP:
+                    outtakeTopVertical.setPower(gamepad1.left_stick_y);
+                    break;
+                case BOTTOM:
                     outtakeBottomVertical.setPower(gamepad1.left_stick_y);
-                    outtakeTopVertical.setPower(gamepad1.right_stick_y);
+                    break;
             }
 
             if (currentGamepad1.a && !previousGamepad1.a) {
                 switch (mode) {
                     case BOTH:
-                        mode = Mode.INDIVIDUAL;
+                        mode = Mode.TOP;
                         break;
-                    case INDIVIDUAL:
+                    case TOP:
+                        mode = Mode.BOTTOM;
+                        break;
+                    case BOTTOM:
                         mode = Mode.BOTH;
                         break;
                 }
