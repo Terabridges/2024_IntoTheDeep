@@ -18,6 +18,7 @@ public class DriveControl implements Control {
     public double SLOW_MULT = 0.6;
     public double speed = FAST_MULT;
     boolean useSlowMode = false;
+    boolean manualDrive = true;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
 
     //Constructor
@@ -41,10 +42,10 @@ public class DriveControl implements Control {
     @Override
     public void update(){
 
-        slowModeRE.update(gp1.x);
+        slowModeRE.update(gp1.dpad_up);
         speed = (useSlowMode ? SLOW_MULT : FAST_MULT);
 
-        if(driveSystem.manualDrive){
+        if(manualDrive){
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value

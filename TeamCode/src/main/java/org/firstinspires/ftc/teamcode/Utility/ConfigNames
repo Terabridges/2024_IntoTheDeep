@@ -16,10 +16,10 @@ Analog Intake right swivel: "intake_right_swivel_analog" - CHub Analog 3
 
 DcMotor Winch top: "outtake_top_vertical" - Chub Motor 2
 DcMotor Winch bottom: "outtake_bottom_vertical" - Expansion Hub Motor 2
-CRServo Deposit left swivel: "outtake_left_swivel" - Servo Hub 1
-CRServo Deposit right swivel: "outtake_right_swivel" - Servo Hub 0
-Servo Wrist: "outtake_wrist" - Servo Hub 5
-Servo Claw: "outtake_claw" - Servo Hub 4
+CRServo Deposit left swivel: "outtake_left_swivel"
+CRServo Deposit right swivel: "outtake_right_swivel"
+Servo Wrist: "outtake_wrist"
+Servo Claw: "outtake_claw"
 Analog Right Swivel: "outtake_right_swivel_analog" - Expansion Hub Analog 3
 
 I2C Intake Color Sensor: "intake_color_sensor" - Chub I2C 1

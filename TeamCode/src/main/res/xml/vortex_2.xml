@@ -10,7 +10,6 @@
             <Servo name="right_light" port="2" />
             <AnalogInput name="intake_right_slide_analog" port="2" />
             <AnalogInput name="outtake_right_swivel_analog" port="3" />
-            <RevTouchSensor name="limit" port="0" />
         </LynxModule>
         <ServoHub name="Servo Hub 3" port="3">
             <ContinuousRotationServo name="outtake_right_swivel" port="0" />

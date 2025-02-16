@@ -8,18 +8,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="Test Distance Sensor over I2C", group = "Tests")
-public class I2CLaserTest extends LinearOpMode {
+@TeleOp(name="Configure Distance Sensor", group = "Tests")
+public class DistanceSensorConfigure extends LinearOpMode {
 
     @Override
     public void runOpMode(){
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         LaserRangefinder lrf = new LaserRangefinder(hardwareMap.get(RevColorSensorV3.class, "Laser"));
-
         waitForStart();
         while (opModeIsActive()) {
             double distance = lrf.getDistance(DistanceUnit.MM);
-
             telemetry.addData("Distance", distance);
             telemetry.addData("Status", lrf.getStatus());
             telemetry.update();

@@ -33,18 +33,18 @@ public class IntakeSystem implements Subsystem {
     private int servoOffset = 15;
     private int motorOffset = 50;
     public double intakeSwivelGearRatio = 40.0/48.0;
-    private double intakeSwivelOffset = 65.0;
+    private double intakeSwivelOffset = 87.0;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.75;
     private double INTAKE_SPIN_OUT = 0.75;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 335;
-    private int INTAKE_SLIDES_HALF = 312;
-    private int INTAKE_SLIDES_RETRACT = 275;
-    private int INTAKE_SWIVEL_TRANSFER = 124;
-    private int INTAKE_SWIVEL_REST = 210;
-    private int INTAKE_SWIVEL_DOWN = 293;
+    private int INTAKE_SLIDES_EXTEND = 90;
+    private int INTAKE_SLIDES_RETRACT = 35;
+    private int INTAKE_SLIDES_PULL = 28;
+    private int INTAKE_SWIVEL_TRANSFER = 125;
+    private int INTAKE_SWIVEL_REST = 135;
+    private int INTAKE_SWIVEL_DOWN = 287;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
@@ -66,7 +66,7 @@ public class IntakeSystem implements Subsystem {
 
     //First PID for intake slides
     public PIDController intakeSlidesController;
-    public static double p = 0.0075, i = 0.04, d = 0.0003;
+    public static double p = 0.009, i = 0.03, d = 0.00008;
     public static double f = 0.0;
     public static int intakeSlidesTarget;
     double intakeSlidesPos;
@@ -74,8 +74,8 @@ public class IntakeSystem implements Subsystem {
 
     //Second PID for intake swivel
     public PIDController intakeSwivelController;
-    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
-    public static double f2 = 0.05;
+    public static double p2 = 0.0035, i2 = 0.02, d2 = 0.00009;
+    public static double f2 = 0.04;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
@@ -95,7 +95,7 @@ public class IntakeSystem implements Subsystem {
         intakeSwivelEnc = new AbsoluteAnalogEncoder(intakeSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeSlidesController = new PIDController(p, i, d);
         intakeSwivelController = new PIDController(p2, i2, d2);
@@ -131,6 +131,8 @@ public class IntakeSystem implements Subsystem {
     public void intakeSlidesRetract() {
         intakeSlidesTarget = INTAKE_SLIDES_RETRACT;
     }
+
+    public void intakeSlidesPull(){intakeSlidesTarget = INTAKE_SLIDES_PULL;}
 
     public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 

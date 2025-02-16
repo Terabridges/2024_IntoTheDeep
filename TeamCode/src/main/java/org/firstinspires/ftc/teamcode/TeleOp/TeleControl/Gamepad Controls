@@ -4,12 +4,12 @@ BOOLEANS
 A - sample intake FSM
 B - sample transfer FSM
 Y - sample outtake FSM
-X - slow mode
+X -
 rightBumper - specimen score FSM
 leftBumper - open/close claw
 dLeft - move intake slides in
 dRight - move intake slides out
-dUp -
+dUp - slow mode
 dDown - hold to hold sweeper out
 leftStickButton - low basket mode
 rightStickButton - vertical slide manual mode
