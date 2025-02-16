@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -21,6 +22,7 @@ public class OuttakeSystem implements Subsystem {
     public Servo outtakeClaw;
     public AnalogInput outtakeSwivelAnalog;
     public AbsoluteAnalogEncoder outtakeSwivelEnc;
+    public TouchSensor limit;
 
     //SOFTWARE
     private int servoOffset = 15;
@@ -32,25 +34,29 @@ public class OuttakeSystem implements Subsystem {
     private double outtakeSwivelOffset = 180.0;
 
     //Positions
-    private double CLAW_OPEN = 0.77;
-    private double CLAW_CLOSE = 0.43;
-    private double WRIST_DOWN = 0.68;
-    private double WRIST_TRANSFER = 0.3;
+    private double CLAW_OPEN = 0.5;
+    private double CLAW_CLOSE = 0.19;
+    private double WRIST_DOWN = 0.6;
+    private double WRIST_TRANSFER = 0.05;
     private double WRIST_UP = 0.98;
-    private double WRIST_GRAB;
-    private int OUTTAKE_SWIVEL_UP = 345;
-    private int OUTTAKE_SWIVEL_MID = 300;
-    private int OUTTAKE_SWIVEL_DOWN = 123;
-    private int OUTTAKE_SWIVEL_TRANSFER = 161;
-    private int OUTTAKE_SWIVEL_GRAB;
-    private int OUTTAKE_SLIDES_HIGH = -3400;
-    private int OUTTAKE_SLIDES_LOW = -1600;
+    private double WRIST_GRAB = 0.01;
+    private double WRIST_LOCK = 0.45;
+    //LIMIT BACK: 0
+    //LIMIT FORWARD: 1
+    //SPECIMEN LIMIT: 0.35
+    private int OUTTAKE_SWIVEL_UP = 390;
+    //private int OUTTAKE_SWIVEL_MID = 275;
+    private int OUTTAKE_SWIVEL_DOWN = 180;
+    private int OUTTAKE_SWIVEL_TRANSFER = 208;
+    private int OUTTAKE_SWIVEL_GRAB = 146;
+    private int OUTTAKE_SWIVEL_LOCK = 91;
+    private int OUTTAKE_SLIDES_HIGH = -3220;
+    private int OUTTAKE_SLIDES_LOW = -1320;
     private int OUTTAKE_SLIDES_DOWN = 0;
-    private int OUTTAKE_SLIDES_REST = -800;
-    private int OUTTAKE_SLIDES_GRAB_1;
-    private int OUTTAKE_SLIDES_GRAB_2;
-    private int OUTTAKE_SLIDES_SCORE_1;
-    private int OUTTAKE_SLIDES_SCORE_2;
+    private int OUTTAKE_SLIDES_REST = -950;
+    private int OUTTAKE_SLIDES_GRAB_1 = 0;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1600;
+    private int OUTTAKE_SLIDES_SCORE_2 = -965;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -69,8 +75,8 @@ public class OuttakeSystem implements Subsystem {
 
     //Fourth PID for outtake swivel
     public PIDController outtakeSwivelController;
-    public static double p4 = 0.0025, i4 = 0.001, d4 = 0.00005;
-    public static double f4 = 0.0;
+    public static double p4 = 0.003, i4 = 0.001, d4 = 0.00005;
+    public static double f4 = -0.02;
     public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
@@ -85,6 +91,7 @@ public class OuttakeSystem implements Subsystem {
         outtakeClaw = map.get(Servo.class, "outtake_claw");
         outtakeSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
         outtakeSwivelEnc = new AbsoluteAnalogEncoder(outtakeSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
+        limit = map.get(TouchSensor.class, "limit");
 
         outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -138,10 +145,6 @@ public class OuttakeSystem implements Subsystem {
         outtakeSlidesTarget = OUTTAKE_SLIDES_GRAB_1;
     }
 
-    public void outtakeSlidesGrab2() {
-        outtakeSlidesTarget = OUTTAKE_SLIDES_GRAB_2;
-    }
-
     public void outtakeSlidesScore1() {
         outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_1;
     }
@@ -158,12 +161,16 @@ public class OuttakeSystem implements Subsystem {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_DOWN;
     }
 
-    public void outtakeSwivelMid() {
-        outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
-    }
+//    public void outtakeSwivelMid() {
+//        outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
+//    }
 
     public void outtakeSwivelGrab() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_GRAB;
+    }
+
+    public void outtakeSwivelLock() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_LOCK;
     }
 
     public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}
@@ -187,6 +194,8 @@ public class OuttakeSystem implements Subsystem {
     public void wristTransfer() {setWrist(WRIST_TRANSFER);}
 
     public void wristGrab() {setWrist(WRIST_GRAB);}
+
+    public void wristLock() {setWrist(WRIST_LOCK);}
 
     public void resetSlideEncoders() {
         outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -222,6 +231,10 @@ public class OuttakeSystem implements Subsystem {
     }
     public boolean isSwivelDown() {
         return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
+    }
+
+    public boolean isSwivelGrab() {
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_GRAB) <= servoOffset;
     }
 
     //PIDF
@@ -265,6 +278,9 @@ public class OuttakeSystem implements Subsystem {
     public void update(){
         outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
+        if (limit.isPressed()){
+            outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 
 }

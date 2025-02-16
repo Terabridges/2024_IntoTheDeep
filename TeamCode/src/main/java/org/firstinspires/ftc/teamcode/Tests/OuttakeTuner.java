@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -26,6 +27,7 @@ public class OuttakeTuner extends LinearOpMode {
     public Servo outtakeClaw;
     public AnalogInput outtakeRightSwivelAnalog;
     public AbsoluteAnalogEncoder outtakeRightSwivelEnc;
+    public TouchSensor limit;
 
     private double ticks_in_degree = 144.0 / 180.0;
 
@@ -39,8 +41,8 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Fourth PID for outtake swivel
     private PIDController outtakeSwivelController;
-    public static double p4 = 0.0025, i4 = 0.001, d4 = 0.00005;
-    public static double f4 = 0.0;
+    public static double p4 = 0.003, i4 = 0.001, d4 = 0.00005;
+    public static double f4 = -0.02;
     public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
@@ -62,6 +64,7 @@ public class OuttakeTuner extends LinearOpMode {
         outtakeClaw = hardwareMap.get(Servo.class, "outtake_claw");
         outtakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "outtake_right_swivel_analog");
         outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
+        limit = hardwareMap.get(TouchSensor.class, "limit");
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -72,6 +75,10 @@ public class OuttakeTuner extends LinearOpMode {
         outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         while (opModeIsActive()){
+
+            if (limit.isPressed()){
+                outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
 
             if (gamepad1.a){
                 runSlides = !runSlides;
@@ -94,6 +101,8 @@ public class OuttakeTuner extends LinearOpMode {
                 telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
             }
 
+            telemetry.addData("LIMITING?", limit.isPressed() ? "YES" : "NO");
+
             telemetry.update();
 
         }
@@ -104,7 +113,7 @@ public class OuttakeTuner extends LinearOpMode {
         outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
-        ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
+        ff3 = f3;
         currentOuttakeSlidesAngle = Math.toRadians((outtakeSlidesPos) / ticks_in_degree);
 
         outtakeSlidesPower = pid3 + ff3;

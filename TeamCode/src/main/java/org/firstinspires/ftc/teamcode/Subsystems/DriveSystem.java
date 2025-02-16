@@ -20,6 +20,7 @@ public class DriveSystem implements Subsystem {
     public DcMotor rightBack;
 
     //Software
+    public boolean manualDrive = true;
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -32,6 +33,21 @@ public class DriveSystem implements Subsystem {
     }
 
     //Methods
+    public void driveBack(){
+        manualDrive = false;
+        leftBack.setPower(0.3);
+        leftFront.setPower(0.3);
+        rightBack.setPower(0.3);
+        rightFront.setPower(0.3);
+    }
+
+    public void driveStop(){
+        manualDrive = true;
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+    }
 
     //Interface Methods
     @Override
