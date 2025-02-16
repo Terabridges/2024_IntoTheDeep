@@ -148,46 +148,11 @@ public class BucketAuto extends LinearOpMode
 
     public void buildPaths()
     {
-        goToScore =
-                new PathBuilder()
-                        .addPath(
-                                new BezierLine(
-                                        new Point(scoreFrom[curSample]),
-                                        new Point(scorePose)))
-                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), scorePose.getHeading())
-                        .build();
-        goToScorePreload =
-                new PathBuilder()
-                        .addPath(
-                                new BezierLine(
-                                        new Point(startPose),
-                                        new Point(scorePose)))
-                        .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-                        .build();
-        goToSample =
-                new PathBuilder()
-                        .addPath(
-                                new BezierLine(
-                                        new Point(scorePose),
-                                        new Point(samples[curSample])))
-                        .setLinearHeadingInterpolation(scorePose.getHeading(), samples[curSample].getHeading())
-                        .build();
-        intakeSample =
-                new PathBuilder()
-                        .addPath(
-                                new BezierLine(
-                                        new Point(samples[curSample]),
-                                        new Point(scoreFrom[curSample+1])))
-                        .setLinearHeadingInterpolation(samples[curSample].getHeading(), scoreFrom[curSample+1].getHeading())
-                        .build();
-        failedIntake =
-                new PathBuilder()
-                        .addPath(
-                                new BezierLine(
-                                        new Point(scoreFrom[curSample]),
-                                        new Point(samples[curSample])))
-                        .setLinearHeadingInterpolation(scoreFrom[curSample].getHeading(), samples[curSample].getHeading())
-                        .build();
+        goToScore = buildLinearPath(scoreFrom[curSample], scorePose);
+        goToScorePreload = buildLinearPath(startPose, scorePose);
+        goToSample = buildLinearPath(scorePose, samples[curSample]);
+        intakeSample = buildLinearPath(samples[curSample], scoreFrom[curSample + 1]);
+        failedIntake = buildLinearPath(scoreFrom[curSample], samples[curSample]);
     }
 
     public void buildStateMachines()
@@ -347,5 +312,12 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("current sample", curSample);
         telemetry.addData("spinTarget", i.intakeSpinTarget);
         telemetry.update();
+    }
+
+    private PathChain buildLinearPath(Pose start, Pose end) {
+        return new PathBuilder()
+                .addPath(new BezierLine(new Point(start), new Point(end)))
+                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
+                .build();
     }
 }
