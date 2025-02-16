@@ -31,7 +31,7 @@ public class IntakeTuner extends LinearOpMode {
 
     //First PID for intake slides
     private PIDController intakeSlidesController;
-    public static double p = 0.009, i = 0.03, d = 0.00008;
+    public static double p = 0.0075, i = 0.04, d = 0.0003;
     public static double f = 0.0;
     public static int intakeSlidesTarget;
     double intakeSlidesPos;
@@ -39,14 +39,14 @@ public class IntakeTuner extends LinearOpMode {
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public static double p2 = 0.0035, i2 = 0.02, d2 = 0.00009;
-    public static double f2 = 0.04;
+    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
+    public static double f2 = 0.05;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = false;
-    public static double intakeSwivelOffset = 87; //120
+    public static double intakeSwivelOffset = 65;
     public double intakeSwivelGearRatio = 40.0/48.0;
 
     @Override
@@ -55,8 +55,8 @@ public class IntakeTuner extends LinearOpMode {
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSlide = hardwareMap.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
-        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
+        intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
