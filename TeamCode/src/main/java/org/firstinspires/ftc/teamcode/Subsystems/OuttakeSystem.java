@@ -25,8 +25,8 @@ public class OuttakeSystem implements Subsystem {
     public TouchSensor limit;
 
     //SOFTWARE
-    private int servoOffset = 15;
-    private int motorOffset = 50;
+    private int servoOffset = 10;
+    private int motorOffset = 40;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
@@ -69,7 +69,7 @@ public class OuttakeSystem implements Subsystem {
     public PIDController outtakeSlidesController;
     public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
     public static double f3 = 0.0;
-    public static int outtakeSlidesTarget;
+    public int outtakeSlidesTarget;
     double outtakeSlidesPos;
     double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
 
@@ -77,7 +77,7 @@ public class OuttakeSystem implements Subsystem {
     public PIDController outtakeSwivelController;
     public static double p4 = 0.003, i4 = 0.001, d4 = 0.00005;
     public static double f4 = -0.02;
-    public static int outtakeSwivelTarget;
+    public int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
@@ -276,9 +276,11 @@ public class OuttakeSystem implements Subsystem {
 
     @Override
     public void update(){
-        outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        if (!manualOuttake) {
+            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
-        if (limit.isPressed()){
+        if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 50)){
             outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
     }

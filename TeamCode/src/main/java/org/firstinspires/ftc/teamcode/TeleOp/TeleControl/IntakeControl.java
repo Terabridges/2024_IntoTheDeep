@@ -41,11 +41,11 @@ public class IntakeControl implements Control{
 
         //Set Spin with Triggers
         if (intake.manualIntake) {
-            if (gp1.right_trigger > 0.1) {
+            if (gp1.right_trigger > 0) {
                 intake.intakeSpinTarget = gp1.right_trigger;
             }
 
-            if (gp1.left_trigger > 0.1) {
+            if (gp1.left_trigger > 0) {
                 intake.intakeSpinTarget = -gp1.left_trigger;
             }
         }

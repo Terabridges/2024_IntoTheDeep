@@ -14,7 +14,6 @@ public class OuttakeControl implements Control {
     Gamepad gp1;
     Robot robot;
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
-    EdgeDetector slidesManualFalseRE = new EdgeDetector( () -> robot.setManualIntakeTrue());
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
     EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
     EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
@@ -42,21 +41,17 @@ public class OuttakeControl implements Control {
 
         //Set slides power with triggers
         if (outtake.manualOuttake) {
-            if (gp1.right_trigger > 0.1) {
+            if (gp1.right_trigger > 0) {
                 outtake.outtakeSetSlides(gp1.right_trigger);
             }
 
-            if (gp1.left_trigger > 0.1) {
-                outtake.outtakeSetSlides(-gp1.right_trigger);
+            if (gp1.left_trigger > 0) {
+                outtake.outtakeSetSlides(-gp1.left_trigger);
             }
         }
 
         //Outtake manual with right stick
-        if (outtake.manualOuttake){
-            slidesManualFalseRE.update(gp1.right_stick_button);
-        } else {
-            slidesManualRE.update(gp1.right_stick_button);
-        }
+        slidesManualRE.update(gp1.right_stick_button);
 
         //Basket Mode Toggle
         basketMode.update(gp1.left_stick_button);
@@ -75,6 +70,7 @@ public class OuttakeControl implements Control {
     @Override
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
+        telemetry.addData("Manual Slides", outtake.manualOuttake);
     }
 
 }

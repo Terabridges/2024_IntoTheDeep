@@ -35,10 +35,10 @@ public class DriveSystem implements Subsystem {
     //Methods
     public void driveBack(){
         manualDrive = false;
-        leftBack.setPower(0.3);
-        leftFront.setPower(0.3);
-        rightBack.setPower(0.3);
-        rightFront.setPower(0.3);
+        leftBack.setPower(0.6);
+        leftFront.setPower(0.6);
+        rightBack.setPower(0.6);
+        rightFront.setPower(0.6);
     }
 
     public void driveStop(){

@@ -161,7 +161,7 @@ public class MainTeleOp extends LinearOpMode {
         transferMachine.start();
         specimenMachine.start();
 
-        robot.outtakeSystem.resetSlideEncoders();
+        //robot.outtakeSystem.resetSlideEncoders();
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //Main Loop
@@ -276,7 +276,7 @@ public class MainTeleOp extends LinearOpMode {
                 .transition( () -> outtake.isSlidesDown(), transferStates.OUTTAKE_RESET, () -> outtake.closeClaw())
 
                 .state(transferStates.OUTTAKE_RESET)
-                .transitionTimed(0.5, transferStates.INTAKE_RESET)
+                .transitionTimed(0.1, transferStates.INTAKE_RESET)
 
                 .state(transferStates.INTAKE_RESET)
                 .onEnter( () -> outtake.outtakeSlidesRest())
@@ -321,7 +321,7 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.closeClaw();
                     driveSystem.driveBack();
                 })
-                .transitionTimed( 0.5, outtakeStates.START, ()-> {
+                .transitionTimed( 0.25, outtakeStates.START, ()-> {
                     driveSystem.driveStop();
                 })
 

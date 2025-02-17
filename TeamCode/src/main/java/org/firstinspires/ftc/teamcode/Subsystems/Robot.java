@@ -67,8 +67,15 @@ public class Robot {
     }
 
     public void setManualSlidesTrue(){
-        outtakeSystem.manualOuttake = true;
-        intakeSystem.manualIntake = false;
+
+        if (!outtakeSystem.manualOuttake) {
+            outtakeSystem.manualOuttake = true;
+            intakeSystem.manualIntake = false;
+        } else {
+            outtakeSystem.manualOuttake = false;
+            intakeSystem.manualIntake = true;
+            outtakeSystem.outtakeSlidesTarget = outtakeSystem.outtakeBottomVertical.getCurrentPosition();
+        }
     }
 
     //Interface Methods
