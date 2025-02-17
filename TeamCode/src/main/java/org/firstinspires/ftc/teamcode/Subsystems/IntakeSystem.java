@@ -31,6 +31,7 @@ public class IntakeSystem implements Subsystem {
     public boolean usePIDFIntakeSwivel = true;
     public boolean manualIntake = true;
     private int servoOffset = 15;
+    private int intakeSlideOffset = 10;
     private int motorOffset = 50;
     public double intakeSwivelGearRatio = 40.0/48.0;
     private double intakeSwivelOffset = 65.0;
@@ -181,7 +182,7 @@ public class IntakeSystem implements Subsystem {
     }
 
     public boolean isIntakeRetracted(){
-        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= intakeSlideOffset;
     }
 
     public boolean isSwivelTransfer(){

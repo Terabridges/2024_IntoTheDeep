@@ -12,13 +12,13 @@ public class AConstants {
     public static final double DROP_TIME = 0.2;
     public static final double PICKUP_TIME = 0.8;
 
-    public static final double PICKUP_OFFSET = 5;
+    public static final double PICKUP_OFFSET = 4.5;
 
-    public static final double STANDARD_POWER = .9;
+    public static final double STANDARD_POWER = .85;
     public static final double LOW_POWER = .7;
 
-    public static final double SAMPLE_X = 38;
-    public static final Point FIRST_SAMPLE = new Point(SAMPLE_X, 121.5);
+    public static final double SAMPLE_X = 40;
+    public static final Point FIRST_SAMPLE = new Point(SAMPLE_X, 121.75);
     public static final Point SECOND_SAMPLE = new Point(SAMPLE_X, 130);
     public static final Point THIRD_SAMPLE = new Point(SAMPLE_X, 126);
 

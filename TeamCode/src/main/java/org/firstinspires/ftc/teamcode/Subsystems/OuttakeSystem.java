@@ -45,18 +45,18 @@ public class OuttakeSystem implements Subsystem {
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
     private int OUTTAKE_SWIVEL_UP = 390;
-    //private int OUTTAKE_SWIVEL_MID = 275;
+    private int OUTTAKE_SWIVEL_MID = 350;
     private int OUTTAKE_SWIVEL_DOWN = 180;
     private int OUTTAKE_SWIVEL_TRANSFER = 208;
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
-    private int OUTTAKE_SLIDES_HIGH = -3220;
-    private int OUTTAKE_SLIDES_LOW = -1320;
+    private int OUTTAKE_SLIDES_HIGH = -3320;
+    private int OUTTAKE_SLIDES_LOW = -1420;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
-    private int OUTTAKE_SLIDES_SCORE_1 = -1600;
-    private int OUTTAKE_SLIDES_SCORE_2 = -965;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1700;
+    private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -161,9 +161,9 @@ public class OuttakeSystem implements Subsystem {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_DOWN;
     }
 
-//    public void outtakeSwivelMid() {
-//        outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
-//    }
+    public void outtakeSwivelMid() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
+    }
 
     public void outtakeSwivelGrab() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_GRAB;
