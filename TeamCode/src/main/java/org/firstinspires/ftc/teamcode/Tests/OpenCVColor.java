@@ -38,6 +38,7 @@ import org.firstinspires.ftc.vision.opencv.ColorSpace;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -86,7 +87,7 @@ public class OpenCVColor extends LinearOpMode
     public void runOpMode()
     {
         ColorBlobLocatorProcessor colorLocatorBlue = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.BLUE)         // use a predefined color match
+                .setTargetColorRange(BLUE1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
@@ -94,7 +95,7 @@ public class OpenCVColor extends LinearOpMode
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorRed = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.RED)         // use a predefined color match
+                .setTargetColorRange(RED1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
@@ -145,33 +146,33 @@ public class OpenCVColor extends LinearOpMode
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
             {
                 RotatedRect boxFit = b.getBoxFit();
-                /*
+
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                telemetry.addData("distance", dist);
+                telemetry.addData("distance", dist * 12);
                 telemetry.addData("angle", boxFit.angle);
                 if (b.getContourArea() > 4000) {
                     telemetry.addData("Area", b.getContourArea());
                     telemetry.addData("Blue is detected", "!");
                 }
-                */
+
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
             {
                 RotatedRect boxFit = b.getBoxFit();
-                /*
+
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                telemetry.addData("distance", dist);
+                telemetry.addData("distance", dist * 12);
                 telemetry.addData("angle", boxFit.angle);
                 if (b.getContourArea() > 4000) {
                     telemetry.addData("Area", b.getContourArea());
                     telemetry.addData("Red is detected", "!");
                 }
-                */
+
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsYellow)
@@ -188,7 +189,6 @@ public class OpenCVColor extends LinearOpMode
                     telemetry.addData("Yellow is detected", "!");
                 }
             }
-
             telemetry.update();
             sleep(50);
         }
