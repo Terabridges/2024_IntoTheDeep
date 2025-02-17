@@ -34,8 +34,10 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.ColorSpace;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.RotatedRect;
+import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -61,6 +63,25 @@ public class OpenCVColor extends LinearOpMode
     public static final double objectWidthInRealWorld = 38.1; // this is the width of the sample, change if incorrect
     public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
 
+    public static final ColorRange YELLOW1 = new ColorRange(
+            ColorSpace.YCrCb,
+            new Scalar( 150, 128,  0),
+            new Scalar(255, 170, 120)
+    );
+
+    public static final ColorRange BLUE1 = new ColorRange(
+            ColorSpace.YCrCb,
+            new Scalar( 16,   0, 200),
+            new Scalar(255, 127, 255)
+    );
+
+    public static final ColorRange RED1 = new ColorRange(
+            ColorSpace.YCrCb,
+            new Scalar( 32, 200,  0),
+            new Scalar(255, 255, 132)
+    );
+
+
     @Override
     public void runOpMode()
     {
@@ -81,7 +102,7 @@ public class OpenCVColor extends LinearOpMode
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorYellow = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.YELLOW)         // use a predefined color match
+                .setTargetColorRange(YELLOW1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
@@ -116,7 +137,7 @@ public class OpenCVColor extends LinearOpMode
 
             ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsBlue);  // filter out very small blobs.
             ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsRed);
-            ColorBlobLocatorProcessor.Util.filterByArea(4000, 20000, blobsYellow);
+            ColorBlobLocatorProcessor.Util.filterByArea(3000, 20000, blobsYellow);
 
             telemetry.addLine(" Area Density Aspect  Center");
 
@@ -156,10 +177,11 @@ public class OpenCVColor extends LinearOpMode
             for(ColorBlobLocatorProcessor.Blob b : blobsYellow)
             {
                 RotatedRect boxFit = b.getBoxFit();
-             //   telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
-              //          b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
+                   telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
+                          b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                telemetry.addData("distance", dist);
+                telemetry.addData("width", boxFit.size.width);
+                telemetry.addData("distance", dist * 12);
                 telemetry.addData("angle", boxFit.angle);
                 if (b.getContourArea() > 4000) {
                     telemetry.addData("Area", b.getContourArea());
@@ -173,7 +195,7 @@ public class OpenCVColor extends LinearOpMode
     }
     public static double getDistance(double width)
     {
-        double distance = (objectWidthInRealWorld * focalLength)/width;
+        double distance = (objectWidthInRealWorld * (focalLength * 1.56))/width;
         return distance;
     }
 }
