@@ -66,19 +66,19 @@ public class OpenCVColor extends LinearOpMode
 
     public static final ColorRange YELLOW1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 150, 128,  0),
+            new Scalar( 105, 128,  0),
             new Scalar(255, 170, 120)
     );
 
     public static final ColorRange BLUE1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 16,   0, 200),
+            new Scalar( 16,   0, 165),
             new Scalar(255, 127, 255)
     );
 
     public static final ColorRange RED1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 32, 200,  0),
+            new Scalar( 32, 175,  0),
             new Scalar(255, 255, 132)
     );
 
