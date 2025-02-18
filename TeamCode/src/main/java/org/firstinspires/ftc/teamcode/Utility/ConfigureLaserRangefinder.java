@@ -24,10 +24,10 @@ public class ConfigureLaserRangefinder extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        lrf.setTiming(10, 20);
+        // lrf.setTiming(10, 20);
 
-        lrf.setPin0Analog(0, 1600);
-        lrf.setPin1Analog(0, 1600);
+        lrf.setPin0Analog(0, 4000);
+        lrf.setPin1Analog(0, 4000);
         //Will setup analog for all future power-ons of the sensor
 
     }

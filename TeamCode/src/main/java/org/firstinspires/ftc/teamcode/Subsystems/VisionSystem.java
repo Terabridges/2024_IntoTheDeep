@@ -21,10 +21,10 @@ public class VisionSystem implements Subsystem {
 
     //Hardware
     public RevColorSensorV3 intakeColorSensor;
-//    public I2cDevice leftBackDistance;
-//    public I2cDevice rightBackDistance;
-//    public TouchSensor magLimitSwitch;
+    public AnalogInput leftBackDistance;
+    public AnalogInput rightBackDistance;
     public Servo rightLight;
+    public DriveSystem driveSystem;
 
     //Software
     NormalizedRGBA colors;
@@ -35,17 +35,19 @@ public class VisionSystem implements Subsystem {
 //    public List<AprilTagDetection> detections;
 //    public List<VisionProcessor> processors;
     HardwareMap hardwareMap;
-    public double leftBackDistanceVal;
-    public double rightBackDistanceVal;
+    public double leftBackDistVal;
+    public double rightBackDistVal;
+    public boolean willStopAtObstacle;
 
 
     //Constructor
-    public VisionSystem(HardwareMap map) {
+    public VisionSystem(HardwareMap map, Robot robot) {
         intakeColorSensor = map.get(RevColorSensorV3.class, "intake_color_sensor");
-//        leftBackDistance = map.get(I2cDevice.class, "left_back_distance");
-//        rightBackDistance = map.get(I2cDevice.class, "right_back_distance");
-//        magLimitSwitch = map.get(TouchSensor.class, "limit_switch");
+        leftBackDistance = map.get(AnalogInput.class, "left_back_distance");
+        rightBackDistance = map.get(AnalogInput.class, "right_back_distance");
         rightLight = map.get(Servo.class, "right_light");
+
+        driveSystem = robot.driveSystem;
     }
 
     //Methods
@@ -98,9 +100,42 @@ public class VisionSystem implements Subsystem {
 
     }
 
+    public void getDistances() {
+        leftBackDistVal = leftBackDistance.getVoltage();
+        leftBackDistVal = (leftBackDistVal/3.3) * 4000;
+
+        rightBackDistVal = rightBackDistance.getVoltage();
+        rightBackDistVal = (rightBackDistVal/3.3) * 4000;
+    }
+
+    public void alignSpecimenClip() {
+
+    }
+
+    public void switchWillStop() {
+        willStopAtObstacle = !willStopAtObstacle;
+    }
+
+    public void stopAtObstacle() {
+        if (leftBackDistVal <= 60 || rightBackDistVal <= 60) {
+            double leftFrontPower = (1.0-(rightBackDistVal/70));
+            double rightFrontPower = (1.0-(rightBackDistVal/70));
+            double leftBackPower = (1.0-(rightBackDistVal/70));
+            double rightBackPower = (1.0-(rightBackDistVal/70));
+
+            driveSystem.leftFront.setPower(leftFrontPower);
+            driveSystem.rightFront.setPower(rightFrontPower);
+            driveSystem.leftBack.setPower(leftBackPower);
+            driveSystem.rightBack.setPower(rightBackPower);
+        }
+    }
+
     //Interface Methods
     @Override
     public void toInit() {
+
+        willStopAtObstacle = false;
+
 //        if (!camInited) {
 //            initProcessors();
 //            vp = vpBuilder.build();
@@ -150,6 +185,11 @@ public class VisionSystem implements Subsystem {
     public void update(){
         detectColor();
         setLightColor(getColorVal());
-        //getDistances();
+        getDistances();
+
+        if (willStopAtObstacle) {
+            stopAtObstacle();
+        }
+
     }
 }

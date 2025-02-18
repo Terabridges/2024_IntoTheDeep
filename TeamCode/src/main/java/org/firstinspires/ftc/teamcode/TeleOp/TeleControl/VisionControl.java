@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
+import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
 public class VisionControl implements Control {
 
@@ -13,6 +14,8 @@ public class VisionControl implements Control {
     VisionSystem vision;
     Gamepad gp1;
     Robot robot;
+    EdgeDetector alignSpecimenClip = new EdgeDetector( () -> vision.alignSpecimenClip() );
+    EdgeDetector willStopAtObstacle = new EdgeDetector( () -> vision.switchWillStop() );
 
     //Constructor
     public VisionControl(VisionSystem vision, Gamepad gp1){
@@ -33,11 +36,16 @@ public class VisionControl implements Control {
     @Override
     public void update(){
 
+        willStopAtObstacle.update(gp1.dpad_up);
+
     }
 
     @Override
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Current Color", vision.getColorVal());
+        telemetry.addData("Left Back Distance", vision.leftBackDistVal);
+        telemetry.addData("Right Back Distance", vision.rightBackDistVal);
+        telemetry.addData("Will Stop?", vision.willStopAtObstacle);
     }
 
 }

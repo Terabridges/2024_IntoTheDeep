@@ -13,6 +13,7 @@ CONFIG NAMES
 {ANALOG}
 "intake_right_slide_analog" - 2
 "outtake_right_swivel_analog" - 3
+"right_back_distance" - 1
 ----------------------------------
     [[SERVO HUB]]
 {SERVOS}
@@ -36,6 +37,7 @@ CONFIG NAMES
 
 {ANALOG}
 "intake_right_swivel_analog" - 3
+"left_back_distance" - 1
 
 {I2C}
 "intake_color_sensor" - port0, bus1
