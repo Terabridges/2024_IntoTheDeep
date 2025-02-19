@@ -117,17 +117,17 @@ public class VisionSystem implements Subsystem {
     }
 
     public void stopAtObstacle() {
-        if (leftBackDistVal <= 60 || rightBackDistVal <= 60) {
-            double leftFrontPower = (1.0-(rightBackDistVal/70));
-            double rightFrontPower = (1.0-(rightBackDistVal/70));
-            double leftBackPower = (1.0-(rightBackDistVal/70));
-            double rightBackPower = (1.0-(rightBackDistVal/70));
-
-            driveSystem.leftFront.setPower(leftFrontPower);
-            driveSystem.rightFront.setPower(rightFrontPower);
-            driveSystem.leftBack.setPower(leftBackPower);
-            driveSystem.rightBack.setPower(rightBackPower);
-        }
+//        if (leftBackDistVal <= 60 || rightBackDistVal <= 60) {
+//            double leftFrontPower = (1.0-(rightBackDistVal/70));
+//            double rightFrontPower = (1.0-(rightBackDistVal/70));
+//            double leftBackPower = (1.0-(rightBackDistVal/70));
+//            double rightBackPower = (1.0-(rightBackDistVal/70));
+//
+//            driveSystem.leftFront.setPower(leftFrontPower);
+//            driveSystem.rightFront.setPower(rightFrontPower);
+//            driveSystem.leftBack.setPower(leftBackPower);
+//            driveSystem.rightBack.setPower(rightBackPower);
+//        }
     }
 
     //Interface Methods

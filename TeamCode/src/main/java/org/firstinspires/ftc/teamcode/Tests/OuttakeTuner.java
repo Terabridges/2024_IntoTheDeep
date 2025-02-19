@@ -73,6 +73,8 @@ public class OuttakeTuner extends LinearOpMode {
 
         waitForStart();
         outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeTopVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         while (opModeIsActive()){
 

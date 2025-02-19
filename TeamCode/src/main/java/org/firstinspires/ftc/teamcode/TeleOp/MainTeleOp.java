@@ -229,8 +229,8 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(() -> intake.isSwivelRest(), intakeStates.EXTEND)
 
                 .state(intakeStates.EXTEND)
-                .onEnter( () -> intake.intakeSlidesExtend())
-                .transition( () -> intake.isIntakeExtended(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
+                .onEnter( () -> intake.intakeSlidesHalf())
+                .transition( () -> intake.isIntakeHalf(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
                 .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {

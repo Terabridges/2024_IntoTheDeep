@@ -15,8 +15,7 @@ public class OuttakeControl implements Control {
     Robot robot;
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
-    EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
-    EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
+    EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
     EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetSlideEncoders());
 
     //Constructor
@@ -33,6 +32,15 @@ public class OuttakeControl implements Control {
     //Methods
     public void toggleLowBasketMode(){
         outtake.highBasketMode = !outtake.highBasketMode;
+    }
+
+    public void toggleClaw(){
+        outtake.isClawOpen = !outtake.isClawOpen;
+        if (outtake.isClawOpen){
+            outtake.closeClaw();
+        } else {
+            outtake.openClaw();
+        }
     }
 
     //Interface Methods
@@ -57,11 +65,7 @@ public class OuttakeControl implements Control {
         basketMode.update(gp1.left_stick_button);
 
         //Claw open/close with right bumper
-        if (outtake.isClawOpen){
-            clawCloseRE.update(gp1.right_bumper);
-        } else {
-            clawOpenRE.update(gp1.right_bumper);
-        }
+        clawRE.update(gp1.right_bumper);
 
         //Reset slide encoders with start button
         resetEncodersRE.update(gp1.start);
@@ -71,6 +75,7 @@ public class OuttakeControl implements Control {
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
         telemetry.addData("Manual Slides", outtake.manualOuttake);
+        telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
     }
 
 }

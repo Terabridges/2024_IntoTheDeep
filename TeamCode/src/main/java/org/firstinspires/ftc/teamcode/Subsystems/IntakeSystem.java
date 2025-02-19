@@ -132,6 +132,10 @@ public class IntakeSystem implements Subsystem {
         intakeSlidesTarget = INTAKE_SLIDES_RETRACT;
     }
 
+    public void intakeSlidesHalf() {
+        intakeSlidesTarget = INTAKE_SLIDES_HALF;
+    }
+
     public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 
     public void intakeSwivelRest(){
@@ -182,6 +186,10 @@ public class IntakeSystem implements Subsystem {
 
     public boolean isIntakeRetracted(){
         return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= servoOffset;
+    }
+
+    public boolean isIntakeHalf(){
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_HALF) <= servoOffset;
     }
 
     public boolean isSwivelTransfer(){

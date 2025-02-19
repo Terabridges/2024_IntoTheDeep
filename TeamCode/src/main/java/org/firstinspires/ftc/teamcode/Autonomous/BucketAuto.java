@@ -112,6 +112,8 @@ public class BucketAuto extends LinearOpMode
         o = new OuttakeSystem(hardwareMap);
         //v = new VisionSystem(hardwareMap);
 
+        o.manualOuttake = false;
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Constants.setConstants(FConstants.class, LConstants.class);
@@ -127,6 +129,7 @@ public class BucketAuto extends LinearOpMode
         waitForStart();
 
         o.resetSlideEncoders();
+
         runtime.reset();
         r.toInit();
         main.start();
@@ -316,6 +319,9 @@ public class BucketAuto extends LinearOpMode
         //telemetry.addData("see something", v.isSomething());
         telemetry.addData("current sample", curSample);
         telemetry.addData("spinTarget", i.intakeSpinTarget);
+        telemetry.addData("Outtake pos", o.outtakeBottomVertical.getCurrentPosition());
+        telemetry.addData("Manual slides", o.manualOuttake);
+        telemetry.addData("Mode", o.outtakeBottomVertical.getMode());
         telemetry.update();
     }
 

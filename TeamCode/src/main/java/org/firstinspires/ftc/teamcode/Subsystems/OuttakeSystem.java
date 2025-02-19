@@ -25,7 +25,7 @@ public class OuttakeSystem implements Subsystem {
     public TouchSensor limit;
 
     //SOFTWARE
-    private int servoOffset = 10;
+    private int servoOffset = 15;
     private int motorOffset = 40;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
@@ -47,16 +47,16 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_UP = 390;
     private int OUTTAKE_SWIVEL_MID = 350;
     private int OUTTAKE_SWIVEL_DOWN = 180;
-    private int OUTTAKE_SWIVEL_TRANSFER = 208;
+    private int OUTTAKE_SWIVEL_TRANSFER = 212; //208;
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
-    private int OUTTAKE_SLIDES_HIGH = -3320;
+    private int OUTTAKE_SLIDES_HIGH = -3420; //-3320;
     private int OUTTAKE_SLIDES_LOW = -1420;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
-    private int OUTTAKE_SLIDES_SCORE_1 = -1700;
-    private int OUTTAKE_SLIDES_SCORE_2 = -1020;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1800; //-1700;
+    private int OUTTAKE_SLIDES_SCORE_2 = -1100; //-1020;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -69,7 +69,7 @@ public class OuttakeSystem implements Subsystem {
     public PIDController outtakeSlidesController;
     public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
     public static double f3 = 0.0;
-    public int outtakeSlidesTarget;
+    public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
     double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
 
@@ -77,7 +77,7 @@ public class OuttakeSystem implements Subsystem {
     public PIDController outtakeSwivelController;
     public static double p4 = 0.003, i4 = 0.001, d4 = 0.00005;
     public static double f4 = -0.02;
-    public int outtakeSwivelTarget;
+    public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
@@ -199,6 +199,7 @@ public class OuttakeSystem implements Subsystem {
 
     public void resetSlideEncoders() {
         outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     //isPositions
@@ -267,7 +268,6 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeSlidesRest();
         outtakeSwivelDown();
         closeClaw();
@@ -276,13 +276,13 @@ public class OuttakeSystem implements Subsystem {
 
     @Override
     public void update(){
-        if (!manualOuttake) {
-            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
-        }
+//        if (!manualOuttake) {
+//            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+//        }
+        outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
         if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 50)){
-            outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            resetSlideEncoders();
         }
     }
-
 }
