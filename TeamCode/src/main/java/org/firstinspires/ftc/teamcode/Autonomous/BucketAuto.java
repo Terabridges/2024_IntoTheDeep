@@ -126,6 +126,7 @@ public class BucketAuto extends LinearOpMode
         //Press Start
         waitForStart();
 
+        o.resetSlideEncoders();
         runtime.reset();
         r.toInit();
         main.start();
