@@ -66,7 +66,7 @@ public class OpenCVColor extends LinearOpMode
 
     public static final ColorRange YELLOW1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 105, 128,  0),
+            new Scalar(100, 128,  0),
             new Scalar(255, 170, 120)
     );
 
@@ -110,14 +110,29 @@ public class OpenCVColor extends LinearOpMode
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
 
+        int[] PortalList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
+
         VisionPortal portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(colorLocatorBlue)
                 .addProcessor(colorLocatorRed)
                 .addProcessor(colorLocatorYellow)
                 .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .enableLiveView(true)
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .setLiveViewContainerId(PortalList[0])
+                .setAutoStopLiveView(true)
+                .build();
+
+
+        VisionPortal portal1 = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
+                //.addProcessor(colorLocatorBlue)
+                //.addProcessor(colorLocatorRed)
+                //.addProcessor(colorLocatorYellow)
+                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .setLiveViewContainerId(PortalList[1])
+                //.enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();
 
@@ -129,6 +144,8 @@ public class OpenCVColor extends LinearOpMode
         while (opModeIsActive() || opModeInInit())
         {
             portal.resumeLiveView();
+            portal1.resumeLiveView();
+
             //telemetry.addData("preview on/off", "... Camera Stream\n");
 
             // Read the current list
@@ -150,16 +167,13 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                double edgeDistanceFromCenter = Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0));
-                edgeDistanceFromCenter = (getDistanceFromCenter(edgeDistanceFromCenter));
-                telemetry.addData("distance", dist * 12);
-                telemetry.addData("angle", boxFit.angle);
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                telemetry.addData("distance", dist);
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
-                if (b.getContourArea() > 4000) {
-                    telemetry.addData("Area", b.getContourArea());
+                telemetry.addData("angle",angleFromCenter);
+                if (b.getContourArea() > 4000)
                     telemetry.addData("Blue is detected", "!");
-                }
-
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
@@ -169,16 +183,14 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                double edgeDistanceFromCenter = Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0));
-                edgeDistanceFromCenter = (getDistanceFromCenter(edgeDistanceFromCenter));
-                telemetry.addData("distance", dist * 12);
-                telemetry.addData("angle", boxFit.angle);
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                telemetry.addData("distance", dist);
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
+                telemetry.addData("angle",angleFromCenter);
 
-                if (b.getContourArea() > 4000) {
-                    telemetry.addData("Area", b.getContourArea());
+                if (b.getContourArea() > 4000)
                     telemetry.addData("Red is detected", "!");
-                }
 
             }
 
@@ -188,17 +200,14 @@ public class OpenCVColor extends LinearOpMode
                    telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                           b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 double dist = getDistance(boxFit.size.width);
-                double edgeDistanceFromCenter = Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0));
-                edgeDistanceFromCenter = (getDistanceFromCenter(edgeDistanceFromCenter));
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
                 telemetry.addData("width", boxFit.size.width);
-                telemetry.addData("distance", dist * 12);
-                telemetry.addData("angle", boxFit.angle);
+                telemetry.addData("distance", dist);
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
-                if (b.getContourArea() > 4000) {
-                    telemetry.addData("Area", b.getContourArea());
+                telemetry.addData("angle", angleFromCenter);
+                if (b.getContourArea() > 4000)
                     telemetry.addData("Yellow is detected", "!");
-                }
-
             }
             telemetry.update();
             sleep(50);
@@ -206,13 +215,19 @@ public class OpenCVColor extends LinearOpMode
     }
     public static double getDistance(double width)
     {
-        double distance = (objectWidthInRealWorld * (focalLength * 1.56))/width;
+        double distance = (objectWidthInRealWorld * 12.0 * (focalLength * 1.56))/width;
         return distance;
     }
 
     public static double getDistanceFromCenter(double distFromCenter)
     {
         return (focalLength * distFromCenter) / 72;
+    }
+
+    public static double angleFromCenter(double adjacent, double hypotenuse)
+    {
+        double angle = (Math.asin(adjacent/hypotenuse));
+        return angle * (180.0/Math.PI);
     }
 
 }
