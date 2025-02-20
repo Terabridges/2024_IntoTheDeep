@@ -61,13 +61,7 @@ public class Robot {
         gp1.rumble(milliseconds);
     }
 
-    public void setManualIntakeTrue(){
-        intakeSystem.manualIntake = true;
-        outtakeSystem.manualOuttake = false;
-    }
-
     public void setManualSlidesTrue(){
-
         if (!outtakeSystem.manualOuttake) {
             outtakeSystem.manualOuttake = true;
             intakeSystem.manualIntake = false;

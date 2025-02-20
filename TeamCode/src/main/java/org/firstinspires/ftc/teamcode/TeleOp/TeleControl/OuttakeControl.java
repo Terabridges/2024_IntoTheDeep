@@ -51,10 +51,10 @@ public class OuttakeControl implements Control {
         if (outtake.manualOuttake) {
             if (gp1.right_trigger > 0) {
                 outtake.outtakeSetSlides(gp1.right_trigger);
-            }
-
-            if (gp1.left_trigger > 0) {
+            } else if (gp1.left_trigger > 0) {
                 outtake.outtakeSetSlides(-gp1.left_trigger);
+            } else {
+                outtake.outtakeSetSlides(0);
             }
         }
 

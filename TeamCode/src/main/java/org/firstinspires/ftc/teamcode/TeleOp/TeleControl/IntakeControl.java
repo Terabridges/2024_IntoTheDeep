@@ -43,10 +43,10 @@ public class IntakeControl implements Control{
         if (intake.manualIntake) {
             if (gp1.right_trigger > 0) {
                 intake.intakeSpinTarget = gp1.right_trigger;
-            }
-
-            if (gp1.left_trigger > 0) {
+            } else if (gp1.left_trigger > 0) {
                 intake.intakeSpinTarget = -gp1.left_trigger;
+            } else {
+                intake.intakeSpinTarget = 0;
             }
         }
 

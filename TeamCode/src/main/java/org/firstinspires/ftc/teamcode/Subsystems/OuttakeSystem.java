@@ -51,7 +51,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
     private int OUTTAKE_SLIDES_HIGH = -3420; //-3320;
-    private int OUTTAKE_SLIDES_LOW = -1420;
+    private int OUTTAKE_SLIDES_LOW = -1510; //-1420;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
@@ -276,10 +276,9 @@ public class OuttakeSystem implements Subsystem {
 
     @Override
     public void update(){
-//        if (!manualOuttake) {
-//            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
-//        }
-        outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        if (!manualOuttake) {
+            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
         if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 50)){
             resetSlideEncoders();

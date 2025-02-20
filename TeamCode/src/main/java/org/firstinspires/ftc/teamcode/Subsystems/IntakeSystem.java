@@ -50,7 +50,7 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
     private double INTAKE_SWEEPER_OUT = 0.65;
-    private double INTAKE_SWEEPER_IN = 0.2;
+    private double INTAKE_SWEEPER_IN = 0.3;
 
     //Targets
     public double intakeSpinTarget = 0;
@@ -172,7 +172,7 @@ public class IntakeSystem implements Subsystem {
 
     public void intakeSlidesSetManualStop(){
         usePIDFIntakeSlides = true;
-        setIntakeSlidesPIDF((int) intakeSlidesEnc.getCurrentPosition());
+        intakeSlidesTarget = (int)intakeSlidesEnc.getCurrentPosition();
         intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;
     }
 

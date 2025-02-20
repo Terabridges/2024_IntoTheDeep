@@ -234,7 +234,7 @@ public class MainTeleOp extends LinearOpMode {
                     intake.intakeSlidesHalf();
                     drive.isIntakeExtended = true;
                 })
-                .transition( () -> intake.isIntakeHalf(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
+                .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
                 .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
@@ -357,10 +357,11 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(() -> leftBumpPressed(), specimenStates.PICKUP)
 
                 .state(specimenStates.PICKUP)
-                .transitionTimed(0.5, specimenStates.SCORE, () -> {
+                .onEnter(() -> {
                     outtake.outtakeSlidesScore1();
                     outtake.wristLock();
                 })
+                .transitionTimed(0.3, specimenStates.SCORE)
 
                 .state(specimenStates.SCORE)
                 .onEnter(() -> outtake.outtakeSwivelLock())
