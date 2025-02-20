@@ -47,7 +47,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_UP = 390;
     private int OUTTAKE_SWIVEL_MID = 350;
     private int OUTTAKE_SWIVEL_DOWN = 180;
-    private int OUTTAKE_SWIVEL_TRANSFER = 212; //208;
+    private int OUTTAKE_SWIVEL_TRANSFER = 210; //208;
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
     private int OUTTAKE_SLIDES_HIGH = -3420; //-3320;
@@ -56,7 +56,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
     private int OUTTAKE_SLIDES_SCORE_1 = -1800; //-1700;
-    private int OUTTAKE_SLIDES_SCORE_2 = -1100; //-1020;
+    private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;

@@ -41,7 +41,7 @@ public class Robot {
         outtakeSystem = new OuttakeSystem(hardwareMap);
         intakeSystem = new IntakeSystem(hardwareMap);
         driveSystem = new DriveSystem(hardwareMap);
-        visionSystem = new VisionSystem(hardwareMap, this);
+        visionSystem = new VisionSystem(hardwareMap);
 
         subsystems = new ArrayList<>(Arrays.asList(outtakeSystem, intakeSystem, visionSystem, driveSystem));
 

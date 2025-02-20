@@ -190,6 +190,7 @@ public class BucketAuto extends LinearOpMode
         score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
+                    follower.setMaxPower(AConstants.LOW_POWER);
                     buildPaths();
                     if (isPreload)
                     {
@@ -204,6 +205,7 @@ public class BucketAuto extends LinearOpMode
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {
+                    follower.setMaxPower(AConstants.STANDARD_POWER);
                     o.outtakeSwivelUp();
                     o.wristUp();
                 })
@@ -249,7 +251,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     i.intakeSpinTarget = -0.75;
                     //i.intakeSpin.setPower(-0.75);
-                    follower.setMaxPower(AConstants.LOW_POWER);
+                    //follower.setMaxPower(AConstants.LOW_POWER);
                     buildPaths();
                     follower.followPath(intakeSample, true);
                 })
@@ -258,7 +260,7 @@ public class BucketAuto extends LinearOpMode
                 .onExit(() -> {
                     i.intakeSpinTarget = 0;
                     i.intakeSwivelRest();
-                    follower.setMaxPower(AConstants.STANDARD_POWER);
+                    //follower.setMaxPower(AConstants.STANDARD_POWER);
                 })
 
                 //TRANSFER

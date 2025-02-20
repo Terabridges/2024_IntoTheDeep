@@ -21,6 +21,10 @@ public class DriveSystem implements Subsystem {
 
     //Software
     public boolean manualDrive = true;
+    public boolean isIntakeExtended = false;
+    public double fastTurn = 1;
+    public double turnFactor = fastTurn;
+    public double slowTurn = 0.4;
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -56,6 +60,11 @@ public class DriveSystem implements Subsystem {
 
     @Override
     public void update(){
+        if (isIntakeExtended){
+            turnFactor = slowTurn;
+        } else {
+            turnFactor = fastTurn;
+        }
     }
 
 }

@@ -31,16 +31,17 @@ public class IntakeSystem implements Subsystem {
     public boolean usePIDFIntakeSwivel = true;
     public boolean manualIntake = true;
     private int servoOffset = 10;
+    private int lowServoOffset = 4;
     private int motorOffset = 40;
     public double intakeSwivelGearRatio = 40.0/48.0;
     private double intakeSwivelOffset = 65.0;
 
     //Positions
-    private double INTAKE_SPIN_IN = -0.75;
-    private double INTAKE_SPIN_OUT = 0.75;
+    private double INTAKE_SPIN_IN = -0.90;
+    private double INTAKE_SPIN_OUT = 0.90;
     private double INTAKE_SPIN_STOP = 0;
     private int INTAKE_SLIDES_EXTEND = 335;
-    private int INTAKE_SLIDES_HALF = 312;
+    private int INTAKE_SLIDES_HALF = 325;
     private int INTAKE_SLIDES_RETRACT = 275;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
@@ -59,6 +60,7 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
+    private int SLIDES_MAX = 335;
 
     //PIDF
 
@@ -181,15 +183,15 @@ public class IntakeSystem implements Subsystem {
     //isPositions
 
     public boolean isIntakeExtended(){
-        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= lowServoOffset;
     }
 
     public boolean isIntakeRetracted(){
-        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= lowServoOffset;
     }
 
     public boolean isIntakeHalf(){
-        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_HALF) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_HALF) <= lowServoOffset;
     }
 
     public boolean isSwivelTransfer(){
@@ -239,7 +241,11 @@ public class IntakeSystem implements Subsystem {
         if (usePIDFIntakeSlides) {
             intakeSetSlides(setIntakeSlidesPIDF(intakeSlidesTarget));
         } else {
-            intakeSetSlides(intakeSlidesManualPower);
+            if (!(intakeSlidesEnc.getCurrentPosition() > SLIDES_MAX && (intakeSlidesManualPower > 0))) {
+                intakeSetSlides(intakeSlidesManualPower);
+            } else {
+                intakeSetSlides(0);
+            }
         }
         if (usePIDFIntakeSwivel) {
             intakeSetSwivel(setIntakeSwivelPIDF(intakeSwivelTarget));

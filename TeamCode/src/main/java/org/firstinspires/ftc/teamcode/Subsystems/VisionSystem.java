@@ -41,13 +41,11 @@ public class VisionSystem implements Subsystem {
 
 
     //Constructor
-    public VisionSystem(HardwareMap map, Robot robot) {
+    public VisionSystem(HardwareMap map) {
         intakeColorSensor = map.get(RevColorSensorV3.class, "intake_color_sensor");
         leftBackDistance = map.get(AnalogInput.class, "left_back_distance");
         rightBackDistance = map.get(AnalogInput.class, "right_back_distance");
         rightLight = map.get(Servo.class, "right_light");
-
-        driveSystem = robot.driveSystem;
     }
 
     //Methods

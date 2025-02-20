@@ -220,6 +220,7 @@ public class MainTeleOp extends LinearOpMode {
     public StateMachine getIntakeMachine(Robot robot){
         IntakeSystem intake = robot.intakeSystem;
         VisionSystem vision = robot.visionSystem;
+        DriveSystem drive = robot.driveSystem;
         return new StateMachineBuilder()
                 .state(intakeStates.START)
                 .transition(() -> (!currentGamepad1.a && previousGamepad1.a) && robot.currentState.equals("intake"), intakeStates.SWIVEL_UP)
@@ -229,7 +230,10 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(() -> intake.isSwivelRest(), intakeStates.EXTEND)
 
                 .state(intakeStates.EXTEND)
-                .onEnter( () -> intake.intakeSlidesHalf())
+                .onEnter( () -> {
+                    intake.intakeSlidesHalf();
+                    drive.isIntakeExtended = true;
+                })
                 .transition( () -> intake.isIntakeHalf(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
@@ -244,7 +248,10 @@ public class MainTeleOp extends LinearOpMode {
                 .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
 
                 .state(intakeStates.SWIVEL_DOWN)
-                .onEnter(() -> intake.intakeSlidesRetract())
+                .onEnter(() -> {
+                    intake.intakeSlidesRetract();
+                    drive.isIntakeExtended = false;
+                })
                 .transition(() -> intake.isIntakeRetracted(), intakeStates.START, ()-> intake.intakeSwivelTransfer())
 
                 .build();

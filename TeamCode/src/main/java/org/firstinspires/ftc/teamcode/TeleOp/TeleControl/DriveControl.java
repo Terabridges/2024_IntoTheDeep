@@ -52,10 +52,10 @@ public class DriveControl implements Control {
             double yaw = gp1.right_stick_x;
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower = axial - lateral + yaw;
-            double rightBackPower = axial + lateral - yaw;
+            double leftFrontPower = axial + lateral + (yaw * driveSystem.turnFactor);
+            double rightFrontPower = axial - lateral - (yaw * driveSystem.turnFactor);
+            double leftBackPower = axial - lateral + (yaw * driveSystem.turnFactor);
+            double rightBackPower = axial + lateral - (yaw * driveSystem.turnFactor);
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
