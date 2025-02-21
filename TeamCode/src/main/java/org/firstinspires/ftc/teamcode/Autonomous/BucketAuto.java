@@ -4,7 +4,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.util.DashboardPoseTracker;
+import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -95,10 +98,12 @@ public class BucketAuto extends LinearOpMode
 
         FAILED_PICKUP,
         STOP
-
     }
 
     //Other
+    private PoseUpdater poseUpdater;
+    private DashboardPoseTracker dashboardPoseTracker;
+
     public ElapsedTime runtime = new ElapsedTime();
     int curSample = 0;
     boolean failedPickup = false;
@@ -114,7 +119,11 @@ public class BucketAuto extends LinearOpMode
 
         o.manualOuttake = false;
 
+        poseUpdater = new PoseUpdater(hardwareMap);
+        dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+        Drawing.sendPacket();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
@@ -141,7 +150,11 @@ public class BucketAuto extends LinearOpMode
             main.update();
             r.update();
 
+            poseUpdater.update();
             telemetry();
+            Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
+            Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+            Drawing.sendPacket();
 
             i.intakeSetSpin(i.intakeSpinTarget);
 

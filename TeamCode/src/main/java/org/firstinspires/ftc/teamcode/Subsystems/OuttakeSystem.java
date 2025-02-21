@@ -218,7 +218,9 @@ public class OuttakeSystem implements Subsystem {
     public boolean isSlidesGrab1(){
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
     }
-
+    public boolean isSlidesScore1(){
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset;
+    }
     public boolean isSlidesScore2(){
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
     }
