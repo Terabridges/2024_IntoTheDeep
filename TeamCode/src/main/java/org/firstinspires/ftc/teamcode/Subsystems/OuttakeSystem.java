@@ -35,7 +35,7 @@ public class OuttakeSystem implements Subsystem {
 
     //Positions
     private double CLAW_OPEN = 0.5;
-    private double CLAW_CLOSE = 0.19;
+    private double CLAW_CLOSE = 0.175;
     private double WRIST_DOWN = 0.6;
     private double WRIST_TRANSFER = 0.05;
     private double WRIST_UP = 0.98;

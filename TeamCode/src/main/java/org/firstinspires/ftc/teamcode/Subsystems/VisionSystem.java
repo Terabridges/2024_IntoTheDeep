@@ -99,8 +99,8 @@ public class VisionSystem implements Subsystem {
         willStopAtObstacle = !willStopAtObstacle;
     }
 
-    public void stopAtObstacle() {
-        isCloseEnough = leftBackDistVal <= 145 || rightBackDistVal <= 145;
+    public boolean isClose() {
+        return ((leftBackDistVal <= 143 && leftBackDistVal >= 130) || (rightBackDistVal <= 143 && rightBackDistVal >= 130));
     }
 
     //Interface Methods
@@ -112,11 +112,15 @@ public class VisionSystem implements Subsystem {
     @Override
     public void update(){
         detectColor();
-        setLightColor(getColorVal());
+        if(!willStopAtObstacle){setLightColor(getColorVal());}
         getDistances();
 
         if (willStopAtObstacle) {
-            stopAtObstacle();
+            if (isClose()){
+                rightLight.setPosition(0.444);
+            } else {
+                rightLight.setPosition(0);
+            }
         }
 
     }
