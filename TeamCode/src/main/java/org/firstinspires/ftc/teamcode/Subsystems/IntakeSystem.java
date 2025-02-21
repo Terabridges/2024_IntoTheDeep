@@ -34,7 +34,7 @@ public class IntakeSystem implements Subsystem {
     private int lowServoOffset = 4;
     private int motorOffset = 40;
     public double intakeSwivelGearRatio = 40.0/48.0;
-    private double intakeSwivelOffset = 65.0;
+    private double intakeSwivelOffset = 102.0;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.90;
@@ -50,7 +50,7 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
     private double INTAKE_SWEEPER_OUT = 0.65;
-    private double INTAKE_SWEEPER_IN = 0.3;
+    private double INTAKE_SWEEPER_IN = 0.26;
 
     //Targets
     public double intakeSpinTarget = 0;

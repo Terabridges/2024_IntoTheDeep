@@ -30,14 +30,11 @@ public class VisionSystem implements Subsystem {
     NormalizedRGBA colors;
     private boolean camInited = false;
 
-//    public VisionPortal vp;
-//    public VisionPortal.Builder vpBuilder;
-//    public List<AprilTagDetection> detections;
-//    public List<VisionProcessor> processors;
     HardwareMap hardwareMap;
     public double leftBackDistVal;
     public double rightBackDistVal;
     public boolean willStopAtObstacle;
+    public boolean isCloseEnough = false;
 
 
     //Constructor
@@ -49,10 +46,6 @@ public class VisionSystem implements Subsystem {
     }
 
     //Methods
-//    public void getDistances(){
-//        leftBackDistanceVal = (leftBackDistance.getVoltage()*48.7)-4.9;
-//        rightBackDistanceVal = (rightBackDistance.getVoltage()*48.7)-4.9;
-//    }
 
     public double getColorPWN(String color){
         if (color.equals("red")){
@@ -94,10 +87,6 @@ public class VisionSystem implements Subsystem {
         rightLight.setPosition(getColorPWN(chosenColor));
     }
 
-    public void setLookForBasket(){
-
-    }
-
     public void getDistances() {
         leftBackDistVal = leftBackDistance.getVoltage();
         leftBackDistVal = (leftBackDistVal/3.3) * 4000;
@@ -106,78 +95,19 @@ public class VisionSystem implements Subsystem {
         rightBackDistVal = (rightBackDistVal/3.3) * 4000;
     }
 
-    public void alignSpecimenClip() {
-
-    }
-
     public void switchWillStop() {
         willStopAtObstacle = !willStopAtObstacle;
     }
 
     public void stopAtObstacle() {
-//        if (leftBackDistVal <= 60 || rightBackDistVal <= 60) {
-//            double leftFrontPower = (1.0-(rightBackDistVal/70));
-//            double rightFrontPower = (1.0-(rightBackDistVal/70));
-//            double leftBackPower = (1.0-(rightBackDistVal/70));
-//            double rightBackPower = (1.0-(rightBackDistVal/70));
-//
-//            driveSystem.leftFront.setPower(leftFrontPower);
-//            driveSystem.rightFront.setPower(rightFrontPower);
-//            driveSystem.leftBack.setPower(leftBackPower);
-//            driveSystem.rightBack.setPower(rightBackPower);
-//        }
+        isCloseEnough = leftBackDistVal <= 145 || rightBackDistVal <= 145;
     }
 
     //Interface Methods
     @Override
     public void toInit() {
-
         willStopAtObstacle = false;
-
-//        if (!camInited) {
-//            initProcessors();
-//            vp = vpBuilder.build();
-//
-//            vp.resumeStreaming();
-//            camInited = true;
-//        }
     }
-
-//    private void initProcessors() {
-//        if(camInited) return;
-//        for (VisionProcessor processor : processors) {
-//            vpBuilder.addProcessors(processor);
-//        }
-//    }
-
-//    private void addProcessors(VisionProcessor... processors) {
-//        if (camInited) return;
-//        for (VisionProcessor processor : processors) {
-//            vpBuilder.addProcessor(processor);
-//        }
-//    }
-
-//    public void addAprilTag() {
-//        addProcessors(new AprilTagProcessor.Builder().setDrawAxes(true).build());
-//    }
-
-//    private VisionPortal.Builder vpBuilderFront() {
-//
-//        // Create a VisionPortal builder
-//        return new VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "front_camera"));
-//
-//    }
-
-//    private VisionPortal.Builder vpBuilderBack() {
-//
-//        // Create a VisionPortal builder
-//        return new VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "back_camera"));
-//
-//    }
-
-
 
     @Override
     public void update(){

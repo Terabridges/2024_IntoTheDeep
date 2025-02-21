@@ -14,8 +14,7 @@ public class VisionControl implements Control {
     VisionSystem vision;
     Gamepad gp1;
     Robot robot;
-    EdgeDetector alignSpecimenClip = new EdgeDetector( () -> vision.alignSpecimenClip() );
-    EdgeDetector willStopAtObstacle = new EdgeDetector( () -> vision.switchWillStop() );
+    EdgeDetector stopAtObs = new EdgeDetector( () -> vision.switchWillStop() );
 
     //Constructor
     public VisionControl(VisionSystem vision, Gamepad gp1){
@@ -36,7 +35,7 @@ public class VisionControl implements Control {
     @Override
     public void update(){
 
-        willStopAtObstacle.update(gp1.dpad_up);
+        stopAtObs.update(gp1.dpad_up);
 
     }
 

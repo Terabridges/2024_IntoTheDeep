@@ -72,10 +72,19 @@ public class Robot {
         }
     }
 
+    public void distanceDriving(){
+        if (visionSystem.isCloseEnough && visionSystem.willStopAtObstacle){
+            driveSystem.stopForward();
+        } else {
+            driveSystem.normalSpeed();
+        }
+    }
+
     //Interface Methods
     public void update() {
         for (Subsystem s : subsystems) {
             s.update();
+            distanceDriving();
         }
     }
 

@@ -71,6 +71,12 @@ public class DriveControl implements Control {
             rightFrontPower *= speed;
             leftBackPower *= speed;
             rightBackPower *= speed;
+            if (driveSystem.distanceStopSpeed){
+                if (axial < 0) leftFrontPower = 0;
+                if (axial < 0) rightFrontPower = 0;
+                if (axial < 0) leftBackPower = 0;
+                if (axial < 0) rightBackPower = 0;
+            }
             driveSystem.leftFront.setPower(leftFrontPower);
             driveSystem.rightFront.setPower(rightFrontPower);
             driveSystem.leftBack.setPower(leftBackPower);

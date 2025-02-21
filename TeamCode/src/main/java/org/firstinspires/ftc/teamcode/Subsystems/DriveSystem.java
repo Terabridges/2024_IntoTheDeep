@@ -25,6 +25,7 @@ public class DriveSystem implements Subsystem {
     public double fastTurn = 1;
     public double turnFactor = fastTurn;
     public double slowTurn = 0.4;
+    public boolean distanceStopSpeed = false;
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -51,6 +52,14 @@ public class DriveSystem implements Subsystem {
         leftFront.setPower(0);
         rightBack.setPower(0);
         rightFront.setPower(0);
+    }
+
+    public void stopForward(){
+        distanceStopSpeed = true;
+    }
+
+    public void normalSpeed(){
+        distanceStopSpeed = false;
     }
 
     //Interface Methods

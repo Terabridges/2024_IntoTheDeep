@@ -46,7 +46,7 @@ public class IntakeTuner extends LinearOpMode {
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = false;
-    public static double intakeSwivelOffset = 65;
+    public static double intakeSwivelOffset = 102;
     public double intakeSwivelGearRatio = 40.0/48.0;
 
     @Override
