@@ -40,12 +40,12 @@ public class SpecimenAuto extends LinearOpMode
     //Pedro
     private Follower follower;
 
-    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 96+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
+    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 96+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(40, 60, Math.toRadians(0));
-    Pose score1 = new Pose(40, 62.5, Math.toRadians(0));
-    Pose score2 = new Pose(40, 65, Math.toRadians(0));
-    Pose score3 = new Pose(40, 67.5, Math.toRadians(0));
+    Pose preloadPose = new Pose(40, 60, Math.toRadians(180));
+    Pose score1 = new Pose(40, 62.5, Math.toRadians(180));
+    Pose score2 = new Pose(40, 65, Math.toRadians(180));
+    Pose score3 = new Pose(40, 67.5, Math.toRadians(180));
     Pose[] score = {preloadPose, score1, score2, score3};
 
     Pose start1 = new Pose(60, 26.5, Math.toRadians(90));
@@ -61,8 +61,8 @@ public class SpecimenAuto extends LinearOpMode
     Pose control3 = new Pose(45, 25, Math.toRadians(90));
     Pose[] control = {control1, control2, control3};
 
-    Pose prep = new Pose(20, 24, Math.toRadians(0));
-    Pose pick = new Pose(10, 24, Math.toRadians(0));
+    Pose prep = new Pose(20, 24, Math.toRadians(180));
+    Pose pick = new Pose(10, 24, Math.toRadians(180));
 
     private PathChain scorePreload, pushSamples, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3;
     PathChain[] goPrep = {goPrep1, goPrep2, goPrep3};
