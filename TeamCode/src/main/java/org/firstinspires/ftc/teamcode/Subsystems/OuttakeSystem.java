@@ -32,6 +32,7 @@ public class OuttakeSystem implements Subsystem {
     public double outtakeSwivelGearRatio = 40.0/30.0;
     public boolean isClawOpen = false;
     private double outtakeSwivelOffset = 180.0;
+    public boolean usePIDF = false;
 
     //Positions
     private double CLAW_OPEN = 0.5;
@@ -281,6 +282,9 @@ public class OuttakeSystem implements Subsystem {
         if (!manualOuttake) {
             outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
         }
+//        if (usePIDF){
+//            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+//        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
         if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 50)){
             resetSlideEncoders();

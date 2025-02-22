@@ -21,6 +21,7 @@ public class FConstants {
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
         FollowerConstants.mass = 11.612;
+        //Real weight: 12.5191
 
         FollowerConstants.xMovement = 78.9;
         FollowerConstants.yMovement = 62.5;
@@ -36,11 +37,11 @@ public class FConstants {
         FollowerConstants.useSecondaryHeadingPID = false;
         FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
 
-        FollowerConstants.drivePIDFCoefficients.setCoefficients(0.006,0,0.00001,0.6,0);
+        FollowerConstants.drivePIDFCoefficients.setCoefficients(0.015,0,0.000015,0.6,0);
         FollowerConstants.useSecondaryDrivePID = false;
         FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.02,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 3.9;
+        FollowerConstants.zeroPowerAccelerationMultiplier = 3.4;
         FollowerConstants.centripetalScaling = 0.00025;
 
         FollowerConstants.pathEndTimeoutConstraint = 500;

@@ -54,6 +54,7 @@ public class OuttakeControl implements Control {
             } else if (gp1.left_trigger > 0) {
                 outtake.outtakeSetSlides(-gp1.left_trigger);
             } else {
+                //outtake.usePIDF = true;
                 outtake.outtakeSetSlides(0);
             }
         }

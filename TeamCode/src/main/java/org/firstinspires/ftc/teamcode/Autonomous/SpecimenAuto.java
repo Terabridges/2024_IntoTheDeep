@@ -40,31 +40,34 @@ public class SpecimenAuto extends LinearOpMode
     //Pedro
     private Follower follower;
 
-    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 96+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
+    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(40, 60, Math.toRadians(180));
-    Pose score1 = new Pose(40, 62.5, Math.toRadians(180));
-    Pose score2 = new Pose(40, 65, Math.toRadians(180));
-    Pose score3 = new Pose(40, 67.5, Math.toRadians(180));
-    Pose[] score = {preloadPose, score1, score2, score3};
+    Pose preloadPose = new Pose(35.595, 60, Math.toRadians(180));
+    Pose score1 = new Pose(35.593, 63, Math.toRadians(180));
+    Pose score2 = new Pose(35.6, 66, Math.toRadians(180));
+    Pose score3 = new Pose(35.61, 69, Math.toRadians(180));
 
     Pose start1 = new Pose(60, 26.5, Math.toRadians(90));
-    Pose end1 = new Pose(60, 26.5, Math.toRadians(90));
+    Pose end1 = new Pose(20, 26.5, Math.toRadians(90));
     Pose start2 = new Pose(58, 16.5, Math.toRadians(90));
-    Pose end2 = new Pose(58, 16.5, Math.toRadians(90));
+    Pose end2 = new Pose(20, 16.5, Math.toRadians(90));
     Pose start3 = new Pose(58, 7, Math.toRadians(90));
-    Pose end3 = new Pose(58, 7, Math.toRadians(90));
-    Pose[] push = {start1, end1, start2, end2, start3, end3};
+    Pose end3 = new Pose(20, 7, Math.toRadians(90));
 
     Pose control1 = new Pose(24, 49, Math.toRadians(90));
     Pose control2 = new Pose(45, 35, Math.toRadians(90));
     Pose control3 = new Pose(45, 25, Math.toRadians(90));
+
+    Pose prep = new Pose(20, 24, Math.toRadians(0));
+    Pose pick = new Pose(8.75, 24, Math.toRadians(0));
+
+    private PathChain scorePreload, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3;
+    private PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6;
+
+    Pose[] score = {preloadPose, score1, score2, score3};
+    Pose[] push = {start1, end1, start2, end2, start3, end3};
     Pose[] control = {control1, control2, control3};
 
-    Pose prep = new Pose(20, 24, Math.toRadians(180));
-    Pose pick = new Pose(10, 24, Math.toRadians(180));
-
-    private PathChain scorePreload, pushSamples, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3;
     PathChain[] goPrep = {goPrep1, goPrep2, goPrep3};
     PathChain[] goScore = {goScore1, goScore2, goScore3};
 
@@ -96,17 +99,24 @@ public class SpecimenAuto extends LinearOpMode
     }
     enum pushStates
     {
-        PUSH,
+        PUSH1,
+        PUSH2,
+        PUSH3,
+        PUSH4,
+        PUSH5,
+        PUSH6,
         STOP
     }
 
     //Other
-    private PoseUpdater poseUpdater;
-    private DashboardPoseTracker dashboardPoseTracker;
+//    private PoseUpdater poseUpdater;
+//    private DashboardPoseTracker dashboardPoseTracker;
+
     public ElapsedTime runtime = new ElapsedTime();
     int curSpec = 0;
     boolean isPreload = true;
     boolean endCheck = false;
+    double pickPower = 0.5;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -118,19 +128,20 @@ public class SpecimenAuto extends LinearOpMode
 
         o.manualOuttake = false;
 
-        poseUpdater = new PoseUpdater(hardwareMap);
-        dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
+//        poseUpdater = new PoseUpdater(hardwareMap);
+//        dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
-        Drawing.sendPacket();
+//        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+//        Drawing.sendPacket();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
 
-        follower.setMaxPower(AConstants.STANDARD_POWER);
+        follower.setMaxPower(AConstants.LOW_POWER);
 
         buildPaths();
+
         buildStateMachines();
 
         //Press Start
@@ -149,11 +160,11 @@ public class SpecimenAuto extends LinearOpMode
             main.update();
             r.update();
 
-            poseUpdater.update();
+//            poseUpdater.update();
             telemetry();
-            Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
-            Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
-            Drawing.sendPacket();
+//            Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
+//            Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+//            Drawing.sendPacket();
 
             if (main.getStateString().equals("STOP"))
             {
@@ -176,24 +187,31 @@ public class SpecimenAuto extends LinearOpMode
         goPrep3 = buildLinearPath(score2, prep);
         goScore3 = buildLinearPath(pick, score3);
 
-        pushSamples = follower.pathBuilder()
-                .addPath(bezierCurve(score[0], control[0], push[0]))
-                .setLinearHeadingInterpolation(score[0].getHeading(), push[0].getHeading())
+        pushSamples1 = buildCurvedPath(score[0], control[0], push[0]);
+        pushSamples2 = buildLinearPath(push[0], push[1]);
+        pushSamples3 = buildCurvedPath(push[1], control[1], push[2]);
+        pushSamples4 = buildLinearPath(push[2], push[3]);
+        pushSamples5 = buildCurvedPath(push[3], control[2], push[4]);
+        pushSamples6 = buildLinearPath(push[4], push[5]);
 
-                .addPath(bezierLine(push[0], push[1]))
-                .setLinearHeadingInterpolation(push[0].getHeading(), push[1].getHeading())
-                .addPath(bezierCurve(push[1], control[1], push[2]))
-                .setLinearHeadingInterpolation(push[1].getHeading(), push[2].getHeading())
-
-                .addPath(bezierLine(push[2], push[3]))
-                .setLinearHeadingInterpolation(push[2].getHeading(), push[3].getHeading())
-                .addPath(bezierCurve(push[3], control[2], push[4]))
-                .setLinearHeadingInterpolation(push[3].getHeading(), push[4].getHeading())
-
-                .addPath(bezierLine(push[4], push[5]))
-                .setLinearHeadingInterpolation(push[4].getHeading(), push[5].getHeading())
-
-                .build();
+//        pushSamples = follower.pathBuilder()
+//                .addPath(bezierCurve(score[0], control[0], push[0]))
+//                .setLinearHeadingInterpolation(score[0].getHeading(), push[0].getHeading())
+//
+//                .addPath(bezierLine(push[0], push[1]))
+//                .setLinearHeadingInterpolation(push[0].getHeading(), push[1].getHeading())
+//                .addPath(bezierCurve(push[1], control[1], push[2]))
+//                .setLinearHeadingInterpolation(push[1].getHeading(), push[2].getHeading())
+//
+//                .addPath(bezierLine(push[2], push[3]))
+//                .setLinearHeadingInterpolation(push[2].getHeading(), push[3].getHeading())
+//                .addPath(bezierCurve(push[3], control[2], push[4]))
+//                .setLinearHeadingInterpolation(push[3].getHeading(), push[4].getHeading())
+//
+//                .addPath(bezierLine(push[4], push[5]))
+//                .setLinearHeadingInterpolation(push[4].getHeading(), push[5].getHeading())
+//
+//                .build();
     }
 
     public void buildStateMachines()
@@ -215,15 +233,24 @@ public class SpecimenAuto extends LinearOpMode
                 .state(mainStates.GRAB)
                 .onEnter(() -> grab.start())
                 .loop(() -> grab.update())
-                .transition(() -> grab.getStateString().equals("STOP") && !endCheck, mainStates.STOP)
+                .transition(() -> grab.getStateString().equals("STOP") && endCheck, mainStates.STOP)
                 .transition(() -> grab.getStateString().equals("STOP"), mainStates.SCORE)
-                .onExit(() -> grab.reset())
+                .onExit(() -> {
+                    follower.setMaxPower(AConstants.LOW_POWER);
+                    grab.reset();
+                })
 
                 .state(mainStates.PUSH)
-                .onEnter(() -> grab.start())
-                .loop(() -> grab.update())
-                .transition(() -> grab.getStateString().equals("STOP"), mainStates.GRAB)
-                .onExit(() -> grab.reset())
+                .onEnter(() -> {
+                    pushSpec.start();
+                    follower.setMaxPower(AConstants.STANDARD_POWER);
+                })
+                .loop(() -> pushSpec.update())
+                .transition(() -> pushSpec.getStateString().equals("STOP"), mainStates.GRAB)
+                .onExit(() -> {
+                    pushSpec.reset();
+                    follower.setMaxPower(AConstants.LOW_POWER);
+                })
 
                 .state(mainStates.STOP)
 
@@ -232,21 +259,33 @@ public class SpecimenAuto extends LinearOpMode
         scoreSpec = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
+                    runtime.reset();
                     if (isPreload)
-                        follower.followPath(scorePreload);
+                        follower.followPath(scorePreload, true);
                     else
-                        follower.followPath(goScore[curSpec]);
+                        //follower.followPath(goScore[curSpec], true);
+                        if (curSpec == 0)
+                            follower.followPath(goScore1, true);
+                        else if (curSpec == 1)
+                            follower.followPath(goScore2, true);
+                        else if (curSpec == 2)
+                            follower.followPath(goScore3, true);
                     o.outtakeSlidesScore1();
                     o.wristLock();
+                    o.outtakeSwivelLock();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1(), scoreStates.CLIP)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > 1, scoreStates.CLIP)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && !isPreload, scoreStates.CLIP)
 
                 .state(scoreStates.CLIP)
                 .onEnter(() -> {
-                    o.outtakeSwivelLock();
                     o.outtakeSlidesScore2();
                 })
-                .transition(() -> o.isSlidesScore2(), scoreStates.STOP)
+                .transitionTimed(0.3, scoreStates.STOP)
+                .onExit(() -> {
+                    o.openClaw();
+                    o.outtakeSwivelDown();
+                })
 
                 .state(scoreStates.STOP)
 
@@ -255,9 +294,15 @@ public class SpecimenAuto extends LinearOpMode
         grab = new StateMachineBuilder()
                 .state(grabStates.GO_PREP)
                 .onEnter(() -> {
-                    if (curSpec < 2)
+                    if (curSpec < 3)
                     {
-                        follower.followPath(goPrep[curSpec]);
+                        //follower.followPath(goPrep[curSpec], true);
+                        if (curSpec == 0)
+                            follower.followPath(goPrep1, true);
+                        else if (curSpec == 1)
+                            follower.followPath(goPrep2, true);
+                        else if (curSpec == 2)
+                            follower.followPath(goPrep3, true);
                         o.wristGrab();
                         o.outtakeSwivelGrab();
                         o.openClaw();
@@ -268,23 +313,55 @@ public class SpecimenAuto extends LinearOpMode
                 })
                 .transition(() -> !follower.isBusy() && i.isSwivelRest() && endCheck, grabStates.STOP)
                 .transition(() -> !follower.isBusy() && i.isSwivelRest(), grabStates.ADVANCE)
-                .onExit(() -> o.outtakeSlidesGrab1())
+                .onExit(() -> {
+                    follower.setMaxPower(pickPower-.05);
+                    o.outtakeSlidesGrab1();
+                })
 
                 .state(grabStates.ADVANCE)
-                .onEnter(() -> follower.followPath(goPick))
+                .onEnter(() -> follower.followPath(goPick,true))
                 .transition(() -> !follower.isBusy(), grabStates.STOP)
-                .onExit(() -> o.closeClaw())
+                .onExit(() -> {
+                    o.closeClaw();
+                    follower.setMaxPower(AConstants.LOW_POWER);
+                })
 
                 .state(grabStates.STOP)
 
                 .build();
 
         pushSpec = new StateMachineBuilder()
-                .state(pushStates.PUSH)
-                .onEnter(() -> follower.followPath(pushSamples))
+                .state(pushStates.PUSH1)
+                .onEnter(() -> {
+                    o.outtakeSlidesRest();
+                    o.outtakeSwivelDown();
+                    o.wristDown();
+                    follower.followPath(pushSamples1, true);
+                })
+                .transition(() -> !follower.isBusy(), pushStates.PUSH2)
+
+                .state(pushStates.PUSH2)
+                .onEnter(() -> follower.followPath(pushSamples2, true))
+                .transition(() -> !follower.isBusy(), pushStates.PUSH3)
+
+                .state(pushStates.PUSH3)
+                .onEnter(() -> follower.followPath(pushSamples3, true))
+                .transition(() -> !follower.isBusy(), pushStates.PUSH4)
+
+                .state(pushStates.PUSH4)
+                .onEnter(() -> follower.followPath(pushSamples4, true))
+                .transition(() -> !follower.isBusy(), pushStates.STOP)
+
+                .state(pushStates.PUSH5)
+                .onEnter(() -> follower.followPath(pushSamples5, true))
+                .transition(() -> !follower.isBusy(), pushStates.PUSH6)
+
+                .state(pushStates.PUSH6)
+                .onEnter(() -> follower.followPath(pushSamples6, true))
                 .transition(() -> !follower.isBusy(), pushStates.STOP)
 
                 .state(pushStates.STOP)
+                .onEnter(() -> follower.setMaxPower(AConstants.LOW_POWER))
 
                 .build();
     }
@@ -294,6 +371,7 @@ public class SpecimenAuto extends LinearOpMode
         telemetry.addData("main state", main.getStateString());
         telemetry.addData("grab state", grab.getStateString());
         telemetry.addData("score state", scoreSpec.getStateString());
+        telemetry.addData("push state", pushSpec.getStateString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
