@@ -262,7 +262,7 @@ public class BucketAuto extends LinearOpMode
 
                 .state(pickupStates.MOVE_FORWARD)
                 .onEnter(() -> {
-                    i.intakeSpinTarget = -0.75;
+                    i.intakeSpinTarget = -1;
                     //i.intakeSpin.setPower(-0.75);
                     //follower.setMaxPower(AConstants.LOW_POWER);
                     buildPaths();
@@ -337,6 +337,8 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("Outtake pos", o.outtakeBottomVertical.getCurrentPosition());
         telemetry.addData("Manual slides", o.manualOuttake);
         telemetry.addData("Mode", o.outtakeBottomVertical.getMode());
+        telemetry.addData("Linear SLides POs", i.intakeSlidesEnc.getCurrentPosition());
+        telemetry.addData("Swivel Pos", i.intakeSwivelEnc.getCurrentPosition());
         telemetry.update();
     }
 

@@ -31,10 +31,10 @@ public class IntakeSystem implements Subsystem {
     public boolean usePIDFIntakeSwivel = true;
     public boolean manualIntake = true;
     private int servoOffset = 10;
-    private int lowServoOffset = 4;
+    private int lowServoOffset = 7;
     private int motorOffset = 40;
     public double intakeSwivelGearRatio = 40.0/48.0;
-    private double intakeSwivelOffset = 102.0;
+    private double intakeSwivelOffset = 80;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.90;
@@ -45,7 +45,7 @@ public class IntakeSystem implements Subsystem {
     private int INTAKE_SLIDES_RETRACT = 275;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
-    private int INTAKE_SWIVEL_DOWN = 293;
+    private int INTAKE_SWIVEL_DOWN = 288;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
@@ -76,7 +76,7 @@ public class IntakeSystem implements Subsystem {
 
     //Second PID for intake swivel
     public PIDController intakeSwivelController;
-    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
+    public static double p2 = 0.006, i2 = 0.03, d2 = 0.00005;
     public static double f2 = 0.05;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
@@ -98,7 +98,9 @@ public class IntakeSystem implements Subsystem {
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        intakeSwivelEnc.setInverted(true);
         intakeSlidesController = new PIDController(p, i, d);
         intakeSwivelController = new PIDController(p2, i2, d2);
     }

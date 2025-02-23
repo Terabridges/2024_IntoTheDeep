@@ -42,10 +42,14 @@ public class SpecimenAuto extends LinearOpMode
 
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(35.595, 60, Math.toRadians(180));
-    Pose score1 = new Pose(35.593, 63, Math.toRadians(180));
-    Pose score2 = new Pose(35.6, 66, Math.toRadians(180));
-    Pose score3 = new Pose(35.61, 69, Math.toRadians(180));
+    Pose preloadPose = new Pose(32, 60, Math.toRadians(180));
+    Pose preloadPoseb = new Pose(35.595, 60, Math.toRadians(180));
+    Pose score1b = new Pose(35.595, 63, Math.toRadians(180));
+    Pose score2b = new Pose(35.6, 66, Math.toRadians(180));
+    Pose score3b = new Pose(35.61, 69, Math.toRadians(180));
+    Pose score1 = new Pose(32, 63, Math.toRadians(180));
+    Pose score2 = new Pose(32, 66, Math.toRadians(180));
+    Pose score3 = new Pose(32, 69, Math.toRadians(180));
 
     Pose start1 = new Pose(60, 26.5, Math.toRadians(90));
     Pose end1 = new Pose(20, 26.5, Math.toRadians(90));
@@ -61,10 +65,10 @@ public class SpecimenAuto extends LinearOpMode
     Pose prep = new Pose(20, 24, Math.toRadians(0));
     Pose pick = new Pose(8.75, 24, Math.toRadians(0));
 
-    private PathChain scorePreload, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3;
+    private PathChain scorePreload, scorePreloadb, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
     private PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6;
 
-    Pose[] score = {preloadPose, score1, score2, score3};
+    Pose[] score = {preloadPoseb, score1b, score2b, score3b};
     Pose[] push = {start1, end1, start2, end2, start3, end3};
     Pose[] control = {control1, control2, control3};
 
@@ -87,7 +91,8 @@ public class SpecimenAuto extends LinearOpMode
     }
     enum scoreStates
     {
-        GO_TO_SCORE,
+        GO_TO_SCORE1,
+        GO_TO_SCORE2,
         CLIP,
         STOP
     }
@@ -177,15 +182,19 @@ public class SpecimenAuto extends LinearOpMode
 
     public void buildPaths()
     {
-        scorePreload = buildLinearPath(startPose, score[0]);
+        scorePreload = buildLinearPath(startPose, preloadPose);
+        scorePreloadb = buildLinearPath(preloadPose, preloadPoseb);
 
         goPick = buildLinearPath(prep, pick);
         goPrep1 = buildLinearPath(push[5], prep);
         goScore1 = buildLinearPath(pick, score1);
+        goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
         goScore2 = buildLinearPath(pick, score2);
+        goScore2b = buildLinearPath(score2, score2b);
         goPrep3 = buildLinearPath(score2, prep);
         goScore3 = buildLinearPath(pick, score3);
+        goScore3b = buildLinearPath(score3, score3b);
 
         pushSamples1 = buildCurvedPath(score[0], control[0], push[0]);
         pushSamples2 = buildLinearPath(push[0], push[1]);
@@ -257,7 +266,7 @@ public class SpecimenAuto extends LinearOpMode
                 .build();
 
         scoreSpec = new StateMachineBuilder()
-                .state(scoreStates.GO_TO_SCORE)
+                .state(scoreStates.GO_TO_SCORE1)
                 .onEnter(() -> {
                     runtime.reset();
                     if (isPreload)
@@ -274,8 +283,24 @@ public class SpecimenAuto extends LinearOpMode
                     o.wristLock();
                     o.outtakeSwivelLock();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > 1, scoreStates.CLIP)
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && !isPreload, scoreStates.CLIP)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > .5, scoreStates.GO_TO_SCORE2)
+
+                .state(scoreStates.GO_TO_SCORE2)
+                .onEnter(() ->
+                {
+                    runtime.reset();
+                    if (isPreload)
+                        follower.followPath(scorePreloadb, true);
+                    else
+                        //follower.followPath(goScore[curSpec], true);
+                        if (curSpec == 0)
+                            follower.followPath(goScore1b, true);
+                        else if (curSpec == 1)
+                            follower.followPath(goScore2b, true);
+                        else if (curSpec == 2)
+                            follower.followPath(goScore3b, true);
+                })
+                .transition(() -> !follower.isBusy() && runtime.seconds() > .4, scoreStates.CLIP)
 
                 .state(scoreStates.CLIP)
                 .onEnter(() -> {

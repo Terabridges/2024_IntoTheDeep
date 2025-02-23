@@ -56,7 +56,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
-    private int OUTTAKE_SLIDES_SCORE_1 = -1800; //-1700;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1740; //-1700;
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
     //Max

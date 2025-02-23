@@ -39,14 +39,14 @@ public class IntakeTuner extends LinearOpMode {
 
     //Second PID for intake swivel
     private PIDController intakeSwivelController;
-    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
+    public static double p2 = 0.006, i2 = 0.03, d2 = 0.00005;
     public static double f2 = 0.05;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = false;
-    public static double intakeSwivelOffset = 102;
+    public static double intakeSwivelOffset = 80;
     public double intakeSwivelGearRatio = 40.0/48.0;
 
     @Override
@@ -57,11 +57,13 @@ public class IntakeTuner extends LinearOpMode {
         intakeLeftSwivel = hardwareMap.get(CRServo.class, "intake_left_swivel");
         intakeRightSwivel = hardwareMap.get(CRServo.class, "intake_right_swivel");
         intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_right_swivel_analog");
         intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
         intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
+        intakeRightSwivelEnc.setInverted(true);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
