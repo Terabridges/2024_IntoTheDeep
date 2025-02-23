@@ -64,7 +64,7 @@ public class SpecimenAuto extends LinearOpMode
 
     Pose prep = new Pose(20, 24, Math.toRadians(0));
     Pose pick = new Pose(12, 24, Math.toRadians(0));
-    Pose pickb = new Pose(7.75, 24, Math.toRadians(0));
+    Pose pickb = new Pose(7, 24, Math.toRadians(0));
 
     private PathChain scorePreload, scorePreloadb, goPick, goPickb, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
     private PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6;
@@ -342,7 +342,7 @@ public class SpecimenAuto extends LinearOpMode
                 .transition(() -> !follower.isBusy() && i.isSwivelRest() && endCheck, grabStates.STOP)
                 .transition(() -> !follower.isBusy() && i.isSwivelRest(), grabStates.ADVANCE1)
                 .onExit(() -> {
-                    follower.setMaxPower(pickPower-.05);
+                    //follower.setMaxPower(pickPower-.05);
                     o.outtakeSlidesGrab1();
                 })
 

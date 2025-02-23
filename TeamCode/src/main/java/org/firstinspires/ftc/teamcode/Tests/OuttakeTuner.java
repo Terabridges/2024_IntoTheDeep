@@ -65,16 +65,12 @@ public class OuttakeTuner extends LinearOpMode {
         outtakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "outtake_right_swivel_analog");
         outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
         limit = hardwareMap.get(TouchSensor.class, "limit");
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         outtakeSlidesController = new PIDController(p3, i3, d3);
         outtakeSwivelController = new PIDController(p4, i4, d4);
 
         waitForStart();
-        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtakeTopVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
 
         while (opModeIsActive()){
 
@@ -99,11 +95,10 @@ public class OuttakeTuner extends LinearOpMode {
                 telemetry.addData("Linear Slides Pos", outtakeBottomVertical.getCurrentPosition());
             } else {
                 telemetry.addData("Swivel Target", outtakeSwivelTarget);
-                telemetry.addData("Swivel Voltage", outtakeRightSwivelAnalog.getVoltage());
                 telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
             }
 
-            telemetry.addData("LIMITING?", limit.isPressed() ? "YES" : "NO");
+            //telemetry.addData("LIMITING?", limit.isPressed() ? "YES" : "NO");
 
             telemetry.update();
 

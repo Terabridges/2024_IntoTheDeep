@@ -34,7 +34,8 @@ public class IntakeSystem implements Subsystem {
     private int lowServoOffset = 7;
     private int motorOffset = 40;
     public double intakeSwivelGearRatio = 40.0/48.0;
-    private double intakeSwivelOffset = 80;
+    //private double intakeSwivelOffset = 80;
+    private double intakeSwivelOffset = 102;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.90;
@@ -76,7 +77,7 @@ public class IntakeSystem implements Subsystem {
 
     //Second PID for intake swivel
     public PIDController intakeSwivelController;
-    public static double p2 = 0.006, i2 = 0.03, d2 = 0.00005;
+    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
     public static double f2 = 0.05;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
@@ -90,7 +91,7 @@ public class IntakeSystem implements Subsystem {
         intakeLeftSwivel = map.get(CRServo.class, "intake_left_swivel");
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");
-        intakeSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
+        intakeSwivelAnalog = map.get(AnalogInput.class, "intake_left_swivel_analog");
         intakeSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
         intakeSlidesEnc = new AbsoluteAnalogEncoder(intakeSlidesAnalog);
@@ -100,7 +101,7 @@ public class IntakeSystem implements Subsystem {
         intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         //intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        intakeSwivelEnc.setInverted(true);
+        //intakeSwivelEnc.setInverted(true);
         intakeSlidesController = new PIDController(p, i, d);
         intakeSwivelController = new PIDController(p2, i2, d2);
     }
