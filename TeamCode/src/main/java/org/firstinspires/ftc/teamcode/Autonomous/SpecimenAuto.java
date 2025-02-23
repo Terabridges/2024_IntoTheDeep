@@ -46,7 +46,7 @@ public class SpecimenAuto extends LinearOpMode
     Pose preloadPoseb = new Pose(35.595, 60, Math.toRadians(180));
     Pose score1b = new Pose(35.595, 63, Math.toRadians(180));
     Pose score2b = new Pose(35.6, 66, Math.toRadians(180));
-    Pose score3b = new Pose(35.61, 69, Math.toRadians(180));
+    Pose score3b = new Pose(35.65, 69, Math.toRadians(180));
     Pose score1 = new Pose(32, 63, Math.toRadians(180));
     Pose score2 = new Pose(32, 66, Math.toRadians(180));
     Pose score3 = new Pose(32, 69, Math.toRadians(180));
@@ -63,9 +63,10 @@ public class SpecimenAuto extends LinearOpMode
     Pose control3 = new Pose(45, 25, Math.toRadians(90));
 
     Pose prep = new Pose(20, 24, Math.toRadians(0));
-    Pose pick = new Pose(8.75, 24, Math.toRadians(0));
+    Pose pick = new Pose(12, 24, Math.toRadians(0));
+    Pose pickb = new Pose(7.75, 24, Math.toRadians(0));
 
-    private PathChain scorePreload, scorePreloadb, goPick, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
+    private PathChain scorePreload, scorePreloadb, goPick, goPickb, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
     private PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6;
 
     Pose[] score = {preloadPoseb, score1b, score2b, score3b};
@@ -99,7 +100,8 @@ public class SpecimenAuto extends LinearOpMode
     enum grabStates
     {
         GO_PREP,
-        ADVANCE,
+        ADVANCE1,
+        ADVANCE2,
         STOP
     }
     enum pushStates
@@ -186,7 +188,8 @@ public class SpecimenAuto extends LinearOpMode
         scorePreloadb = buildLinearPath(preloadPose, preloadPoseb);
 
         goPick = buildLinearPath(prep, pick);
-        goPrep1 = buildLinearPath(push[5], prep);
+        goPickb = buildLinearPath(pick, pickb);
+        goPrep1 = buildLinearPath(push[1], prep);
         goScore1 = buildLinearPath(pick, score1);
         goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
@@ -337,14 +340,18 @@ public class SpecimenAuto extends LinearOpMode
                         endCheck = true;
                 })
                 .transition(() -> !follower.isBusy() && i.isSwivelRest() && endCheck, grabStates.STOP)
-                .transition(() -> !follower.isBusy() && i.isSwivelRest(), grabStates.ADVANCE)
+                .transition(() -> !follower.isBusy() && i.isSwivelRest(), grabStates.ADVANCE1)
                 .onExit(() -> {
                     follower.setMaxPower(pickPower-.05);
                     o.outtakeSlidesGrab1();
                 })
 
-                .state(grabStates.ADVANCE)
+                .state(grabStates.ADVANCE1)
                 .onEnter(() -> follower.followPath(goPick,true))
+                .transition(() -> !follower.isBusy(), grabStates.ADVANCE2)
+
+                .state(grabStates.ADVANCE2)
+                .onEnter(() -> follower.followPath(goPickb,true))
                 .transition(() -> !follower.isBusy(), grabStates.STOP)
                 .onExit(() -> {
                     o.closeClaw();
@@ -367,7 +374,7 @@ public class SpecimenAuto extends LinearOpMode
 
                 .state(pushStates.PUSH2)
                 .onEnter(() -> follower.followPath(pushSamples2, true))
-                .transition(() -> !follower.isBusy(), pushStates.PUSH3)
+                .transition(() -> !follower.isBusy(), pushStates.STOP)
 
                 .state(pushStates.PUSH3)
                 .onEnter(() -> follower.followPath(pushSamples3, true))

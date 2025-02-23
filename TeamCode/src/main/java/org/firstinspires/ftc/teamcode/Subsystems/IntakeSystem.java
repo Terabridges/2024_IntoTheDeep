@@ -45,7 +45,7 @@ public class IntakeSystem implements Subsystem {
     private int INTAKE_SLIDES_RETRACT = 275;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
-    private int INTAKE_SWIVEL_DOWN = 288;
+    private int INTAKE_SWIVEL_DOWN = 292;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;

@@ -41,7 +41,7 @@ public class OuttakeSystem implements Subsystem {
     private double WRIST_TRANSFER = 0.05;
     private double WRIST_UP = 0.98;
     private double WRIST_GRAB = 0.01;
-    private double WRIST_LOCK = 0.45;
+    private double WRIST_LOCK = 0.6; //0.45;
     //LIMIT BACK: 0
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
@@ -56,7 +56,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
-    private int OUTTAKE_SLIDES_SCORE_1 = -1740; //-1700;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1655; //-1700;
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
     //Max
@@ -286,7 +286,7 @@ public class OuttakeSystem implements Subsystem {
 //            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
 //        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
-        if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 50)){
+        if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 30)){
             resetSlideEncoders();
         }
     }

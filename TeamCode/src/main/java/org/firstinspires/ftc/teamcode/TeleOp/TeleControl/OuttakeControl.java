@@ -77,6 +77,7 @@ public class OuttakeControl implements Control {
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
         telemetry.addData("Manual Slides", outtake.manualOuttake);
         telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
+        telemetry.addData("oSwivel", outtake.outtakeSwivelEnc.getCurrentPosition());
     }
 
 }
