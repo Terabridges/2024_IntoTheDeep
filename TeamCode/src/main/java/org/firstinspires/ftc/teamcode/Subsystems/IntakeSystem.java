@@ -41,9 +41,9 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SPIN_IN = -0.90;
     private double INTAKE_SPIN_OUT = 0.90;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 335;
-    private int INTAKE_SLIDES_HALF = 325;
-    private int INTAKE_SLIDES_RETRACT = 275;
+    private int INTAKE_SLIDES_EXTEND = 346;
+    private int INTAKE_SLIDES_HALF = 336;
+    private int INTAKE_SLIDES_RETRACT = 286;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
     private int INTAKE_SWIVEL_DOWN = 292;
@@ -61,7 +61,7 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
-    private int SLIDES_MAX = 335;
+    private int SLIDES_MAX = 346;
 
     //PIDF
 

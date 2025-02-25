@@ -203,6 +203,10 @@ public class OuttakeSystem implements Subsystem {
         outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public void resetSlideEncodersButton() {
+        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     //isPositions
     public boolean isSlidesDown(){
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;

@@ -16,7 +16,7 @@ public class OuttakeControl implements Control {
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
     EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
-    EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetSlideEncoders());
+    EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetSlideEncodersButton());
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
