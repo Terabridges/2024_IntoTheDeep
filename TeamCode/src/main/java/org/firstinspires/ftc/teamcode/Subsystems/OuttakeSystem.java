@@ -203,7 +203,7 @@ public class OuttakeSystem implements Subsystem {
         outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void resetSlideEncodersButton() {
+    public void resetEncodersButton() {
         outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
