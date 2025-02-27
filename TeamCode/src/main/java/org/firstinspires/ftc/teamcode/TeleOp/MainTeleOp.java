@@ -20,11 +20,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+
 @TeleOp(name="MainTeleOp", group="TeleOp")
 public class MainTeleOp extends LinearOpMode {
 
     public HashMap<String, String> gamepadMap = null;
     private ElapsedTime runtime = new ElapsedTime();
+
+    private LoopTimer loopTimer = new LoopTimer();
 
     //Global FSM
     enum globalStates {
@@ -166,6 +169,8 @@ public class MainTeleOp extends LinearOpMode {
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //Main Loop
         while (opModeIsActive()) {
+            loopTimer.updateTime(telemetry);
+
             gamepadUpdate();
             robot.update();
             globalMachine.update();
@@ -184,6 +189,7 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     //Other Methods
+
     public void controlsUpdate() {
         for (Control c : controls) {
             c.update();

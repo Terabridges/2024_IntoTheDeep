@@ -30,6 +30,9 @@ public class VisionSystem implements Subsystem {
     NormalizedRGBA colors;
     private boolean camInited = false;
 
+    public double[] leftBackDists;
+    public double[] rightBackDists;
+
     HardwareMap hardwareMap;
     public double leftBackDistVal;
     public double rightBackDistVal;
@@ -87,12 +90,34 @@ public class VisionSystem implements Subsystem {
         rightLight.setPosition(getColorPWN(chosenColor));
     }
 
+    public double dataSampleAvg(double[] array, double data) {
+        for (int j = 0; j < array.length - 1; j++) {
+            array[j] = array[j + 1];
+        }
+        array[array.length-1] = data;
+
+        double average = 0.0;
+
+        for (int i = 0; i < array.length; i++) {
+            average += array[i];
+        }
+
+        average /= array.length;
+
+        return average;
+    }
+
+
     public void getDistances() {
         leftBackDistVal = leftBackDistance.getVoltage();
         leftBackDistVal = (leftBackDistVal/3.3) * 4000;
 
         rightBackDistVal = rightBackDistance.getVoltage();
         rightBackDistVal = (rightBackDistVal/3.3) * 4000;
+
+        rightBackDistVal = dataSampleAvg(rightBackDists, rightBackDistVal);
+        leftBackDistVal = dataSampleAvg(leftBackDists, leftBackDistVal);
+
     }
 
     public void switchWillStop() {
@@ -107,6 +132,10 @@ public class VisionSystem implements Subsystem {
     @Override
     public void toInit() {
         willStopAtObstacle = false;
+
+        leftBackDists = new double[10];
+        rightBackDists = new double[10];
+
     }
 
     @Override
