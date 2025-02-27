@@ -36,14 +36,16 @@ public class IntakeSystem implements Subsystem {
     public double intakeSwivelGearRatio = 40.0/48.0;
     //private double intakeSwivelOffset = 80;
     private double intakeSwivelOffset = 102;
+    private double intakeSlidesOffset = 100;
 
     //Positions
     private double INTAKE_SPIN_IN = -0.90;
     private double INTAKE_SPIN_OUT = 0.90;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 346;
-    private int INTAKE_SLIDES_HALF = 336;
-    private int INTAKE_SLIDES_RETRACT = 286;
+    private int INTAKE_SLIDES_EXTEND = 246;
+    private int INTAKE_SLIDES_HALF = 236;
+    private int INTAKE_SLIDES_QUARTER = 221;
+    private int INTAKE_SLIDES_RETRACT = 186;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
     private int INTAKE_SWIVEL_DOWN = 292;
@@ -61,7 +63,7 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
-    private int SLIDES_MAX = 346;
+    private int SLIDES_MAX = 248;
 
     //PIDF
 
@@ -94,7 +96,7 @@ public class IntakeSystem implements Subsystem {
         intakeSwivelAnalog = map.get(AnalogInput.class, "intake_left_swivel_analog");
         intakeSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
-        intakeSlidesEnc = new AbsoluteAnalogEncoder(intakeSlidesAnalog);
+        intakeSlidesEnc = new AbsoluteAnalogEncoder(intakeSlidesAnalog, 3.3, intakeSlidesOffset, 1);
         intakeSwivelEnc = new AbsoluteAnalogEncoder(intakeSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -139,6 +141,10 @@ public class IntakeSystem implements Subsystem {
 
     public void intakeSlidesHalf() {
         intakeSlidesTarget = INTAKE_SLIDES_HALF;
+    }
+
+    public void intakeSlidesQuarter() {
+        intakeSlidesTarget = INTAKE_SLIDES_QUARTER;
     }
 
     public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}

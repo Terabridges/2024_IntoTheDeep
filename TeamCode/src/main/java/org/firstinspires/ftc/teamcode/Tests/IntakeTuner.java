@@ -49,6 +49,7 @@ public class IntakeTuner extends LinearOpMode {
 
     boolean runSlides = false;
     public static double intakeSwivelOffset = 102;
+    public static double intakeSlidesOffset = 100;
     public double intakeSwivelGearRatio = 40.0/48.0;
 //    public static double otherIntakeSwivelOffset = 80;
 
@@ -64,7 +65,7 @@ public class IntakeTuner extends LinearOpMode {
         intakeSpin = hardwareMap.get(DcMotor.class, "intake_spin");
         intakeRightSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_left_swivel_analog");
         intakeRightSlidesAnalog = hardwareMap.get(AnalogInput.class, "intake_right_slide_analog");
-        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
+        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog, 3.3, intakeSlidesOffset, 1);
         intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 //        intakeRightSwivelEnc.setInverted(true);
 //        intakeLeftSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_left_swivel_analog");
