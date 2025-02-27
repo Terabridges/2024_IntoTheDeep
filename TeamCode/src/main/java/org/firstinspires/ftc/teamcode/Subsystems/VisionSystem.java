@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import android.view.contentcapture.DataRemovalRequest;
+
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -9,6 +11,9 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+
+import org.firstinspires.ftc.teamcode.Utility.DataSampler;
+import org.firstinspires.ftc.teamcode.Utility.DataSampler.SamplingMethod; //import enum for sampling styles
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -30,8 +35,8 @@ public class VisionSystem implements Subsystem {
     NormalizedRGBA colors;
     private boolean camInited = false;
 
-    public double[] leftBackDists;
-    public double[] rightBackDists;
+    public DataSampler rightDistanceSampling;
+    public DataSampler leftDistanceSampling;
 
     HardwareMap hardwareMap;
     public double leftBackDistVal;
@@ -90,23 +95,6 @@ public class VisionSystem implements Subsystem {
         rightLight.setPosition(getColorPWN(chosenColor));
     }
 
-    public double dataSampleAvg(double[] array, double data) {
-        for (int j = 0; j < array.length - 1; j++) {
-            array[j] = array[j + 1];
-        }
-        array[array.length-1] = data;
-
-        double average = 0.0;
-
-        for (int i = 0; i < array.length; i++) {
-            average += array[i];
-        }
-
-        average /= array.length;
-
-        return average;
-    }
-
 
     public void getDistances() {
         leftBackDistVal = leftBackDistance.getVoltage();
@@ -115,8 +103,11 @@ public class VisionSystem implements Subsystem {
         rightBackDistVal = rightBackDistance.getVoltage();
         rightBackDistVal = (rightBackDistVal/3.3) * 4000;
 
-        rightBackDistVal = dataSampleAvg(rightBackDists, rightBackDistVal);
-        leftBackDistVal = dataSampleAvg(leftBackDists, leftBackDistVal);
+        rightDistanceSampling.updateData(rightBackDistVal);
+        leftDistanceSampling.updateData(leftBackDistVal);
+
+        rightBackDistVal = rightDistanceSampling.calculateData();
+        leftBackDistVal = leftDistanceSampling.calculateData();
 
     }
 
@@ -133,8 +124,8 @@ public class VisionSystem implements Subsystem {
     public void toInit() {
         willStopAtObstacle = false;
 
-        leftBackDists = new double[10];
-        rightBackDists = new double[10];
+        rightDistanceSampling = new DataSampler(SamplingMethod.AVERAGE, 10);
+        leftDistanceSampling = new DataSampler(SamplingMethod.AVERAGE, 10);
 
     }
 
