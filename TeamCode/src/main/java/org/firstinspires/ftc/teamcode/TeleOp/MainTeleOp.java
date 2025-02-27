@@ -47,11 +47,7 @@ public class MainTeleOp extends LinearOpMode {
 
     public enum transferStates {
         START,
-        SWIVEL_DOWN,
-        INTAKE_TRANSFER,
-        OUTTAKE_TRANSFER,
-        OUTTAKE_RESET,
-        INTAKE_RESET
+        TRANSFER
     }
 
     public enum outtakeStates {
@@ -67,7 +63,6 @@ public class MainTeleOp extends LinearOpMode {
         SLIDES_RISE,
         SLIDES_FALL,
         PICKUP,
-        SCORE,
         RESET
     }
 
@@ -161,8 +156,6 @@ public class MainTeleOp extends LinearOpMode {
         transferMachine.start();
         specimenMachine.start();
 
-        //robot.outtakeSystem.resetSlideEncoders();
-
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //Main Loop
         while (opModeIsActive()) {
@@ -237,11 +230,7 @@ public class MainTeleOp extends LinearOpMode {
                 .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
-                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
-                    intake.intakeSwivelRest();
-                    robot.rumble(500);
-
-                })
+                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
                 .transition( () -> aPressed(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
 
                 .state(intakeStates.RETRACT)
@@ -262,34 +251,18 @@ public class MainTeleOp extends LinearOpMode {
         OuttakeSystem outtake = robot.outtakeSystem;
         return new StateMachineBuilder()
                 .state(transferStates.START)
-                .transition(() -> (!currentGamepad1.b && previousGamepad1.b) && robot.currentState.equals("transfer"), transferStates.INTAKE_TRANSFER)
+                .transition(() -> (!currentGamepad1.b && previousGamepad1.b) && robot.currentState.equals("transfer"), transferStates.TRANSFER)
 
-                .state(transferStates.INTAKE_TRANSFER)
+                .state(transferStates.TRANSFER)
                 .onEnter( () -> {
-                    intake.intakeSlidesRetract();
                     outtake.openClaw();
-                })
-                .transition(() -> intake.isIntakeRetracted(), transferStates.SWIVEL_DOWN)
-
-                .state(transferStates.SWIVEL_DOWN)
-                .onEnter(() -> intake.intakeSwivelTransfer())
-                .transition( () -> intake.isSwivelTransfer(), transferStates.OUTTAKE_TRANSFER, () -> {
                     outtake.outtakeSwivelTransfer();
-                    outtake.outtakeSlidesDown();
                     outtake.wristTransfer();
+                    outtake.outtakeSlidesDown();
                 })
-
-                .state(transferStates.OUTTAKE_TRANSFER)
-                .transition( () -> outtake.isSlidesDown(), transferStates.OUTTAKE_RESET, () -> outtake.closeClaw())
-
-                .state(transferStates.OUTTAKE_RESET)
-                .transitionTimed(0.1, transferStates.INTAKE_RESET)
-
-                .state(transferStates.INTAKE_RESET)
-                .onEnter( () -> outtake.outtakeSlidesRest())
-                .transition( () -> outtake.isSlidesRest(), transferStates.START, () -> {
-                    outtake.outtakeSwivelDown();
-                    outtake.wristDown();
+                .transition(() -> outtake.isSlidesDown(), transferStates.START, () -> {
+                    outtake.closeClaw();
+                    outtake.outtakeSlidesRest();
                 })
 
                 .build();
@@ -319,13 +292,12 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> outtake.openClaw())
-                .transitionTimed(0.5, outtakeStates.OUTTAKE_RESET)
+                .transitionTimed(0.2, outtakeStates.OUTTAKE_RESET)
 
                 .state(outtakeStates.OUTTAKE_RESET)
                 .onEnter( () -> {
                     outtake.outtakeSwivelDown();
                     outtake.outtakeSlidesRest();
-                    outtake.closeClaw();
                     driveSystem.driveBack();
                 })
                 .transitionTimed( 0.25, outtakeStates.START, ()-> {
@@ -360,11 +332,8 @@ public class MainTeleOp extends LinearOpMode {
                 .onEnter(() -> {
                     outtake.outtakeSlidesScore1();
                     outtake.wristLock();
+                    outtake.outtakeSwivelLock();
                 })
-                .transitionTimed(0.3, specimenStates.SCORE)
-
-                .state(specimenStates.SCORE)
-                .onEnter(() -> outtake.outtakeSwivelLock())
                 .transition(() -> leftBumpPressed(), specimenStates.RESET, ()-> outtake.outtakeSlidesScore2())
 
                 .state(specimenStates.RESET)

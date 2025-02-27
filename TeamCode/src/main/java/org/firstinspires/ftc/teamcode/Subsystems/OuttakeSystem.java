@@ -26,7 +26,7 @@ public class OuttakeSystem implements Subsystem {
 
     //SOFTWARE
     private int servoOffset = 15;
-    private int motorOffset = 40;
+    private int motorOffset = 30;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
@@ -58,6 +58,8 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_GRAB_1 = 0;
     private int OUTTAKE_SLIDES_SCORE_1 = -1655; //-1700;
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
+
+    private int OUTTAKE_SLIDES_ALMOST_DOWN = -100;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -234,6 +236,10 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
     }
 
+    public boolean isSlidesAlmostDown(){
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_ALMOST_DOWN) <= motorOffset;
+    }
+
     public boolean isSwivelUp() {
         return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
     }
@@ -291,7 +297,7 @@ public class OuttakeSystem implements Subsystem {
 //        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
         if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 30)){
-            resetSlideEncoders();
+            resetEncodersButton();
         }
     }
 }
