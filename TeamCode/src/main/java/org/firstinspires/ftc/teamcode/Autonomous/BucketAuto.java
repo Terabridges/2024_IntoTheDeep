@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.localization.PoseUpdater;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
@@ -63,15 +64,16 @@ public class BucketAuto extends LinearOpMode
 
     Pose firstSampleEnd = new Pose(22, 131.5, Math.toRadians(336.5));
     Pose secondSampleEnd = new Pose(21, 134, Math.toRadians(353));
-    Pose thirdSampleEnd = new Pose(27, 131, Math.toRadians(34));
+    Pose thirdSampleEnd = new Pose(25, 129, Math.toRadians(40));
 
     Pose placeHolder = new Pose(0, 0, Math.toRadians(0));
+    Pose controlPoint = new Pose(28, 129, Math.toRadians(28.5));
 
     //Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
     Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd};
     Pose[] scoreTo = {scorePoseP, scorePose1, scorePose2, scorePose3};
 
-    private PathChain goToScore, goToScorePreload, goToSample, intakeSample, failedIntake;
+    private PathChain goToScore, goToScorePreload, goToSample, intakeSample, curvedIntake, failedIntake;
 
     //Enums
     enum mainStates
@@ -163,6 +165,7 @@ public class BucketAuto extends LinearOpMode
         else
             intakeSample = buildLinearPath(scoreTo[curSample], scoreFrom[curSample]);
         //failedIntake = buildLinearPath(scoreFrom[curSample], samples[curSample]);
+        curvedIntake = buildCurvedPath(scorePose2, controlPoint, thirdSampleEnd);
     }
 
     public void buildStateMachines()
@@ -204,7 +207,7 @@ public class BucketAuto extends LinearOpMode
                 .state(scoreStates.EXTEND)
                 .onEnter(() -> {
                     if (curSample == 2) {
-                        i.intakeSlidesQuarter();
+                        i.intakeSlidesHalf();
                         i.intakeSwivelDown();
                     }
                     else if (curSample == 3) {
@@ -243,7 +246,10 @@ public class BucketAuto extends LinearOpMode
                     buildPaths();
                     o.outtakeSlidesRest();
                     i.intakeSpinTarget = -1;
-                    follower.followPath(intakeSample, true);
+//                    if (curSample == 3)
+//                        follower.followPath(curvedIntake, true);
+//                    else
+                        follower.followPath(intakeSample, true);
                 })
                 .transition(() -> !follower.isBusy(), pickupStates.INTAKE_TRANSFER)
                 .onExit(() -> {
@@ -299,8 +305,23 @@ public class BucketAuto extends LinearOpMode
 
     private PathChain buildLinearPath(Pose start, Pose end) {
         return new PathBuilder()
-                .addPath(new BezierLine(new Point(start), new Point(end)))
+                .addPath(bezierLine(start, end))
                 .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
                 .build();
+    }
+    private BezierLine bezierLine(Pose start, Pose end)
+    {
+        return new BezierLine(new Point(start), new Point(end));
+    }
+
+    private PathChain buildCurvedPath(Pose start, Pose control, Pose end) {
+        return new PathBuilder()
+                .addPath(bezierCurve(start, control, end))
+                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
+                .build();
+    }
+    private BezierCurve bezierCurve(Pose start, Pose control, Pose end)
+    {
+        return new BezierCurve(new Point(start), new Point(control), new Point(end));
     }
 }
