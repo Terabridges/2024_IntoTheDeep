@@ -80,7 +80,7 @@ public class DataSampler {
             weightedAverage += dataList[i] * (i + 1);
         }
         // Normalize the weighted sum by dividing by the sum of the weights
-        weightedAverage /= (dataList.length * (dataList.length + 1)) / 2;
+        weightedAverage /= (double) (dataList.length * (dataList.length + 1)) / 2;
         return weightedAverage;
     }
 

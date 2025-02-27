@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.TeleOp.VisionMediator;
 //import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class Robot {
     public VisionSystem visionSystem;
     public DriveSystem driveSystem;
 
+    public VisionMediator vM;
+
     //Other
     public String currentState = "none";
 
@@ -46,6 +49,8 @@ public class Robot {
         subsystems = new ArrayList<>(Arrays.asList(outtakeSystem, intakeSystem, visionSystem, driveSystem));
 
         this.gp1 = gp1;
+
+        this.vM = new VisionMediator(this);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
     }

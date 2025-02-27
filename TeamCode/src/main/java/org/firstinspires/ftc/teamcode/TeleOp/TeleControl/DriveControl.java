@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.TeleOp.VisionMediator;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
 public class DriveControl implements Control {
@@ -14,6 +15,7 @@ public class DriveControl implements Control {
     DriveSystem driveSystem;
     public Robot robot;
     public Gamepad gp1;
+    VisionMediator vM;
     public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
     public double speed = FAST_MULT;
@@ -29,6 +31,7 @@ public class DriveControl implements Control {
     public DriveControl(Robot robot, Gamepad gp1) {
         this(robot.driveSystem, gp1);
         this.robot = robot;
+        this.vM = robot.vM;
     }
 
     //Methods

@@ -37,6 +37,8 @@ public class VisionSystem implements Subsystem {
 
     public DataSampler rightDistanceSampling;
     public DataSampler leftDistanceSampling;
+    public SamplingMethod samplingMethod = SamplingMethod.AVERAGE;
+    public int sampleSize = 10;
 
     HardwareMap hardwareMap;
     public double leftBackDistVal;
@@ -117,15 +119,18 @@ public class VisionSystem implements Subsystem {
 
     public boolean isClose() {
         return ((leftBackDistVal <= 143 && leftBackDistVal >= 130) || (rightBackDistVal <= 143 && rightBackDistVal >= 130));
+        // NOT ACCURATE
+        // WILL FIX WHEN TESTING
     }
+
 
     //Interface Methods
     @Override
     public void toInit() {
         willStopAtObstacle = false;
 
-        rightDistanceSampling = new DataSampler(SamplingMethod.AVERAGE, 10);
-        leftDistanceSampling = new DataSampler(SamplingMethod.AVERAGE, 10);
+        rightDistanceSampling = new DataSampler(samplingMethod, sampleSize);
+        leftDistanceSampling = new DataSampler(samplingMethod, sampleSize);
 
     }
 
@@ -141,6 +146,7 @@ public class VisionSystem implements Subsystem {
             } else {
                 rightLight.setPosition(0);
             }
+
         }
 
     }
