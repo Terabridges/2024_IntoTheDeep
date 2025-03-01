@@ -179,6 +179,7 @@ public class MainTeleOp extends LinearOpMode {
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+        robot.slowFall();
     }
 
     //Other Methods

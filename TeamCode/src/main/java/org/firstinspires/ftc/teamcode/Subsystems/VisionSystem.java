@@ -29,7 +29,6 @@ public class VisionSystem implements Subsystem {
     public AnalogInput leftBackDistance;
     public AnalogInput rightBackDistance;
     public Servo rightLight;
-    public DriveSystem driveSystem;
 
     //Software
     NormalizedRGBA colors;
@@ -43,7 +42,7 @@ public class VisionSystem implements Subsystem {
     HardwareMap hardwareMap;
     public double leftBackDistVal;
     public double rightBackDistVal;
-    public boolean willStopAtObstacle;
+    public boolean willStopAtObstacle = false;
     public boolean isCloseEnough = false;
 
 
@@ -70,11 +69,25 @@ public class VisionSystem implements Subsystem {
     }
 
     public String getColorVal(){
-        if (colors.red > 0.07 && colors.green > 0.07){
+        colors = intakeColorSensor.getNormalizedColors();
+        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
             return "yellow";
-        } else if (colors.red > 0.07){
+        } else if (colors.red > 0.019){
             return "red";
-        } else if (colors.blue > 0.05){
+        } else if (colors.blue > 0.015){
+            return "blue";
+        } else {
+            return "none";
+        }
+    }
+
+    public String getColorValSensitive(){
+        colors = intakeColorSensor.getNormalizedColors();
+        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
+            return "yellow";
+        } else if (colors.red > 0.014){
+            return "red";
+        } else if (colors.blue > 0.014){
             return "blue";
         } else {
             return "none";

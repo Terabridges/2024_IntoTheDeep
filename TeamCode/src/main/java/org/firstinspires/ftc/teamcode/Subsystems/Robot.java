@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -77,6 +78,11 @@ public class Robot {
         }
     }
 
+    public void slowFall(){
+        outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
     //Interface Methods
     public void update() {
         for (Subsystem s : subsystems) {
@@ -85,6 +91,8 @@ public class Robot {
     }
 
     public void toInit() {
+        outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         for (Subsystem s : subsystems) {
             s.toInit();
         }

@@ -42,9 +42,10 @@ public class IntakeSystem implements Subsystem {
     private double INTAKE_SPIN_IN = -0.90;
     private double INTAKE_SPIN_OUT = 0.90;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 246;
-    private int INTAKE_SLIDES_HALF = 236;
-    private int INTAKE_SLIDES_QUARTER = 221;
+    private double INTAKE_SLOW_SPIN_OUT = 0.5;
+    private int INTAKE_SLIDES_EXTEND = 250;
+    private int INTAKE_SLIDES_HALF = 235;
+    private int INTAKE_SLIDES_QUARTER = 202;
     private int INTAKE_SLIDES_RETRACT = 186;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
@@ -63,7 +64,7 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
-    private int SLIDES_MAX = 248;
+    private int SLIDES_MAX = 250;
 
     //PIDF
 
@@ -169,6 +170,8 @@ public class IntakeSystem implements Subsystem {
         intakeSpinTarget = INTAKE_SPIN_STOP;
     }
 
+    public void intakeSlowSpinOut(){intakeSpinTarget = INTAKE_SLOW_SPIN_OUT;}
+
     public void intakeSlidesSetManualIn(){
         usePIDFIntakeSlides = false;
         intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_IN;
@@ -201,6 +204,10 @@ public class IntakeSystem implements Subsystem {
 
     public boolean isIntakeHalf(){
         return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_HALF) <= lowServoOffset;
+    }
+
+    public boolean isIntakeQuarter(){
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_QUARTER) <= lowServoOffset;
     }
 
     public boolean isSwivelTransfer(){

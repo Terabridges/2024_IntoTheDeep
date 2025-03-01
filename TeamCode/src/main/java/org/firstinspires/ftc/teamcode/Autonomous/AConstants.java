@@ -9,13 +9,13 @@ public class AConstants {
     public static final double BOT_CENTER_Y = ROBOT_HEIGHT /2;
     public static final double INTAKE_LENGTH = 19; //Length intake extends from bot center to end of intake in inches
 
-    public static final double DROP_TIME = 0.2;
+    public static final double DROP_TIME = 0.1;
     public static final double PICKUP_TIME = 0.8;
 
     public static final double PICKUP_OFFSET = 4.5;
 
-    public static final double STANDARD_POWER = .85;
-    public static final double LOW_POWER = .7;
+    public static final double STANDARD_POWER = 1;
+    public static final double LOW_POWER = .6;
 
     public static final double SAMPLE_X = 40;
     public static final Point FIRST_SAMPLE = new Point(SAMPLE_X, 121.4);
