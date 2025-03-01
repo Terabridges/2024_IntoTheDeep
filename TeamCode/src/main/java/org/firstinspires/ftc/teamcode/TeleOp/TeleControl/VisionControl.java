@@ -16,7 +16,7 @@ public class VisionControl implements Control {
     Gamepad gp1;
     Robot robot;
     VisionMediator vM;
-    EdgeDetector stopAtObs = new EdgeDetector( () -> vision.switchWillStop() );
+    EdgeDetector visionMode = new EdgeDetector( () -> vision.switchVisionMode());
 
     //Constructor
     public VisionControl(VisionSystem vision, Gamepad gp1){
@@ -42,7 +42,7 @@ public class VisionControl implements Control {
     @Override
     public void update(){
 
-        stopAtObs.update(gp1.dpad_up);
+        visionMode.update(gp1.dpad_up);
 
         if (vision.willStopAtObstacle) {
             handleCollisions(vision.leftBackDistVal, vision.rightBackDistVal);
@@ -55,9 +55,7 @@ public class VisionControl implements Control {
     @Override
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Current Color", vision.getColorVal());
-        telemetry.addData("Left Back Distance", vision.leftBackDistVal);
-        telemetry.addData("Right Back Distance", vision.rightBackDistVal);
-        telemetry.addData("Will Stop?", vision.willStopAtObstacle);
+        telemetry.addData("Vision Mode", (vision.specimenVisionMode ? "specimen" : "sample"));
     }
 
 }

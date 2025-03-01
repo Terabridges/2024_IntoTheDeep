@@ -45,6 +45,8 @@ public class VisionSystem implements Subsystem {
     public boolean willStopAtObstacle = false;
     public boolean isCloseEnough = false;
 
+    public boolean specimenVisionMode = false;
+
 
     //Constructor
     public VisionSystem(HardwareMap map) {
@@ -126,8 +128,8 @@ public class VisionSystem implements Subsystem {
 
     }
 
-    public void switchWillStop() {
-        willStopAtObstacle = !willStopAtObstacle;
+    public void switchVisionMode() {
+        specimenVisionMode = !specimenVisionMode;
     }
 
     public boolean isClose() {
@@ -150,10 +152,10 @@ public class VisionSystem implements Subsystem {
     @Override
     public void update(){
         detectColor();
-        if(!willStopAtObstacle){setLightColor(getColorVal());}
+        if(!specimenVisionMode){setLightColor(getColorVal());}
         getDistances();
 
-        if (willStopAtObstacle) {
+        if (specimenVisionMode) {
             if (isClose()){
                 rightLight.setPosition(0.444);
             } else {

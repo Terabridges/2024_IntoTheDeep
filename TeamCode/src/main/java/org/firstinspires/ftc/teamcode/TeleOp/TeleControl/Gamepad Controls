@@ -11,7 +11,7 @@ dLeft - move intake slides in
 dRight - move intake slides out
 dUp -
 dDown - hold to hold sweeper out
-leftStickButton - low basket mode
+leftStickButton - break / regular / low basket mode / high basket mode
 rightStickButton - vertical slide manual mode
 back button - reset states
 start button - reset outtake slides encoders

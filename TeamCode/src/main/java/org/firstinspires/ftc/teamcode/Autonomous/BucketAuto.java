@@ -213,8 +213,6 @@ public class BucketAuto extends LinearOpMode
                 return;
             }
         }
-        o.outtakeClaw.setPosition(o.CLAW_OPEN);
-        v.rightLight.setPosition(0.279);
     }
 
     public void buildPaths()

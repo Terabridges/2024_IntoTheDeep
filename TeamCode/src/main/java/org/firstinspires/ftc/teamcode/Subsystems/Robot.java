@@ -83,6 +83,11 @@ public class Robot {
         outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    public void regularFall(){
+        outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
     //Interface Methods
     public void update() {
         for (Subsystem s : subsystems) {
@@ -91,8 +96,7 @@ public class Robot {
     }
 
     public void toInit() {
-        outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        regularFall();
         for (Subsystem s : subsystems) {
             s.toInit();
         }

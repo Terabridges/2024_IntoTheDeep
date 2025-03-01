@@ -178,8 +178,6 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.update();
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        robot.slowFall();
     }
 
     //Other Methods
@@ -231,7 +229,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(intakeStates.EXTEND)
                 .onEnter( () -> {
-                    intake.intakeSlidesHalf();
+                    intake.intakeSlidesQuarter();
                     drive.isIntakeExtended = true;
                 })
                 .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())

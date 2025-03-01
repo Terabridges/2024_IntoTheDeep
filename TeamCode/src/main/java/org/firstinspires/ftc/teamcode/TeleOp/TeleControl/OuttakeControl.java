@@ -14,9 +14,18 @@ public class OuttakeControl implements Control {
     Gamepad gp1;
     Robot robot;
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
-    EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
+    EdgeDetector lsStateCycle = new EdgeDetector( () -> leftStickStateCycle());
     EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
     EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetEncodersButton());
+
+    public enum leftStickState {
+        BRAKE,
+        NORMAL,
+        LOW_BASKET,
+        HIGH_BASKET
+    }
+
+    leftStickState lsState = leftStickState.BRAKE;
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
@@ -30,8 +39,25 @@ public class OuttakeControl implements Control {
     }
 
     //Methods
-    public void toggleLowBasketMode(){
-        outtake.highBasketMode = !outtake.highBasketMode;
+    public void leftStickStateCycle(){
+        switch (lsState){
+            case BRAKE:
+                robot.slowFall();
+                lsState = leftStickState.NORMAL;
+                break;
+            case NORMAL:
+                robot.regularFall();
+                lsState = leftStickState.LOW_BASKET;
+                break;
+            case LOW_BASKET:
+                outtake.highBasketMode = false;
+                lsState = leftStickState.HIGH_BASKET;
+                break;
+            case HIGH_BASKET:
+                outtake.highBasketMode = true;
+                lsState = leftStickState.BRAKE;
+                break;
+        }
     }
 
     public void toggleClaw(){
@@ -62,8 +88,8 @@ public class OuttakeControl implements Control {
         //Outtake manual with right stick
         slidesManualRE.update(gp1.right_stick_button);
 
-        //Basket Mode Toggle
-        basketMode.update(gp1.left_stick_button);
+        //Left Stick States
+        lsStateCycle.update(gp1.left_stick_button);
 
         //Claw open/close with right bumper
         clawRE.update(gp1.right_bumper);
@@ -77,7 +103,7 @@ public class OuttakeControl implements Control {
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
         telemetry.addData("Manual Slides", outtake.manualOuttake);
         telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
-        telemetry.addData("oSwivel", outtake.outtakeSwivelEnc.getCurrentPosition());
+        telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
     }
 
 }
