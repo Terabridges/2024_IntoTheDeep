@@ -15,6 +15,7 @@ public class DriveControl implements Control {
     DriveSystem driveSystem;
     public Robot robot;
     public Gamepad gp1;
+    public Gamepad gp2;
     VisionMediator vM;
     public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
@@ -23,13 +24,14 @@ public class DriveControl implements Control {
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
 
     //Constructor
-    public DriveControl(DriveSystem d, Gamepad gp1) {
+    public DriveControl(DriveSystem d, Gamepad gp1, Gamepad gp2) {
         this.driveSystem = d;
         this.gp1 = gp1;
+        this.gp2 = gp2;
     }
 
-    public DriveControl(Robot robot, Gamepad gp1) {
-        this(robot.driveSystem, gp1);
+    public DriveControl(Robot robot, Gamepad gp1, Gamepad gp2) {
+        this(robot.driveSystem, gp1, gp2);
         this.robot = robot;
         this.vM = robot.vM;
     }

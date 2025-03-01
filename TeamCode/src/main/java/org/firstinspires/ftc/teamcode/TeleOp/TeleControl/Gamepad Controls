@@ -11,10 +11,10 @@ dLeft - move intake slides in
 dRight - move intake slides out
 dUp -
 dDown - hold to hold sweeper out
-leftStickButton - break / regular / low basket mode / high basket mode
+leftStickButton -
 rightStickButton - vertical slide manual mode
 back button - reset states
-start button - reset outtake slides encoders
+
 
 DOUBLES
 rightTrigger - intake spin in / vertical slides up
@@ -22,8 +22,14 @@ leftTrigger - intake spin out / vertical slides down
 leftStickX - strafe
 leftStickY - forward/back
 rightStickX - spin
-rightStickY -
-touchPadX -
-touchPadY -
 
 
+
+GAMEPAD 2
+A - High Basket Mode Toggle
+Y - Light Mode Toggle
+X - Limit Switch Off/on
+
+
+LeftStickButton - Slow Fall Delay Button
+Right Bump - Reset Encoders

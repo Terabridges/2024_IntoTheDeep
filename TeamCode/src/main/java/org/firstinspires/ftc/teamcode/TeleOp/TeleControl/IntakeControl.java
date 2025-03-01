@@ -13,6 +13,7 @@ public class IntakeControl implements Control{
     //Software
     IntakeSystem intake;
     Gamepad gp1;
+    Gamepad gp2;
     Robot robot;
     EdgeDetector manualSlidesInRE = new EdgeDetector(() -> intake.intakeSlidesSetManualIn());
     EdgeDetector manualSlidesInFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
@@ -23,13 +24,14 @@ public class IntakeControl implements Control{
 
 
     //Constructor
-    public IntakeControl(IntakeSystem intake, Gamepad gp1) {
+    public IntakeControl(IntakeSystem intake, Gamepad gp1, Gamepad gp2) {
         this.intake = intake;
         this.gp1 = gp1;
+        this.gp2 = gp2;
     }
 
-    public IntakeControl(Robot robot, Gamepad gp1) {
-        this(robot.intakeSystem, gp1);
+    public IntakeControl(Robot robot, Gamepad gp1, Gamepad gp2) {
+        this(robot.intakeSystem, gp1, gp2);
         this.robot = robot;
     }
 

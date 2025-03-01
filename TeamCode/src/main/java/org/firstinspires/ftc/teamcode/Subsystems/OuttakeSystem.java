@@ -33,6 +33,7 @@ public class OuttakeSystem implements Subsystem {
     public boolean isClawOpen = false;
     private double outtakeSwivelOffset = 180.0;
     public boolean usePIDF = false;
+    public boolean useLimitSwitch = true;
 
     //Positions
     public double CLAW_OPEN = 0.5;
@@ -53,10 +54,10 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_LOCK = 91;
     private int OUTTAKE_SLIDES_HIGH = -3420; //-3320;
     private int OUTTAKE_SLIDES_LOW = -1510; //-1420;
-    private int OUTTAKE_SLIDES_DOWN = 0;
+    private int OUTTAKE_SLIDES_DOWN = -20;
     //private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_REST = -750;
-    private int OUTTAKE_SLIDES_GRAB_1 = 0;
+    private int OUTTAKE_SLIDES_GRAB_1 = -20;
     private int OUTTAKE_SLIDES_SCORE_1 = -1655; //-1700;
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
@@ -301,8 +302,14 @@ public class OuttakeSystem implements Subsystem {
 //            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
 //        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
-        if (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 30)){
+
+        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 150))){
             resetEncodersButton();
+        }
+
+        //IDK ABOUT THIS
+        if(outtakeBottomVertical.getMode().equals(DcMotor.RunMode.STOP_AND_RESET_ENCODER)){
+            outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 }

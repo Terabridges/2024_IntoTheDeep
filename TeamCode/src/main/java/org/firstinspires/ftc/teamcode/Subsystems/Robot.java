@@ -21,6 +21,7 @@ public class Robot {
     public HardwareMap hardwareMap;
     public Telemetry telemetry;
     public Gamepad gp1;
+    public Gamepad gp2;
     public static VoltageSensor voltageSensor;
 
     //Subsystems
@@ -38,7 +39,7 @@ public class Robot {
     public List<Subsystem> subsystems;
 
     //Constructors
-    public Robot(HardwareMap map, Telemetry t, Gamepad gp1){
+    public Robot(HardwareMap map, Telemetry t, Gamepad gp1, Gamepad gp2){
         hardwareMap = map;
         telemetry = t;
 
@@ -50,21 +51,18 @@ public class Robot {
         subsystems = new ArrayList<>(Arrays.asList(outtakeSystem, intakeSystem, visionSystem, driveSystem));
 
         this.gp1 = gp1;
+        this.gp2 = gp2;
 
         this.vM = new VisionMediator(this);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
-    public Robot(HardwareMap map, Telemetry t){this(map, t, null);}
+    public Robot(HardwareMap map, Telemetry t){this(map, t, null, null);}
 
     //Methods
     public double getVoltage() {
         return voltageSensor.getVoltage();
-    }
-
-    public void rumble(int milliseconds){
-        gp1.rumble(milliseconds);
     }
 
     public void setManualSlidesTrue(){
@@ -86,6 +84,10 @@ public class Robot {
     public void regularFall(){
         outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void toggleLimitSwitch(){
+        outtakeSystem.useLimitSwitch = !outtakeSystem.useLimitSwitch;
     }
 
     //Interface Methods

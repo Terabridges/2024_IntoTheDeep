@@ -47,6 +47,7 @@ public class IntakeSystem implements Subsystem {
     private int INTAKE_SLIDES_HALF = 235;
     private int INTAKE_SLIDES_QUARTER = 202;
     private int INTAKE_SLIDES_RETRACT = 186;
+    private int INTAKE_SLIDES_SAM = 220;
     private int INTAKE_SWIVEL_TRANSFER = 124;
     private int INTAKE_SWIVEL_REST = 210;
     private int INTAKE_SWIVEL_DOWN = 292;
@@ -148,6 +149,8 @@ public class IntakeSystem implements Subsystem {
         intakeSlidesTarget = INTAKE_SLIDES_QUARTER;
     }
 
+    public void intakeSlidesSam(){intakeSlidesTarget = INTAKE_SLIDES_SAM;}
+
     public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 
     public void intakeSwivelRest(){
@@ -213,6 +216,7 @@ public class IntakeSystem implements Subsystem {
     public boolean isSwivelTransfer(){
         return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_TRANSFER) <= servoOffset;
     }
+
 
     public boolean isSwivelRest(){
         return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;

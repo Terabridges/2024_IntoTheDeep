@@ -26,8 +26,11 @@ public class MainTeleOp extends LinearOpMode {
 
     public HashMap<String, String> gamepadMap = null;
     private ElapsedTime runtime = new ElapsedTime();
+    ElapsedTime hangTimer = new ElapsedTime();
 
     private LoopTimer loopTimer = new LoopTimer();
+
+    public boolean isHanging = false;
 
     //Global FSM
     enum globalStates {
@@ -44,13 +47,15 @@ public class MainTeleOp extends LinearOpMode {
         SWIVEL_UP,
         EXTEND,
         COLOR_WAIT,
+        LIL_SPIT,
         RETRACT,
         SWIVEL_DOWN
     }
 
     public enum transferStates {
         START,
-        TRANSFER
+        TRANSFER,
+        CLOSE
     }
 
     public enum outtakeStates {
@@ -82,27 +87,33 @@ public class MainTeleOp extends LinearOpMode {
     public Gamepad currentGamepad1;
     public Gamepad previousGamepad1;
 
+    public Gamepad currentGamepad2;
+    public Gamepad previousGamepad2;
+
     //Run OpMode
     @Override
     public void runOpMode() throws InterruptedException {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        Robot robot = new Robot(hardwareMap, telemetry, gamepad1);
+        Robot robot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
 
         intakeMachine = getIntakeMachine(robot);
         transferMachine = getTransferMachine(robot);
         outtakeMachine = getOuttakeMachine(robot);
         specimenMachine = getSpecimenMachine(robot);
 
-        driveControl = new DriveControl(robot, gamepad1);
-        intakeControl = new IntakeControl(robot, gamepad1);
-        outtakeControl = new OuttakeControl(robot, gamepad1);
-        visionControl = new VisionControl(robot, gamepad1);
+        driveControl = new DriveControl(robot, gamepad1, gamepad2);
+        intakeControl = new IntakeControl(robot, gamepad1, gamepad2);
+        outtakeControl = new OuttakeControl(robot, gamepad1, gamepad2);
+        visionControl = new VisionControl(robot, gamepad1, gamepad2);
 
         controls = new ArrayList<>(Arrays.asList(intakeControl, outtakeControl, driveControl, visionControl));
 
         currentGamepad1 = new Gamepad();
         previousGamepad1 = new Gamepad();
+
+        currentGamepad2 = new Gamepad();
+        previousGamepad2 = new Gamepad();
 
         StateMachine globalMachine = new StateMachineBuilder()
 
@@ -174,6 +185,22 @@ public class MainTeleOp extends LinearOpMode {
             transferMachine.update();
             specimenMachine.update();
 
+            if (currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
+                hangMacro();
+            }
+
+            if (isHanging && (hangTimer.seconds() > 3)){
+                robot.slowFall();
+                robot.outtakeSystem.manualOuttake = true;
+                robot.intakeSystem.manualIntake = false;
+                telemetry.addData("Hang Macro", "Brake");
+            }
+
+            if (isHanging && (hangTimer.seconds() > 6)){
+                telemetry.addData("Hang Macro", "Stop");
+                stop();
+            }
+
             telemetry.addData("CURRENT STATE", robot.currentState);
             telemetry.update();
         }
@@ -181,6 +208,12 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     //Other Methods
+
+    public void hangMacro(){
+        isHanging = true;
+        hangTimer.reset();
+        telemetry.addData("Hang Macro", "start");
+    }
 
     public void controlsUpdate() {
         for (Control c : controls) {
@@ -192,6 +225,9 @@ public class MainTeleOp extends LinearOpMode {
     public void gamepadUpdate(){
         previousGamepad1.copy(currentGamepad1);
         currentGamepad1.copy(gamepad1);
+
+        previousGamepad2.copy(currentGamepad2);
+        currentGamepad2.copy(gamepad2);
     }
 
     public boolean aPressed() {
@@ -229,14 +265,24 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(intakeStates.EXTEND)
                 .onEnter( () -> {
-                    intake.intakeSlidesQuarter();
+                    intake.intakeSlidesSam();
                     drive.isIntakeExtended = true;
                 })
                 .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
-                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
-                .transition( () -> aPressed(), intakeStates.RETRACT, () -> intake.intakeSwivelRest())
+                .transition( () -> vision.isSomething(), intakeStates.LIL_SPIT, () -> {
+                    intake.intakeSlowSpinOut();
+                    intake.intakeSwivelRest();
+                })
+                .transition( () -> aPressed(), intakeStates.RETRACT, () -> {
+                    //intake.intakeSlowSpinOut();
+                    intake.intakeSwivelRest();
+                })
+
+                //Probably need to stop mapping to trigger for this to work well
+//                .state(intakeStates.LIL_SPIT)
+//                .transitionTimed(0.15, intakeStates.RETRACT, () -> intake.intakeStopSpin())
 
                 .state(intakeStates.RETRACT)
                 .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
@@ -265,10 +311,14 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.wristTransfer();
                     outtake.outtakeSlidesDown();
                 })
-                .transition(() -> outtake.isSlidesDown(), transferStates.START, () -> {
+                .transition(() -> outtake.isSlidesDown(), transferStates.CLOSE, () -> {
                     outtake.closeClaw();
-                    outtake.outtakeSlidesRest();
                 })
+
+                .state(transferStates.CLOSE)
+                .onEnter(() -> outtake.closeClaw())
+                .transitionTimed(0.3, transferStates.START)
+                .onExit(() -> outtake.outtakeSlidesRest())
 
                 .build();
     }
@@ -297,17 +347,21 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> outtake.openClaw())
-                .transitionTimed(0.2, outtakeStates.OUTTAKE_RESET)
-
-                .state(outtakeStates.OUTTAKE_RESET)
-                .onEnter( () -> {
+                .transitionTimed(0.2, outtakeStates.START)
+                .onExit(() -> {
                     outtake.outtakeSwivelDown();
                     outtake.outtakeSlidesRest();
-                    driveSystem.driveBack();
                 })
-                .transitionTimed( 0.25, outtakeStates.START, ()-> {
-                    driveSystem.driveStop();
-                })
+
+//                .state(outtakeStates.OUTTAKE_RESET)
+//                .onEnter( () -> {
+//                    outtake.outtakeSwivelDown();
+//                    outtake.outtakeSlidesRest();
+//                    driveSystem.driveBack();
+//                })
+//                .transitionTimed( 0.25, outtakeStates.START, ()-> {
+//                    driveSystem.driveStop();
+//                })
 
                 .build();
     }

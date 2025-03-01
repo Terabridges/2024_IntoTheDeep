@@ -12,52 +12,30 @@ public class OuttakeControl implements Control {
     //Software
     OuttakeSystem outtake;
     Gamepad gp1;
+    Gamepad gp2;
     Robot robot;
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
-    EdgeDetector lsStateCycle = new EdgeDetector( () -> leftStickStateCycle());
+    EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
     EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
     EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetEncodersButton());
-
-    public enum leftStickState {
-        BRAKE,
-        NORMAL,
-        LOW_BASKET,
-        HIGH_BASKET
-    }
-
-    leftStickState lsState = leftStickState.BRAKE;
+    EdgeDetector useLimitSwitchRE = new EdgeDetector(() -> robot.toggleLimitSwitch());
 
     //Constructor
-    public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
+    public OuttakeControl(OuttakeSystem outtake, Gamepad gp1, Gamepad gp2){
         this.outtake = outtake;
         this.gp1 = gp1;
+        this.gp2 = gp2;
     }
 
-    public OuttakeControl(Robot robot, Gamepad gp1) {
-        this(robot.outtakeSystem, gp1);
+    public OuttakeControl(Robot robot, Gamepad gp1, Gamepad gp2) {
+        this(robot.outtakeSystem, gp1, gp2);
         this.robot = robot;
     }
 
     //Methods
-    public void leftStickStateCycle(){
-        switch (lsState){
-            case BRAKE:
-                robot.slowFall();
-                lsState = leftStickState.NORMAL;
-                break;
-            case NORMAL:
-                robot.regularFall();
-                lsState = leftStickState.LOW_BASKET;
-                break;
-            case LOW_BASKET:
-                outtake.highBasketMode = false;
-                lsState = leftStickState.HIGH_BASKET;
-                break;
-            case HIGH_BASKET:
-                outtake.highBasketMode = true;
-                lsState = leftStickState.BRAKE;
-                break;
-        }
+
+    public void toggleLowBasketMode() {
+        outtake.highBasketMode = !outtake.highBasketMode;
     }
 
     public void toggleClaw(){
@@ -88,14 +66,17 @@ public class OuttakeControl implements Control {
         //Outtake manual with right stick
         slidesManualRE.update(gp1.right_stick_button);
 
-        //Left Stick States
-        lsStateCycle.update(gp1.left_stick_button);
+        //GAMEPAD2 basketModeToggle A
+        basketMode.update(gp2.a);
 
         //Claw open/close with right bumper
         clawRE.update(gp1.right_bumper);
 
-        //Reset slide encoders with start button
-        resetEncodersRE.update(gp1.start);
+        //GAMEPAD 2 Reset slide encoders with right bumper
+        resetEncodersRE.update(gp2.right_bumper);
+
+        //GAMEPAD 2 Use limit switch toggle X
+        useLimitSwitchRE.update(gp2.x);
     }
 
     @Override
@@ -104,6 +85,8 @@ public class OuttakeControl implements Control {
         telemetry.addData("Manual Slides", outtake.manualOuttake);
         telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
         telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
+        telemetry.addData("Zero Power Behavior", outtake.outtakeBottomVertical.getZeroPowerBehavior());
+        telemetry.addData("Use Limit Switch", outtake.useLimitSwitch);
     }
 
 }
