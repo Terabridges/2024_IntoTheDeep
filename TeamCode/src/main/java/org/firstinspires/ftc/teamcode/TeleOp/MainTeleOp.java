@@ -272,17 +272,21 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(intakeStates.COLOR_WAIT)
                 .transition( () -> vision.isSomething(), intakeStates.LIL_SPIT, () -> {
+                    intake.manualIntake = false;
                     intake.intakeSlowSpinOut();
                     intake.intakeSwivelRest();
                 })
-                .transition( () -> aPressed(), intakeStates.RETRACT, () -> {
-                    //intake.intakeSlowSpinOut();
+                .transition( () -> aPressed(), intakeStates.LIL_SPIT, () -> {
+                    intake.manualIntake = false;
+                    intake.intakeSlowSpinOut();
                     intake.intakeSwivelRest();
                 })
 
-                //Probably need to stop mapping to trigger for this to work well
-//                .state(intakeStates.LIL_SPIT)
-//                .transitionTimed(0.15, intakeStates.RETRACT, () -> intake.intakeStopSpin())
+                .state(intakeStates.LIL_SPIT)
+                .transitionTimed(0.15, intakeStates.RETRACT, () -> {
+                    intake.manualIntake = true;
+                    intake.intakeStopSpin();
+                })
 
                 .state(intakeStates.RETRACT)
                 .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
@@ -346,22 +350,17 @@ public class MainTeleOp extends LinearOpMode {
                 .transition( () -> yPressed(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
-                .onEnter( () -> outtake.openClaw())
-                .transitionTimed(0.2, outtakeStates.START)
-                .onExit(() -> {
+                .onEnter( () -> {
+                    outtake.openClaw();
                     outtake.outtakeSwivelDown();
                     outtake.outtakeSlidesRest();
+                    if (!(gamepad1.left_stick_x > 0 || gamepad1.left_stick_y > 0 || gamepad1.right_stick_x > 0 || gamepad1.right_stick_y > 0)) {
+                        driveSystem.driveBack();
+                    }
                 })
-
-//                .state(outtakeStates.OUTTAKE_RESET)
-//                .onEnter( () -> {
-//                    outtake.outtakeSwivelDown();
-//                    outtake.outtakeSlidesRest();
-//                    driveSystem.driveBack();
-//                })
-//                .transitionTimed( 0.25, outtakeStates.START, ()-> {
-//                    driveSystem.driveStop();
-//                })
+                .transitionTimed(0.2, outtakeStates.START)
+                .transition(() -> (gamepad1.left_stick_x > 0 || gamepad1.left_stick_y > 0 || gamepad1.right_stick_x > 0 || gamepad1.right_stick_y > 0), outtakeStates.START)
+                .onExit(() -> driveSystem.driveStop())
 
                 .build();
     }

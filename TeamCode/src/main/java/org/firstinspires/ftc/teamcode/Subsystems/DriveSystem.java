@@ -47,10 +47,6 @@ public class DriveSystem implements Subsystem {
 
     public void driveStop(){
         manualDrive = true;
-        leftBack.setPower(0);
-        leftFront.setPower(0);
-        rightBack.setPower(0);
-        rightFront.setPower(0);
     }
 
     //Interface Methods
