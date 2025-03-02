@@ -20,7 +20,6 @@ public class DriveControl implements Control {
     public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
     public double speed = FAST_MULT;
-    boolean useSlowMode = false;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
 
     //Constructor
@@ -38,7 +37,7 @@ public class DriveControl implements Control {
 
     //Methods
     public void toggleSlowMode(){
-        useSlowMode = !useSlowMode;
+        driveSystem.useSlowMode = !driveSystem.useSlowMode;
     }
 
 
@@ -47,7 +46,7 @@ public class DriveControl implements Control {
     public void update(){
 
         slowModeRE.update(gp1.x);
-        speed = (useSlowMode ? SLOW_MULT : FAST_MULT);
+        speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(driveSystem.manualDrive){
             double max;
@@ -85,7 +84,7 @@ public class DriveControl implements Control {
 
     @Override
     public void addTelemetry(Telemetry telemetry){
-        telemetry.addData("SPEED", (useSlowMode ? "SLOW" : "FAST"));
+        telemetry.addData("SPEED", (driveSystem.useSlowMode ? "SLOW" : "FAST"));
     }
 
 }

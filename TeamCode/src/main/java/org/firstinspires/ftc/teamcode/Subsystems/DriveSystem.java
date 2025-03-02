@@ -25,6 +25,7 @@ public class DriveSystem implements Subsystem {
     public double fastTurn = 1;
     public double turnFactor = fastTurn;
     public double slowTurn = 0.4;
+    public boolean useSlowMode = false;
 
     //Constructor
     public DriveSystem(HardwareMap map) {

@@ -33,7 +33,7 @@ public class OuttakeSystem implements Subsystem {
     public boolean isClawOpen = false;
     private double outtakeSwivelOffset = 180.0;
     public boolean usePIDF = false;
-    public boolean useLimitSwitch = true;
+    public boolean useLimitSwitch = false;
 
     //Positions
     public double CLAW_OPEN = 0.5;
@@ -53,11 +53,11 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
     private int OUTTAKE_SLIDES_HIGH = -3420; //-3320;
-    private int OUTTAKE_SLIDES_LOW = -1510; //-1420;
-    private int OUTTAKE_SLIDES_DOWN = -20;
+    private int OUTTAKE_SLIDES_LOW = -1550; //-1420;
+    private int OUTTAKE_SLIDES_DOWN = -40;
     //private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_REST = -750;
-    private int OUTTAKE_SLIDES_GRAB_1 = -20;
+    private int OUTTAKE_SLIDES_GRAB_1 = -40;
     private int OUTTAKE_SLIDES_SCORE_1 = -1655; //-1700;
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
@@ -216,6 +216,10 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
     }
 
+    public boolean isSlidesAlmostDown(){
+        return outtakeBottomVertical.getCurrentPosition() >= (-100);
+    }
+
     public boolean isSlidesRest(){
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
     }
@@ -240,10 +244,6 @@ public class OuttakeSystem implements Subsystem {
 
     public boolean isSlidesLow(){
         return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
-    }
-
-    public boolean isSlidesAlmostDown(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_ALMOST_DOWN) <= motorOffset;
     }
 
     public boolean isSwivelUp() {
