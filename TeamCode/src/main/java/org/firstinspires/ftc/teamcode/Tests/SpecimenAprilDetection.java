@@ -148,9 +148,11 @@ public class SpecimenAprilDetection extends LinearOpMode {
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x * (1.5504), detection.ftcPose.y * (1.8582), detection.ftcPose.z * (1.2352)));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addData("angle calculated", changeAngleToDegrees(Math.atan((detection.ftcPose.x * (1.5504))/detection.ftcPose.y * (1.8582))));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+
             }
         }   // end for() loop
 
@@ -159,6 +161,11 @@ public class SpecimenAprilDetection extends LinearOpMode {
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
 
+
     }   // end method telemetryAprilTag()
 
+    public double changeAngleToDegrees(double angle)
+    {
+        return angle * (180.0 / Math.PI);
+    }
 }   // end class
