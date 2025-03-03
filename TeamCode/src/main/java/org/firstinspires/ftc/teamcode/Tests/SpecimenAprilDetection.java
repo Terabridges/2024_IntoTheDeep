@@ -231,7 +231,7 @@ public class SpecimenAprilDetection extends LinearOpMode {
             if (detection.metadata != null) {
                 double usableYawDegrees = (detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)) + 90;
                 double usableYawRadians = (detection.robotPose.getOrientation().getYaw(AngleUnit.RADIANS)) + (Math.PI / 2);
-                double x_dist = detection.robotPose.getPosition().y +72; // 0.9449
+                double x_dist = 72 - detection.robotPose.getPosition().y; // 0.9449
                 double y_dist = (detection.robotPose.getPosition().x) + 72; //* Math.cos(Math.abs(usableYawRadians));
                 double z_dist = detection.robotPose.getPosition().z;
 
