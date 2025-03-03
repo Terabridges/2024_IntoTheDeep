@@ -118,7 +118,7 @@ public class SpecimenAprilDetection extends LinearOpMode {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        
+
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch START to start OpMode");
@@ -226,14 +226,21 @@ public class SpecimenAprilDetection extends LinearOpMode {
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
+        // 72.5 - 72.5 - 68.5
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
-                double x_dist = (detection.robotPose.getPosition().x); // 0.9449
+                double usableYawDegrees = (detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)) + 90;
+                double usableYawRadians = (detection.robotPose.getOrientation().getYaw(AngleUnit.RADIANS)) + (Math.PI / 2);
+                double x_dist = detection.robotPose.getPosition().y +72; // 0.9449
+                double y_dist = (detection.robotPose.getPosition().x) + 72; //* Math.cos(Math.abs(usableYawRadians));
+                double z_dist = detection.robotPose.getPosition().z;
+
+
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
                         x_dist,
-                        72.5 - detection.robotPose.getPosition().y,
-                        detection.robotPose.getPosition().z));
+                        y_dist,
+                        z_dist));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
                         detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
                         detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
@@ -249,5 +256,14 @@ public class SpecimenAprilDetection extends LinearOpMode {
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
 
     }   // end method telemetryAprilTag()
+    public static double convertRadianToDegrees(double angle)
+    {
+        return angle * (180/Math.PI);
+    }
+
+    public static double convertDegreeToRadians(double angle)
+    {
+        return angle * (Math.PI/ 180);
+    }
 
 }   // end class
