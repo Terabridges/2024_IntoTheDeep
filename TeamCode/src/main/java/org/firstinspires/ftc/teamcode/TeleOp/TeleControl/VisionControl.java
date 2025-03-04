@@ -57,6 +57,8 @@ public class VisionControl implements Control {
     @Override
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Current Color", vision.getColorVal());
+        telemetry.addData("Left Back Dist", vision.leftBackDistVal);
+        telemetry.addData("Right Back Dist", vision.rightBackDistVal);
         telemetry.addData("Vision Mode", (vision.specimenVisionMode ? "specimen" : "sample"));
     }
 

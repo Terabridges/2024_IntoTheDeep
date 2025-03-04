@@ -1,14 +1,22 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.localization.constants.PinpointConstants;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+
+import java.util.Locale;
 
 
 public class DriveSystem implements Subsystem {
@@ -18,6 +26,10 @@ public class DriveSystem implements Subsystem {
     public DcMotor leftBack;
     public DcMotor rightFront;
     public DcMotor rightBack;
+
+    public GoBildaPinpointDriver odo;
+    private Pose2D pos;
+    public String data;
 
     //Software
     public boolean manualDrive = true;
@@ -35,6 +47,8 @@ public class DriveSystem implements Subsystem {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack = map.get(DcMotor.class, "right_back");
         rightFront = map.get(DcMotor.class, "right_front");
+
+        odo = map.get(GoBildaPinpointDriver.class, "pinpoint");
     }
 
     //Methods
@@ -53,6 +67,15 @@ public class DriveSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
+
+        PinpointConstants.distanceUnit = DistanceUnit.INCH;
+
+        odo.setOffsets(-3.5, 1);
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.resetPosAndIMU();
+
+
     }
 
     @Override
@@ -62,6 +85,11 @@ public class DriveSystem implements Subsystem {
         } else {
             turnFactor = fastTurn;
         }
+
+        odo.update();
+        pos = odo.getPosition();
+        data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
+
     }
 
 }
