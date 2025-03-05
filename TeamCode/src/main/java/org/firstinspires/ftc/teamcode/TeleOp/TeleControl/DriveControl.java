@@ -58,14 +58,15 @@ public class DriveControl implements Control {
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
+            double axial;
             if (!noForward) {
-                double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
+                axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
             }
             else if (noForward && -gp1.left_stick_y < 0) {
-                double axial = -gp1.left_stick_y;
+                axial = -gp1.left_stick_y;
             }
             else {
-                double axial = 0;
+                axial = 0;
             }
 
             double lateral = gp1.left_stick_x;
