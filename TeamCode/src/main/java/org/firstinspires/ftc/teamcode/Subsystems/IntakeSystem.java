@@ -39,11 +39,12 @@ public class IntakeSystem implements Subsystem {
     private double intakeSlidesOffset = 100;
 
     //Positions
-    private double INTAKE_SPIN_IN = -0.90;
-    private double INTAKE_SPIN_OUT = 0.90;
+    private double INTAKE_SPIN_IN = -1;
+    private double INTAKE_SPIN_OUT = 1;
     private double INTAKE_SPIN_STOP = 0;
     private double INTAKE_SLOW_SPIN_OUT = 0.5;
-    private int INTAKE_SLIDES_EXTEND = 270;
+    private int INTAKE_SLIDES_EXTEND = 237;
+    private int INTAKE_SLIDES_SUPER_EXTEND = 275;
     //MAX 283.5
     private int INTAKE_SLIDES_HALF = 235;
     private int INTAKE_SLIDES_QUARTER = 202;
@@ -151,6 +152,8 @@ public class IntakeSystem implements Subsystem {
     }
 
     public void intakeSlidesSam(){intakeSlidesTarget = INTAKE_SLIDES_SAM;}
+
+    public void intakeSlidesSuperExtend(){intakeSlidesTarget = INTAKE_SLIDES_SUPER_EXTEND;}
 
     public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 
