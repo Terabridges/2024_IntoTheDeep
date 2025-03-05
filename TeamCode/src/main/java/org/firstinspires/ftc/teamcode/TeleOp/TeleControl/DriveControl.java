@@ -4,9 +4,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.DriveSystem;
-import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.TeleOp.VisionMediator;
+import org.firstinspires.ftc.teamcode.TeleOp.DriveMediator;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
 public class DriveControl implements Control {
@@ -16,11 +15,13 @@ public class DriveControl implements Control {
     public Robot robot;
     public Gamepad gp1;
     public Gamepad gp2;
-    VisionMediator vM;
+    DriveMediator dM;
     public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
     public double speed = FAST_MULT;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
+
+    public boolean noForward = false;
 
     //Constructor
     public DriveControl(DriveSystem d, Gamepad gp1, Gamepad gp2) {
@@ -32,7 +33,7 @@ public class DriveControl implements Control {
     public DriveControl(Robot robot, Gamepad gp1, Gamepad gp2) {
         this(robot.driveSystem, gp1, gp2);
         this.robot = robot;
-        this.vM = robot.vM;
+        this.dM = robot.dM;
     }
 
     //Methods
@@ -45,13 +46,28 @@ public class DriveControl implements Control {
     @Override
     public void update(){
 
+        dM.update();
+        if (dM.isColliding()){
+            noForward = true;
+        }
+
         slowModeRE.update(gp1.x);
         speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(driveSystem.manualDrive){
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
+
+            if (!noForward) {
+                double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
+            }
+            else if (noForward && -gp1.left_stick_y < 0) {
+                double axial = -gp1.left_stick_y;
+            }
+            else {
+                double axial = 0;
+            }
+
             double lateral = gp1.left_stick_x;
             double yaw = gp1.right_stick_x;
             // Combine the joystick requests for each axis-motion to determine each wheel's power.

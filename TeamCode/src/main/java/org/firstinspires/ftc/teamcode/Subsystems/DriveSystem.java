@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.GoBildaPinpointDriver;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.constants.PinpointConstants;
-import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,9 +8,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 import java.util.Locale;
 
@@ -28,8 +21,6 @@ public class DriveSystem implements Subsystem {
     public DcMotor rightBack;
 
     public GoBildaPinpointDriver odo;
-    private Pose2D pos;
-    public String data;
 
     //Software
     public boolean manualDrive = true;
@@ -38,6 +29,15 @@ public class DriveSystem implements Subsystem {
     public double turnFactor = fastTurn;
     public double slowTurn = 0.4;
     public boolean useSlowMode = false;
+
+    public Pose2D pos;
+    public String data;
+    public final Pose2D START_POS = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public final double INCH_TO_MM = 25.4;
+    public static final double ROBOT_WIDTH = 13.117; //Front to back
+    public static final double ROBOT_HEIGHT = 13.413; //Side to side
+    public static final double BOT_CENTER_X = ROBOT_WIDTH /2;
+    public static final double BOT_CENTER_Y = ROBOT_HEIGHT /2;
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -68,12 +68,12 @@ public class DriveSystem implements Subsystem {
     @Override
     public void toInit(){
 
-        PinpointConstants.distanceUnit = DistanceUnit.INCH;
-
-        odo.setOffsets(-3.5, 1);
+        odo.setOffsets((-3.5 * INCH_TO_MM), (1 * INCH_TO_MM));
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
+        odo.setPosition(START_POS);
+        pos = odo.getPosition();
 
 
     }

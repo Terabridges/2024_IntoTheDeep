@@ -3,10 +3,9 @@ package org.firstinspires.ftc.teamcode.TeleOp.TeleControl;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
-import org.firstinspires.ftc.teamcode.TeleOp.VisionMediator;
+import org.firstinspires.ftc.teamcode.TeleOp.DriveMediator;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
 public class VisionControl implements Control {
@@ -16,7 +15,7 @@ public class VisionControl implements Control {
     Gamepad gp1;
     Gamepad gp2;
     Robot robot;
-    VisionMediator vM;
+    DriveMediator dM;
     EdgeDetector visionMode = new EdgeDetector( () -> vision.switchVisionMode());
 
     //Constructor
@@ -29,14 +28,14 @@ public class VisionControl implements Control {
     public VisionControl(Robot robot, Gamepad gp1, Gamepad gp2) {
         this(robot.visionSystem, gp1, gp2);
         this.robot = robot;
-        this.vM = robot.vM;
+        this.dM = robot.dM;
     }
 
 
     //Methods
     public void handleCollisions(double leftBackDistVal, double rightBackDistVal) {
         if ((leftBackDistVal + rightBackDistVal) / 2 < 60) {
-            vM.colliding();
+            dM.colliding();
         }
     }
 
@@ -49,8 +48,6 @@ public class VisionControl implements Control {
         if (vision.willStopAtObstacle) {
             handleCollisions(vision.leftBackDistVal, vision.rightBackDistVal);
         }
-
-        vM.update();
 
     }
 
