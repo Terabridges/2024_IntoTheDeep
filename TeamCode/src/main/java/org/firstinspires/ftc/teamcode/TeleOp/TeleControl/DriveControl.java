@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.TeleControl;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -55,22 +56,43 @@ public class DriveControl implements Control {
         speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(driveSystem.manualDrive){
+
+            double pyaw = 0.003, iyaw = 0.005, dyaw = 0.00005;
+            PIDController yawPID = new PIDController(pyaw, iyaw, dyaw);
+            yawPID.setPID(pyaw, iyaw, dyaw);
+
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-
-            double axial;
-            if (!noForward) {
-                axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
-            }
-            else if (noForward && -gp1.left_stick_y < 0) {
-                axial = -gp1.left_stick_y;
-            }
-            else {
-                axial = 0;
-            }
-
+            double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gp1.left_stick_x;
             double yaw = gp1.right_stick_x;
+
+            if (dM.isColliding()) {
+                // Transform the drive vector to the field's coordinate system
+                double fieldForwardHeading = dM.getFieldForwardHeading();
+                double robotHeading = dM.getRobotHeading();
+                double cosHeading = Math.cos(fieldForwardHeading);
+                double sinHeading = Math.sin(fieldForwardHeading);
+
+                double fieldAxial = axial * cosHeading - lateral * sinHeading;
+                double fieldLateral = axial * sinHeading + lateral * cosHeading;
+
+                // Apply constraints to the drive vector
+                if (fieldAxial > 0) {
+                    fieldAxial = 0;
+
+                    yaw = yawPID.calculate(robotHeading, fieldForwardHeading);
+
+
+                }
+
+                // Transform the constrained drive vector back to the robot's coordinate system
+                axial = fieldAxial * cosHeading + fieldLateral * sinHeading;
+                lateral = -fieldAxial * sinHeading + fieldLateral * cosHeading;
+
+            }
+
+
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower = axial + lateral + (yaw * driveSystem.turnFactor);

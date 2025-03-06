@@ -32,7 +32,7 @@ public class DriveSystem implements Subsystem {
 
     public Pose2D pos;
     public String data;
-    public final Pose2D START_POS = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public final Pose2D START_POS = new Pose2D(DistanceUnit.INCH, BOT_CENTER_X, 0, AngleUnit.DEGREES, 0);
     public final double INCH_TO_MM = 25.4;
     public static final double ROBOT_WIDTH = 13.117; //Front to back
     public static final double ROBOT_HEIGHT = 13.413; //Side to side

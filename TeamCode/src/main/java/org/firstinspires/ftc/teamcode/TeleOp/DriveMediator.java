@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.DriveSystem;
@@ -16,6 +17,8 @@ public class DriveMediator {
     private double rightBackDist;
 
     private Pose2D pose;
+
+    private double fieldForwardHeading;
 
     public DriveMediator(Robot r) {
         this.vision = r.visionSystem;
@@ -35,14 +38,27 @@ public class DriveMediator {
         return colliding;
     }
 
+    public void setFieldForwardHeading(double fieldForwardHeading) {
+        this.fieldForwardHeading = fieldForwardHeading;
+    }
+
+    public double getFieldForwardHeading() {
+        return leftBackDist;
+    }
+
+    public double getRobotHeading() {
+        return pose.getHeading(AngleUnit.DEGREES);
+    }
+
     public void update() {
         leftBackDist = vision.leftBackDistVal;
         rightBackDist = vision.rightBackDistVal;
 
         pose = drive.pos;
 
-        if (pose.getX(DistanceUnit.INCH) > 47 + drive.BOT_CENTER_X) {
+        if (pose.getX(DistanceUnit.INCH) > 42.5 + drive.BOT_CENTER_X) {
             colliding();
+            setFieldForwardHeading(0);
         }
 
         //if drive.localier == where i want && vision.willstopat == true, set colliding to true, move to where i want, set colliding to false
