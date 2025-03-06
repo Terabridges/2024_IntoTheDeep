@@ -57,28 +57,31 @@ public class BucketAuto extends LinearOpMode
 
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 108+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
 
-    Pose scorePoseP = new Pose(20, 135, Math.toRadians(333.5));
-    Pose scorePose1 = new Pose(17.8, 135, Math.toRadians(353));
-    Pose scorePose2 = new Pose(17.5, 135, Math.toRadians(349));
-    Pose scorePose3 = new Pose(17.8, 135, Math.toRadians(349));
+    Pose scorePoseP = new Pose(17.8, 135, Math.toRadians(335));
+    Pose scorePose1 = new Pose(17.6, 136.5, Math.toRadians(346.5));
+    Pose scorePose2 = new Pose(17.65, 136.5, Math.toRadians(349));
+    Pose scorePose3 = new Pose(18.5, 134, Math.toRadians(340));
     Pose scorePose4 = new Pose(15, 129, Math.toRadians(315));
 
-    //Pose firstSampleStart = new Pose(AConstants.START_X, AConstants.FIRST_SAMPLE.getY(), Math.toRadians(0));
-    //Pose secondSampleStart = new Pose(AConstants.START_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
+    //Pose firstSampleStart = new Pose(21.5, 134.4, Math.toRadians(333.5));
+    //Pose secondSampleStart = new Pose(19.3, 134.8, Math.toRadians(353));
     //Pose thirdSampleStart = new Pose(25, 130.5, Math.toRadians(30));
     //Pose firstSampleEnd = new Pose(AConstants.END_X, AConstants.FIRST_SAMPLE.getY(), Math.toRadians(0));
     //Pose secondSampleEnd = new Pose(AConstants.END_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
     //Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY()+3, Math.toRadians(28.5));
 
-    Pose firstSampleEnd = new Pose(22, 131.5, Math.toRadians(337));
-    Pose secondSampleEnd = new Pose(21, 134, Math.toRadians(355));
-    Pose thirdSampleEnd = new Pose(25, 130.5, Math.toRadians(32));
-    Pose subPose = new Pose(60, 98, Math.toRadians(270));
+    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(334));
+    Pose secondSampleEnd = new Pose(20, 135, Math.toRadians(351));
+    Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(28));
 
-    Pose lane1 = new Pose(60, 98, Math.toRadians(270));
-    Pose lane2 = new Pose(60, 95.5, Math.toRadians(270));
-    Pose lane3 = new Pose(60, 98, Math.toRadians(270));
+    Pose lane1 = new Pose(60, 93.5, Math.toRadians(270));
+    Pose lane2 = new Pose(60, 93.5, Math.toRadians(270));
+    Pose lane3 = new Pose(60, 93.5, Math.toRadians(270));
+    Pose lane1C = new Pose(62, 106.5, Math.toRadians(270));
+    Pose lane2C = new Pose(62, 106.5, Math.toRadians(270));
+    Pose lane3C = new Pose(62 , 106.5, Math.toRadians(270));
     Pose[] lanes = {lane1, lane2, lane3};
+    Pose[] lanesC = {lane1C, lane2C, lane3C};
 
     Pose placeHolder = new Pose(0, 0, Math.toRadians(0));
     Pose controlPoint = new Pose(28, 129, Math.toRadians(0));
@@ -88,11 +91,11 @@ public class BucketAuto extends LinearOpMode
     Pose controlPointS = new Pose(17.5, 126.5, Math.toRadians(315));
 
     //Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
-    Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd, subPose};
-    Pose[] scoreTo = {scorePoseP, scorePose1, scorePose2, scorePose3, scorePose4};
+    Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd, placeHolder};
+    Pose[] scoreTo = {scorePoseP, scorePose1, scorePose2, scorePose3, placeHolder};
 
     private PathChain goToScore, goToScoreControl, goToScoreFinal,
-            intakeSample, goToSub2, goToSubC, thirdPickup;
+            intakeSample, goToSub2, goToSubC, thirdPickup, currentPose;
 
     //Enums
     enum mainStates
@@ -135,6 +138,7 @@ public class BucketAuto extends LinearOpMode
         RETRACT_INTAKE,
         SUCCESS,
         OUTTAKE_FALL,
+        WAIT_STATE,
         OUTTAKE_RISE,
         SCORE,
         FLIP,
@@ -149,7 +153,7 @@ public class BucketAuto extends LinearOpMode
     boolean isPreload = true;
     boolean isRed = false;
     int selectedLane = 1;
-    public double intakeTime = 0.75;
+    public double intakeTime = 1;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -170,7 +174,7 @@ public class BucketAuto extends LinearOpMode
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
 
-        //follower.setMaxPower(AConstants.STANDARD_POWER);
+        follower.setMaxPower(AConstants.STANDARD_POWER);
 
         buildPaths();
         buildStateMachines();
@@ -219,8 +223,6 @@ public class BucketAuto extends LinearOpMode
 
     public void buildPaths()
     {
-        subPose = lanes[selectedLane];
-
         goToScore = buildLinearPath(scoreFrom[curSample], scoreTo[curSample]);
         //goToSample = buildLinearPath(scoreTo[curSample], samples[curSample]);
         if (curSample > 0)
@@ -228,11 +230,17 @@ public class BucketAuto extends LinearOpMode
         else
             intakeSample = buildLinearPath(scoreTo[curSample], scoreFrom[curSample]);
 
-        goToSub2 = buildLinearPath(controlPoint2, subPose);
-        goToSubC = buildCurvedPath(scorePose3, controlPoint3, controlPoint2);
-        goToScoreControl = buildCurvedPath(subPose, controlPoint4, controlPointS);
+        goToSubC = buildLinearPath(scorePose3, lanesC[selectedLane]);
+        goToSub2 = buildLinearPath(lanesC[selectedLane], lanes[selectedLane]);
+
+        //goToScoreControl = buildLinearPath(lanes[selectedLane], lanesC[selectedLane]);
+        //goToScoreFinal = buildLinearPath(lanesC[selectedLane], scorePose4);
+
+        goToScoreControl = buildCurvedPath(lanes[selectedLane], controlPoint4, controlPointS);
         goToScoreFinal = buildLinearPath(controlPointS, scorePose4);
-        thirdPickup = buildLinearPath(scorePose2, thirdSampleEnd);
+
+        Pose currentP = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        currentPose = buildLinearPath(currentP, currentP);
     }
 
     public void buildStateMachines()
@@ -268,23 +276,21 @@ public class BucketAuto extends LinearOpMode
         score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
-                    follower.setMaxPower(AConstants.LOW_POWER);
                     buildPaths();
-                    follower.followPath(goToScore, true);
+                    follower.followPath(goToScore, (((curSample == 0) || (curSample == 3)) ? AConstants.MID_POWER : AConstants.LOW_POWER), true);
                     o.outtakeSlidesHigh();
                     o.outtakeSwivelMid();
                     o.wristDown();
                     i.intakeSwivelRest();
                 })
                 .transition(() -> i.isSwivelRest(), scoreStates.EXTEND)
-                .onExit(() -> follower.setMaxPower(AConstants.STANDARD_POWER))
 
                 .state(scoreStates.EXTEND)
                 .onEnter(() -> {
                     if (curSample == 3) {
 
                     } else if (curSample == 2){
-                        i.intakeSlidesQuarter();
+                        i.intakeSlidesSam();
                         i.intakeSwivelDown();
                     } else {
                         i.intakeSlidesExtend();
@@ -295,7 +301,6 @@ public class BucketAuto extends LinearOpMode
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {
-                    //follower.setMaxPower(AConstants.STANDARD_POWER);
                     o.outtakeSwivelUp();
                     o.wristUp();
                 })
@@ -321,7 +326,7 @@ public class BucketAuto extends LinearOpMode
                     if (curSample == 3)
                     {
                         buildPaths();
-                        follower.followPath(thirdPickup);
+                        follower.followPath(intakeSample, AConstants.MID_POWER, true);
                     }
                 })
                 .transition(() -> !(curSample == 3), pickupStates.MOVE_FORWARD)
@@ -329,8 +334,14 @@ public class BucketAuto extends LinearOpMode
 
                 .state(pickupStates.MOVE_FORWARD)
                 .onEnter(() -> {
+                    if (curSample != 3)
+                    {
+                        buildPaths();
+                        follower.followPath(intakeSample, AConstants.MID_POWER, true);
+                    }
                     if (curSample == 3){
-                        i.intakeSlidesExtend();
+                        //i.intakeSlidesExtend();
+                        i.intakeSlidesSuperExtend();
                     } else {
                         i.intakeSlidesSuperExtend();
                     }
@@ -383,10 +394,13 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.GO_TO_SUB2)
                 .onEnter(() -> {
                     buildPaths();
-                    follower.followPath(goToSub2, true);
+                    follower.followPath(goToSub2, AConstants.MID_POWER, false);
                 })
-                //.transition(() -> (currentGamepad1.b && !previousGamepad1.b), diveStates.SWEEP)
-                .transitionTimed(0.25, diveStates.SWEEP)
+                .transition(() -> !follower.isBusy(), diveStates.SWEEP)
+                .transitionTimed(1.65, diveStates.SWEEP, () -> {
+                    buildPaths();
+                    follower.followPath(currentPose);
+                })
                 .onExit(() -> i.intakeSweeperOut())
 
                 .state(diveStates.SWEEP)
@@ -454,10 +468,13 @@ public class BucketAuto extends LinearOpMode
 
                 .state(diveStates.OUTTAKE_FALL)
                 .onEnter(() -> o.outtakeSlidesDown())
-                .transition( () -> o.isSlidesDown(), diveStates.OUTTAKE_RISE, () -> {
+                .transition( () -> o.isSlidesDown(), diveStates.WAIT_STATE, () -> {
                     o.closeClaw();
                     i.intakeStopSpin();
                 })
+
+                .state(diveStates.WAIT_STATE)
+                .transitionTimed(0.2, diveStates.OUTTAKE_RISE)
 
                 .state(diveStates.OUTTAKE_RISE)
                 .onEnter(() -> {
@@ -468,7 +485,7 @@ public class BucketAuto extends LinearOpMode
                 .transition(() -> !follower.isBusy(), diveStates.SCORE)
 
                 .state(diveStates.SCORE)
-                .onEnter(() -> follower.followPath(goToScoreFinal))
+                .onEnter(() -> follower.followPath(goToScoreFinal, true))
                 .transition(() -> o.isSlidesHigh(), diveStates.FLIP)
                 .onExit(() -> {
                     o.outtakeSwivelUp();
@@ -477,7 +494,7 @@ public class BucketAuto extends LinearOpMode
 
                 .state(diveStates.FLIP)
                 .transition(() -> o.isSwivelUp(), diveStates.STOP)
-                .transition(() -> runtime.seconds() >= 29.5, diveStates.STOP)
+                //.transition(() -> runtime.seconds() >= 29.5, diveStates.STOP)
                 .onExit(() -> {
                     o.outtakeClaw.setPosition(o.CLAW_OPEN);
                     o.outtakeSwivelDown();
@@ -497,7 +514,7 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("score state", score.getStateString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         //telemetry.addData("see something", v.isSomething());
         telemetry.addData("current sample", curSample);
         telemetry.addData("spinTarget", i.intakeSpinTarget);

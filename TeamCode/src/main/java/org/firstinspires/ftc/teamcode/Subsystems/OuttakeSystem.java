@@ -39,7 +39,7 @@ public class OuttakeSystem implements Subsystem {
     public double CLAW_OPEN = 0.5;
     private double CLAW_CLOSE = 0.175;
     private double WRIST_DOWN = 0.6;
-    private double WRIST_TRANSFER = 0.05;
+    private double WRIST_TRANSFER = 0.075;
     private double WRIST_UP = 0.94;
     private double WRIST_GRAB = 0.01;
     private double WRIST_LOCK = 0.6; //0.45;
@@ -72,7 +72,7 @@ public class OuttakeSystem implements Subsystem {
 
     //Third PID for outtake slides
     public PIDController outtakeSlidesController;
-    public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
+    public static double p3 = 0.008, i3 = 0.00003, d3 = 0.00001;
     public static double f3 = 0.0;
     public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
@@ -204,7 +204,7 @@ public class OuttakeSystem implements Subsystem {
 
     public void resetSlideEncoders() {
         outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void resetEncodersButton() {
