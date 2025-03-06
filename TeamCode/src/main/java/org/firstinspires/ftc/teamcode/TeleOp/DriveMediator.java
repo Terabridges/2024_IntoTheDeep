@@ -46,7 +46,7 @@ public class DriveMediator {
     }
 
     public void colliding(Walls wall) {
-        colliding = true;
+        colliding();
         obstacle = wall;
         setFieldForwardHeading(wall.getOrthogonalHeading());
     }
@@ -128,14 +128,16 @@ public class DriveMediator {
 
 // Walls Enum
 enum Walls {
-    CHAMBERS(WallType.VERTICAL_LINE, 0, new Equation(0, 0, 42.5), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
-    NET_ZONE(WallType.DIAGONAL_LINE, 135, new Equation(0, 1, 120));
+    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
+    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120));
 
 
     private enum WallType {
         VERTICAL_LINE,
         HORIZONTAL_LINE,
-        DIAGONAL_LINE;
+        DIAGONAL_LINE,
+        VERTICAL_LINE_INCH_THICK,
+        DIAGONAL_LINE_ABOVE_COLLIDING;
     }
 
     private static class Equation {
@@ -195,6 +197,10 @@ enum Walls {
                 return Math.abs(y - equation.getY(y)) < 1.0; // Adjust threshold as needed
             case DIAGONAL_LINE:
                 return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
+            case VERTICAL_LINE_INCH_THICK:
+                return (x - equation.getX(x)) > 0 && (x - equation.getX(x)) < 1.0; // Adjust threshold as needed
+            case DIAGONAL_LINE_ABOVE_COLLIDING:
+                return (y - equation.getY(x)) > 0; // Adjust threshold as needed
             default:
                 return false;
         }

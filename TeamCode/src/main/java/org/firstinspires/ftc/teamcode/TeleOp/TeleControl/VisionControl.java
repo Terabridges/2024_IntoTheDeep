@@ -46,7 +46,7 @@ public class VisionControl implements Control {
         visionMode.update(gp2.y);
 
         if (vision.willStopAtObstacle) {
-            handleCollisions(vision.leftBackDistVal, vision.rightBackDistVal);
+            //handleCollisions(vision.leftBackDistVal, vision.rightBackDistVal);
         }
 
     }
