@@ -27,6 +27,7 @@ public class OuttakeSystem implements Subsystem {
     //SOFTWARE
     private int servoOffset = 15;
     private int motorOffset = 30;
+    private int oServoOffset = 12;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
@@ -40,13 +41,13 @@ public class OuttakeSystem implements Subsystem {
     private double CLAW_CLOSE = 0.175;
     private double WRIST_DOWN = 0.6;
     private double WRIST_TRANSFER = 0.075;
-    private double WRIST_UP = 0.94;
+    private double WRIST_UP = 0.91;
     private double WRIST_GRAB = 0.01;
     private double WRIST_LOCK = 0.6; //0.45;
     //LIMIT BACK: 0
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
-    private int OUTTAKE_SWIVEL_UP = 408; //398;
+    private int OUTTAKE_SWIVEL_UP = 412; //398;
     private int OUTTAKE_SWIVEL_MID = 370;
     private int OUTTAKE_SWIVEL_DOWN = 180;
     private int OUTTAKE_SWIVEL_TRANSFER = 210; //208;
@@ -62,6 +63,9 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_SCORE_2 = -1020;
 
     private int OUTTAKE_SLIDES_ALMOST_DOWN = -100;
+
+    private int OUTTAKE_SLIDES_PARK = -770;
+    private int OUTTAKE_SWIVEL_PARK = 257;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -202,6 +206,14 @@ public class OuttakeSystem implements Subsystem {
 
     public void wristLock() {setWrist(WRIST_LOCK);}
 
+    public void outtakeSwivelPark() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_PARK;
+    }
+
+    public void outtakeSlidesPark(){
+        outtakeSlidesTarget = OUTTAKE_SLIDES_PARK;
+    }
+
     public void resetSlideEncoders() {
         outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -255,6 +267,10 @@ public class OuttakeSystem implements Subsystem {
 
     public boolean isSwivelGrab() {
         return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_GRAB) <= servoOffset;
+    }
+
+    public boolean isSwivelTransfer() {
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_TRANSFER) <= oServoOffset;
     }
 
     //PIDF
