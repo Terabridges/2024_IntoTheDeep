@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -9,12 +10,15 @@ import org.firstinspires.ftc.teamcode.Subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
 
+
 public class DriveMediator {
 
     // PID
-    public double pyaw = 0.003, iyaw = 0.005, dyaw = 0.00005;
-    public PIDController yawPID = new PIDController(pyaw, iyaw, dyaw);
+    public double pyaw = 0.015, iyaw = 0.0003, dyaw = 0.0001, fyaw = 0.0;
+    public PIDFController yawPIDF = new PIDFController(pyaw, iyaw, dyaw, fyaw);
 
+    public double paxial = 0.01, iaxial = 0.0001, daxial = 0.00005, faxial = 0.0;
+    public PIDFController axialPIDF = new PIDFController(paxial, iaxial, daxial, faxial);
 
     // Instance Variables
     private VisionSystem vision;
@@ -37,7 +41,8 @@ public class DriveMediator {
         this.drive = r.driveSystem;
         this.r = r;
 
-        yawPID.setPID(pyaw, iyaw, dyaw);
+        yawPIDF.setPIDF(pyaw, iyaw, dyaw, fyaw);
+        axialPIDF.setPIDF(paxial, iaxial, daxial, faxial);
     }
 
     // Methods
@@ -89,11 +94,41 @@ public class DriveMediator {
         if (fieldAxial > 0) {
             fieldAxial = 0;
 
-            yaw = yawPID.calculate(robotHeading, fieldForwardHeading);
+            double yawError = AngleUnit.normalizeDegrees(fieldForwardHeading - robotHeading);
+            double rawYawPower = yawPIDF.calculate(yawError, 0);
+            double yawPower = Math.max(-1, Math.min(1, rawYawPower));  // Clamping output
+
+            yaw = yawPower;
 
 
         }
 
+        // Use PIDF controller to adjust fieldAxial if the robot is ahead of the wall's line
+        if (obstacle != null && obstacle.isColliding(pose)) {
+            double positionError = 0;
+            switch (obstacle.wallType) {
+                case VERTICAL_LINE:
+                case VERTICAL_LINE_INCH_THICK:
+                    positionError = pose.getX(DistanceUnit.INCH) - obstacle.equation.getX(pose.getY(DistanceUnit.INCH));
+                    break;
+                case HORIZONTAL_LINE:
+                case DIAGONAL_LINE:
+                case DIAGONAL_LINE_ABOVE_COLLIDING:
+                    positionError = pose.getY(DistanceUnit.INCH) - obstacle.equation.getY(pose.getX(DistanceUnit.INCH));
+                    break;
+            }
+
+            if (positionError > 0) {
+                double rawAxialPower = axialPIDF.calculate(positionError, 0);
+                double axialPower = Math.max(-1, Math.min(0, rawAxialPower));  // Clamping output to negative values
+
+                fieldAxial = axialPower;
+            }
+        
+            // Another Option: just make it so that if the robot is within some tolerance from the line, it is colliding, and then the robot needs to use the PIDF to square up against the true line if its colliding
+
+        }
+        
         // Transform the constrained drive vector back to the robot's coordinate system
         axial = fieldAxial * cosHeading + fieldLateral * sinHeading;
         lateral = -fieldAxial * sinHeading + fieldLateral * cosHeading;
@@ -119,8 +154,6 @@ public class DriveMediator {
             }
         }
 
-        //if drive.localier == where i want && vision.willstopat == true, set colliding to true, move to where i want, set colliding to false
-
     }
 }
 
@@ -128,11 +161,11 @@ public class DriveMediator {
 
 // Walls Enum
 enum Walls {
-    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
-    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120));
+    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
+    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120 - DriveSystem.BOT_CENTER_X));
 
 
-    private enum WallType {
+    public enum WallType {
         VERTICAL_LINE,
         HORIZONTAL_LINE,
         DIAGONAL_LINE,
@@ -140,19 +173,19 @@ enum Walls {
         DIAGONAL_LINE_ABOVE_COLLIDING;
     }
 
-    private static class Equation {
+    public static class Equation {
         private double a=0, b=0, c=0;
-        private Equation(double a, double b, double c) {
+        public Equation(double a, double b, double c) {
             this.a = a;
             this.b = b;
             this.c = c;
         }
 
-        private double getY(double y) {
+        public double getX(double y) {
             return (a*y*y) + (b*y) + (c);
         }
 
-        private double getX(double x) {
+        public double getY(double x) {
             return (a*x*x) + (b*x) + (c);
         }
     }
@@ -163,8 +196,8 @@ enum Walls {
     }
 
     private final double orthogonalHeading;
-    private final WallType wallType;
-    private final Equation equation;
+    public final WallType wallType;
+    public final Equation equation;
     private final AdditionalCondition additionalCondition;
 
     private Walls(WallType wallType, double orthogonalHeading, Equation equation) {
@@ -192,13 +225,13 @@ enum Walls {
 
         switch (wallType) {
             case VERTICAL_LINE:
-                return Math.abs(x - equation.getX(x)) < 1.0; // Adjust threshold as needed
+                return Math.abs(x - equation.getX(y)) < 1.0; // Adjust threshold as needed
             case HORIZONTAL_LINE:
-                return Math.abs(y - equation.getY(y)) < 1.0; // Adjust threshold as needed
+                return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
             case DIAGONAL_LINE:
                 return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
             case VERTICAL_LINE_INCH_THICK:
-                return (x - equation.getX(x)) > 0 && (x - equation.getX(x)) < 1.0; // Adjust threshold as needed
+                return (x - equation.getX(y)) > 0 && (x - equation.getX(y)) < 1.0; // Adjust threshold as needed
             case DIAGONAL_LINE_ABOVE_COLLIDING:
                 return (y - equation.getY(x)) > 0; // Adjust threshold as needed
             default:
