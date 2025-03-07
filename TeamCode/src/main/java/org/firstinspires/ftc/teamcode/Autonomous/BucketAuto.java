@@ -60,8 +60,8 @@ public class BucketAuto extends LinearOpMode
     Pose scorePoseP = new Pose(17.8, 135, Math.toRadians(335));
     Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(350.5));
     Pose scorePose2 = new Pose(18.75, 136.5, Math.toRadians(349));
-    Pose scorePose3 = new Pose(19, 135.5, Math.toRadians(350.5));
-    Pose scorePose4 = new Pose(15, 129, Math.toRadians(315));
+    Pose scorePose3 = new Pose(17.8, 135, Math.toRadians(335));
+    Pose scorePose4 = new Pose(17.8, 135, Math.toRadians(335));
 
     //Pose firstSampleStart = new Pose(21.5, 134.4, Math.toRadians(333.5));
     //Pose secondSampleStart = new Pose(19.3, 134.8, Math.toRadians(353));
@@ -70,7 +70,7 @@ public class BucketAuto extends LinearOpMode
     //Pose secondSampleEnd = new Pose(AConstants.END_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
     //Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY()+3, Math.toRadians(28.5));
 
-    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(334));
+    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(333.5));
     Pose secondSampleEnd = new Pose(20, 134, Math.toRadians(357.5));
     Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(31));
 
@@ -236,7 +236,8 @@ public class BucketAuto extends LinearOpMode
         //goToScoreControl = buildLinearPath(lanes[selectedLane], lanesC[selectedLane]);
         //goToScoreFinal = buildLinearPath(lanesC[selectedLane], scorePose4);
 
-        goToScoreControl = buildCurvedPath(lanes[selectedLane], controlPoint4, controlPointS);
+        //goToScoreControl = buildCurvedPath(lanes[selectedLane], controlPoint4, controlPointS);
+        goToScoreControl = buildCurvedPath(lanes[selectedLane], controlPoint4, scorePose4);
         goToScoreFinal = buildLinearPath(controlPointS, scorePose4);
 
         Pose currentP = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
@@ -490,8 +491,8 @@ public class BucketAuto extends LinearOpMode
                 .transition(() -> !follower.isBusy(), diveStates.SCORE)
 
                 .state(diveStates.SCORE)
-                .onEnter(() -> follower.followPath(goToScoreFinal, AConstants.STANDARD_POWER, true))
-                .transition(() -> o.isSlidesHigh() && !follower.isBusy(), diveStates.FLIP)
+                //.onEnter(() -> follower.followPath(goToScoreFinal, AConstants.STANDARD_POWER, true))
+                .transition(() -> o.isSlidesHigh() /* && !follower.isBusy() */, diveStates.FLIP)
                 .onExit(() -> {
                     o.outtakeSwivelUp();
                     o.wristUp();

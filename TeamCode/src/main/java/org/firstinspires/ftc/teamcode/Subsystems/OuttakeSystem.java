@@ -64,8 +64,8 @@ public class OuttakeSystem implements Subsystem {
 
     private int OUTTAKE_SLIDES_ALMOST_DOWN = -100;
 
-    private int OUTTAKE_SLIDES_PARK = -770;
-    private int OUTTAKE_SWIVEL_PARK = 257;
+    private int OUTTAKE_SLIDES_PARK = -800;
+    private int OUTTAKE_SWIVEL_PARK = 259;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
