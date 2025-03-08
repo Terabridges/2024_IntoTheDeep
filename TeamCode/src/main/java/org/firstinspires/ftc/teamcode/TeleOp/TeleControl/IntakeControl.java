@@ -21,6 +21,8 @@ public class IntakeControl implements Control{
     EdgeDetector manualSlidesOutFE = new EdgeDetector(() -> intake.intakeSlidesSetManualStop(), true);
     EdgeDetector intakeSweeperRE = new EdgeDetector(() -> intake.intakeSweeperOut());
     EdgeDetector intakeSweeperFE = new EdgeDetector(() -> intake.intakeSweeperIn(), true);
+    EdgeDetector increaseIntakeRE = new EdgeDetector(() -> intake.setIntakeHigher());
+    EdgeDetector decreaseIntakeRE = new EdgeDetector(() -> intake.setIntakeLower());
 
 
     //Constructor
@@ -63,11 +65,14 @@ public class IntakeControl implements Control{
         //dPadDown holds intake sweeper out when held
         intakeSweeperRE.update(gp1.dpad_down);
         intakeSweeperFE.update(gp1.dpad_down);
+
+        increaseIntakeRE.update(gp2.dpad_right);
+        decreaseIntakeRE.update(gp2.dpad_left);
     }
 
     @Override
     public void addTelemetry(Telemetry telemetry){
-
+        telemetry.addData("Intake Slides Offset", intake.intakeCounter);
     }
 
 

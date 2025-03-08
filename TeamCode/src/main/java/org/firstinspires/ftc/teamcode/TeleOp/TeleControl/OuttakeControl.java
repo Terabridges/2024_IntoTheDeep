@@ -19,6 +19,8 @@ public class OuttakeControl implements Control {
     EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
     EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetEncodersButton());
     EdgeDetector useLimitSwitchRE = new EdgeDetector(() -> robot.toggleLimitSwitch());
+    EdgeDetector increaseOuttakeRE = new EdgeDetector(() -> outtake.setOuttakeHigher());
+    EdgeDetector decreaseOuttakeRE = new EdgeDetector(() -> outtake.setOuttakeLower());
 
     //Constructor
     public OuttakeControl(OuttakeSystem outtake, Gamepad gp1, Gamepad gp2){
@@ -77,6 +79,9 @@ public class OuttakeControl implements Control {
 
         //GAMEPAD 2 Use limit switch toggle X
         useLimitSwitchRE.update(gp2.x);
+
+        increaseOuttakeRE.update(gp2.dpad_up);
+        decreaseOuttakeRE.update(gp2.dpad_down);
     }
 
     @Override
@@ -84,9 +89,10 @@ public class OuttakeControl implements Control {
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
         telemetry.addData("Manual Slides", outtake.manualOuttake);
         telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
-        telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
-        telemetry.addData("Zero Power Behavior", outtake.outtakeBottomVertical.getZeroPowerBehavior());
+        //telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
+        //telemetry.addData("Zero Power Behavior", outtake.outtakeBottomVertical.getZeroPowerBehavior());
         telemetry.addData("Use Limit Switch", outtake.useLimitSwitch);
+        telemetry.addData("Outtake Slides Offset", outtake.outtakeCounter);
     }
 
 }

@@ -37,6 +37,7 @@ public class IntakeSystem implements Subsystem {
     //private double intakeSwivelOffset = 80;
     private double intakeSwivelOffset = 102;
     private double intakeSlidesOffset = 100;
+    public int intakeCounter = 0;
 
     //Positions
     private double INTAKE_SPIN_IN = -1;
@@ -224,6 +225,16 @@ public class IntakeSystem implements Subsystem {
 
     public boolean isSwivelRest(){
         return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
+    }
+
+    public void setIntakeHigher(){
+        INTAKE_SLIDES_SAM+= 3;
+        intakeCounter += 3;
+    }
+
+    public void setIntakeLower(){
+        INTAKE_SLIDES_SAM-= 3;
+        intakeCounter -= 3;
     }
 
     public double setIntakeSlidesPIDF(int target) {

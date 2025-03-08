@@ -52,16 +52,18 @@ public class BucketAuto extends LinearOpMode
     private Follower follower;
 
     //Gamepad
-    Gamepad currentGamepad1;
-    Gamepad previousGamepad1;
+    Gamepad currentGamepad2;
+    Gamepad previousGamepad2;
 
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 108+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
 
     Pose scorePoseP = new Pose(17.8, 135, Math.toRadians(335));
     Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(350.5));
-    Pose scorePose2 = new Pose(18.75, 136.5, Math.toRadians(349));
-    Pose scorePose3 = new Pose(17.8, 135, Math.toRadians(335));
-    Pose scorePose4 = new Pose(17.8, 135, Math.toRadians(335));
+    Pose scorePose2 = new Pose(18.25, 135.5, Math.toRadians(349));
+    Pose scorePose3 = new Pose(15.5, 131.5, Math.toRadians(315));
+    Pose scorePose4 = new Pose(16.5, 132.5, Math.toRadians(315));
+
+    Pose controlPointS = new Pose(32, 121, Math.toRadians(315));
 
     //Pose firstSampleStart = new Pose(21.5, 134.4, Math.toRadians(333.5));
     //Pose secondSampleStart = new Pose(19.3, 134.8, Math.toRadians(353));
@@ -70,16 +72,16 @@ public class BucketAuto extends LinearOpMode
     //Pose secondSampleEnd = new Pose(AConstants.END_X, AConstants.SECOND_SAMPLE.getY(), Math.toRadians(0));
     //Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY()+3, Math.toRadians(28.5));
 
-    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(333.5));
+    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(335));
     Pose secondSampleEnd = new Pose(20, 134, Math.toRadians(357.5));
     Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(31));
 
-    Pose lane1 = new Pose(60, 93.5, Math.toRadians(270));
-    Pose lane2 = new Pose(60, 93.5, Math.toRadians(270));
-    Pose lane3 = new Pose(60, 93.5, Math.toRadians(270));
-    Pose lane1C = new Pose(61, 110, Math.toRadians(270));
-    Pose lane2C = new Pose(61, 110, Math.toRadians(270));
-    Pose lane3C = new Pose(61 , 110, Math.toRadians(270));
+    Pose lane1 = new Pose(60, 93.25, Math.toRadians(270));
+    Pose lane2 = new Pose(60, 93.25, Math.toRadians(270));
+    Pose lane3 = new Pose(60, 93.25, Math.toRadians(270));
+    Pose lane1C = new Pose(61, 109, Math.toRadians(270));
+    Pose lane2C = new Pose(61, 109, Math.toRadians(270));
+    Pose lane3C = new Pose(61 , 109, Math.toRadians(270));
     Pose[] lanes = {lane1, lane2, lane3};
     Pose[] lanesC = {lane1C, lane2C, lane3C};
 
@@ -88,7 +90,6 @@ public class BucketAuto extends LinearOpMode
     Pose controlPoint2 = new Pose(60, 98, Math.toRadians(270));
     Pose controlPoint3 = new Pose(68, 118, Math.toRadians(0));
     Pose controlPoint4 = new Pose(65, 128, Math.toRadians(0));
-    Pose controlPointS = new Pose(17.5, 126.5, Math.toRadians(315));
 
     //Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
     Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd, placeHolder};
@@ -142,6 +143,7 @@ public class BucketAuto extends LinearOpMode
         OUTTAKE_RISE,
         SCORE,
         FLIP,
+        OPEN,
         STOP
     }
 
@@ -163,8 +165,8 @@ public class BucketAuto extends LinearOpMode
         o = new OuttakeSystem(hardwareMap);
         v = new VisionSystem(hardwareMap);
 
-        currentGamepad1 = new Gamepad();
-        previousGamepad1 = new Gamepad();
+        currentGamepad2 = new Gamepad();
+        previousGamepad2 = new Gamepad();
 
         o.manualOuttake = false;
 
@@ -180,14 +182,20 @@ public class BucketAuto extends LinearOpMode
         buildStateMachines();
 
         while (opModeInInit()){
-            previousGamepad1.copy(currentGamepad1);
-            currentGamepad1.copy(gamepad1);
+            previousGamepad2.copy(currentGamepad2);
+            currentGamepad2.copy(gamepad2);
 
-            if (currentGamepad1.a && !previousGamepad1.a){
+            if (currentGamepad2.a && !previousGamepad2.a){
                 isRed = !isRed;
             }
 
+            if(currentGamepad2.b && !previousGamepad2.b){
+                selectedLane++;
+                if (selectedLane == lanes.length){ selectedLane = 0;}
+            }
+
             telemetry.addData("Is Red", isRed);
+            telemetry.addData("Lane", selectedLane+1);
             telemetry.update();
         }
 
@@ -299,6 +307,7 @@ public class BucketAuto extends LinearOpMode
                         i.intakeSlidesExtend();
                         i.intakeSwivelDown();
                     }
+                    i.intakeSpinOut();
                 })
                 .transition(() -> o.isSlidesAlmostHigh() && !follower.isBusy(), scoreStates.DUNK)
 
@@ -306,6 +315,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     o.outtakeSwivelUp();
                     o.wristUp();
+                    i.intakeStopSpin();
                 })
                 .transition(() -> o.isSwivelUp(), scoreStates.OPEN_CLAW)
 
@@ -340,7 +350,7 @@ public class BucketAuto extends LinearOpMode
                     if (curSample != 3)
                     {
                         buildPaths();
-                        follower.followPath(intakeSample, AConstants.MID_POWER, true);
+                        follower.followPath(intakeSample, AConstants.MID_POWER-.05, true);
                     }
                     if (curSample == 3){
                         //i.intakeSlidesExtend();
@@ -390,7 +400,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     o.outtakeSlidesRest();
                     buildPaths();
-                    follower.followPath(goToSubC, true);
+                    follower.followPath(goToSubC, AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.GO_TO_SUB2)
 
@@ -400,9 +410,9 @@ public class BucketAuto extends LinearOpMode
                     follower.followPath(goToSub2, AConstants.MID_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.SWEEP)
-                .transitionTimed(1.55, diveStates.SWEEP, () -> {
+                .transitionTimed(1, diveStates.SWEEP, () -> {
                     buildPaths();
-                    follower.followPath(currentPose);
+                    follower.breakFollowing();
                 })
                 .onExit(() -> i.intakeSweeperOut())
 
@@ -489,22 +499,27 @@ public class BucketAuto extends LinearOpMode
                     o.wristDown();
                 })
                 .transition(() -> !follower.isBusy(), diveStates.SCORE)
+                .transition(() -> runtime.seconds() >= 29.4, diveStates.FLIP, ()-> {
+                    o.outtakeSwivelUp();
+                    o.wristUp();
+                })
 
                 .state(diveStates.SCORE)
-                //.onEnter(() -> follower.followPath(goToScoreFinal, AConstants.STANDARD_POWER, true))
-                .transition(() -> o.isSlidesHigh() /* && !follower.isBusy() */, diveStates.FLIP)
+                .onEnter(() -> follower.followPath(goToScoreFinal, AConstants.LOW_POWER, true))
+                .transition(() -> o.isSlidesHigh(), diveStates.FLIP)
+                .transition(() -> runtime.seconds() >= 29, diveStates.FLIP)
                 .onExit(() -> {
                     o.outtakeSwivelUp();
                     o.wristUp();
                 })
 
                 .state(diveStates.FLIP)
-                .transition(() -> o.isSwivelUp(), diveStates.STOP)
-                .transition(() -> runtime.seconds() >= 29.5, diveStates.STOP)
-                .onExit(() -> {
-                    o.outtakeClaw.setPosition(o.CLAW_OPEN);
-                    o.outtakeSwivelDown();
-                })
+                .transition(() -> o.isSwivelUp(), diveStates.OPEN)
+                .transition(() -> runtime.seconds() >= 29.5, diveStates.OPEN)
+
+                .state(diveStates.OPEN)
+                .onEnter(()->o.openClaw())
+                .transitionTimed(0.2, diveStates.STOP, () -> o.outtakeSwivelDown())
 
                 .state(diveStates.PARK)
                 .onEnter(() -> {

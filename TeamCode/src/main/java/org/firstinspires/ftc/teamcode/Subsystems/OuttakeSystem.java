@@ -54,18 +54,20 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_GRAB = 146;
     private int OUTTAKE_SWIVEL_LOCK = 91;
     private int OUTTAKE_SLIDES_HIGH = -3290; //-3320;
-    private int OUTTAKE_SLIDES_LOW = -1550; //-1420;
-    private int OUTTAKE_SLIDES_DOWN = -40;
+    private int OUTTAKE_SLIDES_LOW = -1600; //-1420;
+    private int OUTTAKE_SLIDES_DOWN = -45;
     //private int OUTTAKE_SLIDES_REST = -950;
     private int OUTTAKE_SLIDES_REST = -750;
     private int OUTTAKE_SLIDES_GRAB_1 = -40;
-    private int OUTTAKE_SLIDES_SCORE_1 = -1655; //-1700;
-    private int OUTTAKE_SLIDES_SCORE_2 = -1020;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1700; //-1677
+    private int OUTTAKE_SLIDES_SCORE_2 = -1020; //Maybe increase? to -1030?
 
     private int OUTTAKE_SLIDES_ALMOST_DOWN = -100;
 
-    private int OUTTAKE_SLIDES_PARK = -800;
-    private int OUTTAKE_SWIVEL_PARK = 259;
+    private int OUTTAKE_SLIDES_PARK = -830;
+    private int OUTTAKE_SWIVEL_PARK = 261;
+
+    public int outtakeCounter = 0;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -273,6 +275,16 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_TRANSFER) <= oServoOffset;
     }
 
+    public void setOuttakeHigher(){
+        OUTTAKE_SLIDES_HIGH-= 50;
+        outtakeCounter += 50;
+    }
+
+    public void setOuttakeLower(){
+        OUTTAKE_SLIDES_HIGH+= 50;
+        outtakeCounter -= 50;
+    }
+
     //PIDF
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
@@ -303,7 +315,10 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        outtakeSlidesRest();
+        if (!(outtakeBottomVertical.getCurrentPosition() < -1500)){
+            outtakeSlidesRest();
+        }
+
         outtakeSwivelDown();
         closeClaw();
         wristDown();
