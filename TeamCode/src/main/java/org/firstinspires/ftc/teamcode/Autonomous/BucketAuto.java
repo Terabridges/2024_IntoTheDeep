@@ -61,7 +61,7 @@ public class BucketAuto extends LinearOpMode
     Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(350.5));
     Pose scorePose2 = new Pose(18.25, 135.5, Math.toRadians(349));
     Pose scorePose3 = new Pose(15.5, 131.5, Math.toRadians(315));
-    Pose scorePose4 = new Pose(16.5, 132.5, Math.toRadians(315));
+    Pose scorePose4 = new Pose(16.5, 131, Math.toRadians(315));
 
     Pose controlPointS = new Pose(32, 121, Math.toRadians(315));
 
@@ -73,8 +73,8 @@ public class BucketAuto extends LinearOpMode
     //Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY()+3, Math.toRadians(28.5));
 
     Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(335));
-    Pose secondSampleEnd = new Pose(20, 134, Math.toRadians(357.5));
-    Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(31));
+    Pose secondSampleEnd = new Pose(20, 135, Math.toRadians(357.5));
+    Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(32.5));
 
     Pose lane1 = new Pose(60, 93.25, Math.toRadians(270));
     Pose lane2 = new Pose(60, 93.25, Math.toRadians(270));
@@ -307,7 +307,7 @@ public class BucketAuto extends LinearOpMode
                         i.intakeSlidesExtend();
                         i.intakeSwivelDown();
                     }
-                    i.intakeSpinOut();
+                    i.intakeSlowSpinOut();
                 })
                 .transition(() -> o.isSlidesAlmostHigh() && !follower.isBusy(), scoreStates.DUNK)
 
@@ -460,7 +460,7 @@ public class BucketAuto extends LinearOpMode
 
                 .state(diveStates.SPIT)
                 .onEnter(() -> i.intakeSpinOut())
-                .transitionTimed(1, diveStates.PARK)
+                .transitionTimed(3, diveStates.PARK)
 
                 .state(diveStates.RETRACT_INTAKE)
                 .onEnter(() -> {

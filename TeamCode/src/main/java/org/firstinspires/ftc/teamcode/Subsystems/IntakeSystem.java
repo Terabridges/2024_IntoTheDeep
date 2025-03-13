@@ -48,7 +48,7 @@ public class IntakeSystem implements Subsystem {
     private int INTAKE_SLIDES_SUPER_EXTEND = 275;
     //MAX 283.5
     private int INTAKE_SLIDES_HALF = 235;
-    private int INTAKE_SLIDES_QUARTER = 203;
+    private int INTAKE_SLIDES_QUARTER = 207;
     private int INTAKE_SLIDES_RETRACT = 186;
     private int INTAKE_SLIDES_SAM = 220;
     private int INTAKE_SWIVEL_TRANSFER = 124;

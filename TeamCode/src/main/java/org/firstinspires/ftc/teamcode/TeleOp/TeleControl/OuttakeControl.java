@@ -59,6 +59,10 @@ public class OuttakeControl implements Control {
                 outtake.outtakeSetSlides(gp1.right_trigger);
             } else if (gp1.left_trigger > 0) {
                 outtake.outtakeSetSlides(-gp1.left_trigger);
+            } else if (gp2.right_trigger > 0) {
+                outtake.outtakeSetSlides(gp2.right_trigger);
+            } else if (gp2.left_trigger > 0) {
+                outtake.outtakeSetSlides(-gp2.left_trigger);
             } else {
                 //outtake.usePIDF = true;
                 outtake.outtakeSetSlides(0);
@@ -66,7 +70,7 @@ public class OuttakeControl implements Control {
         }
 
         //Outtake manual with right stick
-        slidesManualRE.update(gp1.right_stick_button);
+        slidesManualRE.update(gp1.right_stick_button || gp2.right_stick_button);
 
         //GAMEPAD2 basketModeToggle A
         basketMode.update(gp2.a);
