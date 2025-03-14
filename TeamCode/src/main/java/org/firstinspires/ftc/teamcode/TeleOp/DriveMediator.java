@@ -48,6 +48,8 @@ public class DriveMediator {
     // Methods
     public void colliding() {
         colliding = true;
+
+        r.telemetry.addData("COLLIDING", "true");
     }
 
     public void colliding(Walls wall) {
@@ -90,6 +92,9 @@ public class DriveMediator {
         double fieldAxial = axial * cosHeading - lateral * sinHeading;
         double fieldLateral = axial * sinHeading + lateral * cosHeading;
 
+        r.telemetry.addData("Field Axial:", Double.toString(fieldAxial));
+        r.telemetry.addData("Field Lateral:", Double.toString(fieldLateral));
+
         // Apply constraints to the drive vector
         if (fieldAxial > 0) {
             fieldAxial = 0;
@@ -100,11 +105,14 @@ public class DriveMediator {
 
             yaw = yawPower;
 
+            r.telemetry.addData("Yaw Power:" , Double.toString(yawPower));
+
 
         }
 
         // Use PIDF controller to adjust fieldAxial if the robot is ahead of the wall's line
         if (obstacle != null && obstacle.isColliding(pose)) {
+
             double positionError = 0;
             switch (obstacle.wallType) {
                 case VERTICAL_LINE:
@@ -123,6 +131,7 @@ public class DriveMediator {
                 double axialPower = Math.max(-1, Math.min(0, rawAxialPower));  // Clamping output to negative values
 
                 fieldAxial = axialPower;
+                r.telemetry.addData("NEW Field Axial:", Double.toString(fieldAxial));
             }
         
             // Another Option: just make it so that if the robot is within some tolerance from the line, it is colliding, and then the robot needs to use the PIDF to square up against the true line if its colliding
@@ -161,7 +170,8 @@ public class DriveMediator {
 
 // Walls Enum
 enum Walls {
-    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
+    //CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
+    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X)),
     NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120 - DriveSystem.BOT_CENTER_X));
 
 
@@ -231,7 +241,7 @@ enum Walls {
             case DIAGONAL_LINE:
                 return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
             case VERTICAL_LINE_INCH_THICK:
-                return (x - equation.getX(y)) > 0 && (x - equation.getX(y)) < 1.0; // Adjust threshold as needed
+                return (x - equation.getX(y)) > 0 && (x - equation.getX(y)) < 24.0; // Adjust threshold as needed
             case DIAGONAL_LINE_ABOVE_COLLIDING:
                 return (y - equation.getY(x)) > 0; // Adjust threshold as needed
             default:
