@@ -30,6 +30,10 @@ A - High Basket Mode Toggle
 Y - Light Mode Toggle
 X - Limit Switch Off/on
 
+DPAD
+up/down - outtake higher/lower
+left/right - intake left/right
+
 
 LeftStickButton - Slow Fall Delay Button
 Right Bump - Reset Encoders

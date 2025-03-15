@@ -15,7 +15,9 @@ public class AConstants {
     public static final double PICKUP_OFFSET = 4.5;
 
     public static final double STANDARD_POWER = 1;
-    public static final double LOW_POWER = .6;
+    public static final double MID_POWER = .7;
+    public static final double LOW_POWER = .45;
+    public static final double A_LOW = .6;
 
     public static final double SAMPLE_X = 40;
     public static final Point FIRST_SAMPLE = new Point(SAMPLE_X, 121.4);
