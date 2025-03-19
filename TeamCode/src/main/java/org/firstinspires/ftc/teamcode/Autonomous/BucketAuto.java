@@ -73,7 +73,8 @@ public class BucketAuto extends LinearOpMode
     //Pose thirdSampleEnd = new Pose(AConstants.END_X+4, AConstants.THIRD_SAMPLE.getY()+3, Math.toRadians(28.5));
 
     Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(335));
-    Pose secondSampleEnd = new Pose(20, 135, Math.toRadians(357.5));
+    //Pose secondSampleEnd = new Pose(20, 135, Math.toRadians(357.5));
+    Pose secondSampleEnd = new Pose(20, 135.5, Math.toRadians(352));
     Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(32.5));
 
     Pose lane1 = new Pose(60, 93.25, Math.toRadians(270));
@@ -120,6 +121,7 @@ public class BucketAuto extends LinearOpMode
     {
         THIRD_PICKUP,
         MOVE_FORWARD,
+        CLIP_WAIT,
         INTAKE_TRANSFER,
         SWIVEL_DOWN,
         OUTTAKE_TRANSFER,
@@ -335,11 +337,11 @@ public class BucketAuto extends LinearOpMode
         pickup = new StateMachineBuilder()
                 .state(pickupStates.THIRD_PICKUP)
                 .onEnter(() -> {
-                    o.outtakeSlidesRest();
                     if (curSample == 3)
                     {
                         buildPaths();
                         follower.followPath(intakeSample, AConstants.MID_POWER, true);
+                        o.outtakeSlidesRest();
                     }
                 })
                 .transition(() -> !(curSample == 3), pickupStates.MOVE_FORWARD)
@@ -360,7 +362,11 @@ public class BucketAuto extends LinearOpMode
                     }
                     i.intakeSpinIn();
                 })
-                .transitionTimed(intakeTime, pickupStates.INTAKE_TRANSFER)
+                .transitionTimed(0.1, pickupStates.CLIP_WAIT)
+
+                .state(pickupStates.CLIP_WAIT)
+                .onEnter(() -> o.outtakeSlidesRest())
+                .transitionTimed(intakeTime - 0.1, pickupStates.INTAKE_TRANSFER)
                 .onExit(() -> {
                     i.intakeStopSpin();
                     i.intakeSwivelRest();
