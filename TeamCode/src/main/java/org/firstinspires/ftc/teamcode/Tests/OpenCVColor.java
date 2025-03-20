@@ -155,9 +155,9 @@ public class OpenCVColor extends LinearOpMode
             List<ColorBlobLocatorProcessor.Blob> blobsRed = colorLocatorRed.getBlobs();
             List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
 
-            ColorBlobLocatorProcessor.Util.filterByArea(2000, 20000, blobsBlue);  // filter out very small blobs.
-            ColorBlobLocatorProcessor.Util.filterByArea(2000, 20000, blobsRed);
-            ColorBlobLocatorProcessor.Util.filterByArea(2000, 20000, blobsYellow);
+            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsBlue);  // filter out very small blobs.
+            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsRed);
+            ColorBlobLocatorProcessor.Util.filterByArea(50, 20000, blobsYellow);
 
             telemetry.addLine(" Area Density Aspect  Center");
 
@@ -174,7 +174,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distance", dist);
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
                 telemetry.addData("angle",angleFromCenter);
-                if (b.getContourArea() > 2000)
+                if (b.getContourArea() > 50)
                     telemetry.addData("Blue is detected", "!");
             }
 
@@ -191,7 +191,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
                 telemetry.addData("angle",angleFromCenter);
 
-                if (b.getContourArea() > 2000)
+                if (b.getContourArea() > 50)
                     telemetry.addData("Red is detected", "!");
 
             }
@@ -208,7 +208,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distance", dist);
                 telemetry.addData("distCenter", edgeDistanceFromCenter);
                 telemetry.addData("angle", angleFromCenter);
-                if (b.getContourArea() > 2000)
+                if (b.getContourArea() > 50)
                     telemetry.addData("Yellow is detected", "!");
             }
             telemetry.update();
