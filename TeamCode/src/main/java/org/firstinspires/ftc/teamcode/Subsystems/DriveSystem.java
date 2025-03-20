@@ -29,6 +29,7 @@ public class DriveSystem implements Subsystem {
     public double turnFactor = fastTurn;
     public double slowTurn = 0.4;
     public boolean useSlowMode = false;
+    public boolean virtualWallOn = false;
 
     public Pose2D pos;
     public String data;
@@ -58,6 +59,10 @@ public class DriveSystem implements Subsystem {
         leftFront.setPower(0.6);
         rightBack.setPower(0.6);
         rightFront.setPower(0.6);
+    }
+
+    public void toggleWalls(){
+        virtualWallOn = !virtualWallOn;
     }
 
     public void driveStop(){
