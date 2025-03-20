@@ -25,9 +25,8 @@ public class OuttakeSystem implements Subsystem {
     public TouchSensor limit;
 
     //SOFTWARE
-    public double motorRatio = (13.7 / 19.2);
     private int servoOffset = 15;
-    private int motorOffset = (int)(30*motorRatio);
+    private int motorOffset = 20;
     private int oServoOffset = 12;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
@@ -41,32 +40,30 @@ public class OuttakeSystem implements Subsystem {
     public double CLAW_OPEN = 0.5;
     private double CLAW_CLOSE = 0.175;
     private double WRIST_DOWN = 0.6;
-    private double WRIST_TRANSFER = 0.075;
-    private double WRIST_UP = 0.91;
-    private double WRIST_GRAB = 0.01;
-    private double WRIST_LOCK = 0.6; //0.45;
+    private double WRIST_TRANSFER = 0.3; //0.075
+    private double WRIST_UP = 0.9;
+    private double WRIST_GRAB = 0.1;
+    private double WRIST_LOCK = 0.44; //0.6;
     //LIMIT BACK: 0
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
-    private int OUTTAKE_SWIVEL_UP = 412; //398;
+    private int OUTTAKE_SWIVEL_UP = 435; //412;
     private int OUTTAKE_SWIVEL_MID = 370;
     private int OUTTAKE_SWIVEL_DOWN = 180;
     private int OUTTAKE_SWIVEL_TRANSFER = 210; //208;
-    private int OUTTAKE_SWIVEL_GRAB = 146;
-    private int OUTTAKE_SWIVEL_LOCK = 91;
+    private int OUTTAKE_SWIVEL_GRAB = 160; //146;
+    private int OUTTAKE_SWIVEL_LOCK = 125;
     //SLIDES
-    private int OUTTAKE_SLIDES_HIGH = (int)(-3290*motorRatio); //-3320;
-    private int OUTTAKE_SLIDES_LOW = (int)(-1600*motorRatio); //-1420;
-    private int OUTTAKE_SLIDES_DOWN = (int)(-35*motorRatio);
-    private int OUTTAKE_SLIDES_REST = (int)(-750*motorRatio);
-    private int OUTTAKE_SLIDES_GRAB_1 = (int)(-35*motorRatio);
-    private int OUTTAKE_SLIDES_SCORE_1 = (int)(-1700*motorRatio); //-1677
-    private int OUTTAKE_SLIDES_SCORE_2 = (int)(-1020*motorRatio); //Maybe increase? to -1030?
+    private int OUTTAKE_SLIDES_HIGH = -2400; //-3290;
+    private int OUTTAKE_SLIDES_LOW = -1100;//-1600;
+    private int OUTTAKE_SLIDES_DOWN = 0; //-35;
+    private int OUTTAKE_SLIDES_REST = -600; //-750;
+    private int OUTTAKE_SLIDES_GRAB_1 = 0; //-35;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1160; //-1700
+    private int OUTTAKE_SLIDES_SCORE_2 = -700; //-1020
 
-    private int OUTTAKE_SLIDES_ALMOST_DOWN = (int)(-100*motorRatio);
-
-    private int OUTTAKE_SLIDES_PARK = (int)(-830*motorRatio);
-    private int OUTTAKE_SWIVEL_PARK = 261;
+    private int OUTTAKE_SLIDES_PARK = -452; //-600
+    private int OUTTAKE_SWIVEL_PARK = 283;
 
     public int outtakeCounter = 0;
 
@@ -232,7 +229,7 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public boolean isSlidesAlmostDown(){
-        return outtakeBottomVertical.getCurrentPosition() >= (int)(-100*motorRatio);
+        return outtakeBottomVertical.getCurrentPosition() >= -60; //-100
     }
 
     public boolean isSlidesRest(){
@@ -244,7 +241,7 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public boolean isSlidesAlmostHigh(){
-        return outtakeBottomVertical.getCurrentPosition() <= (OUTTAKE_SLIDES_HIGH + (int)(350*motorRatio));
+        return outtakeBottomVertical.getCurrentPosition() <= (OUTTAKE_SLIDES_HIGH + 200); //350
     }
 
     public boolean isSlidesGrab1(){
@@ -277,14 +274,14 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public void setOuttakeHigher(){
-        OUTTAKE_SLIDES_HIGH -= (int)(50*motorRatio);
-        OUTTAKE_SLIDES_LOW -= (int)(50*motorRatio);
+        OUTTAKE_SLIDES_HIGH -= 40; //50
+        OUTTAKE_SLIDES_LOW -= 40;
         outtakeCounter += 1;
     }
 
     public void setOuttakeLower(){
-        OUTTAKE_SLIDES_HIGH += (int)(50*motorRatio);
-        OUTTAKE_SLIDES_LOW += (int)(50*motorRatio);
+        OUTTAKE_SLIDES_HIGH += 40; //50
+        OUTTAKE_SLIDES_LOW += 40;
         outtakeCounter -= 1;
     }
 
@@ -318,7 +315,7 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        if (!(outtakeBottomVertical.getCurrentPosition() < (int)(-1500*motorRatio))){
+        if (!(outtakeBottomVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
             outtakeSlidesRest();
         }
 
@@ -337,7 +334,7 @@ public class OuttakeSystem implements Subsystem {
 //        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
 
-        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > (int)(150*motorRatio)))){
+        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 100))){ //150
             resetEncodersButton();
         }
 

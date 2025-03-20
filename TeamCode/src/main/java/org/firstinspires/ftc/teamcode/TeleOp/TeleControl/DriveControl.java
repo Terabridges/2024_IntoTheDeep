@@ -21,6 +21,7 @@ public class DriveControl implements Control {
     public double SLOW_MULT = 0.6;
     public double speed = FAST_MULT;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
+    EdgeDetector virtualWallsRE = new EdgeDetector(() -> driveSystem.toggleWalls());
 
     public boolean noForward = false;
 
@@ -53,6 +54,7 @@ public class DriveControl implements Control {
         }
 
         slowModeRE.update(gp1.x);
+        virtualWallsRE.update(gp2.left_bumper);
         speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(driveSystem.manualDrive){
@@ -63,7 +65,7 @@ public class DriveControl implements Control {
             double lateral = gp1.left_stick_x;
             double yaw = gp1.right_stick_x;
 
-            if (dM.isColliding()) {
+            if (dM.isColliding() && driveSystem.virtualWallOn) {
                double[] collidingVector = dM.calculateCollidingVector(axial, lateral, yaw);
                axial = collidingVector[0];
                lateral = collidingVector[1];
@@ -104,6 +106,8 @@ public class DriveControl implements Control {
         telemetry.addData("SPEED", (driveSystem.useSlowMode ? "SLOW" : "FAST"));
 
         telemetry.addData("Position", driveSystem.data);
+
+        telemetry.addData("Virtual Walls", driveSystem.virtualWallOn);
     }
 
 }

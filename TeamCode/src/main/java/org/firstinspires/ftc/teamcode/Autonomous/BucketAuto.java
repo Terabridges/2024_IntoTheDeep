@@ -85,12 +85,12 @@ public class BucketAuto extends LinearOpMode
     Pose controlPoint = new Pose(28, 129, Math.toRadians(0));
     Pose controlPoint2 = new Pose(60, 98, Math.toRadians(270));
     Pose controlPoint3 = new Pose(68, 118, Math.toRadians(0));
-
+<<<<<<< Updated upstream
     Pose controlPoint4 = new Pose(65, 128, Math.toRadians(0));
-
+=======
     Pose controlPointDive = new Pose(65, 128, Math.toRadians(0));
     Pose controlPointScore = new Pose(17.5, 126.5, Math.toRadians(315));
-
+>>>>>>> Stashed changes
 
     //Pose[] samples = {firstSampleStart, secondSampleStart, thirdSampleStart};
     Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd, placeHolder};
