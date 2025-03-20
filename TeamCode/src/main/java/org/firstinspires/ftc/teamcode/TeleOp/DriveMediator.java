@@ -17,7 +17,7 @@ public class DriveMediator {
     public double pyaw = 0.015, iyaw = 0.0003, dyaw = 0.0001, fyaw = 0.0;
     public PIDFController yawPIDF = new PIDFController(pyaw, iyaw, dyaw, fyaw);
 
-    public double paxial = 0.01, iaxial = 0.0001, daxial = 0.00005, faxial = 0.0;
+    public double paxial = 0.03, iaxial = 0.0005, daxial = 0.00005, faxial = 0.0;
     public PIDFController axialPIDF = new PIDFController(paxial, iaxial, daxial, faxial);
 
     // Instance Variables
@@ -84,10 +84,12 @@ public class DriveMediator {
         // Transform the drive vector to the field's coordinate system
         double fieldForwardHeading = getFieldForwardHeading();
         double robotHeading = getRobotHeading();
+        double robotBackHeading = robotHeading + 180;
+        if (robotBackHeading >= 360) robotBackHeading -= 360;
+
         double headingDifference = Math.toRadians(fieldForwardHeading - robotHeading);
         double cosHeading = Math.cos(headingDifference);
         double sinHeading = Math.sin(headingDifference);
-
 
         double fieldAxial = axial * cosHeading - lateral * sinHeading;
         double fieldLateral = axial * sinHeading + lateral * cosHeading;
@@ -99,7 +101,11 @@ public class DriveMediator {
         if (fieldAxial > 0) {
             fieldAxial = 0;
 
-            double yawError = AngleUnit.normalizeDegrees(fieldForwardHeading - robotHeading);
+            double yawErrorFront = AngleUnit.normalizeDegrees(fieldForwardHeading - robotHeading);
+            double yawErrorBack = AngleUnit.normalizeDegrees(fieldForwardHeading - robotBackHeading);
+
+            double yawError = Math.abs(yawErrorFront) < Math.abs(yawErrorBack) ? yawErrorFront : yawErrorBack;
+            //double yawError = AngleUnit.normalizeDegrees(fieldForwardHeading - robotHeading);
             double rawYawPower = yawPIDF.calculate(yawError, 0);
             double yawPower = Math.max(-1, Math.min(1, rawYawPower));  // Clamping output
 
@@ -130,7 +136,13 @@ public class DriveMediator {
                 double rawAxialPower = axialPIDF.calculate(positionError, 0);
                 double axialPower = Math.max(-1, Math.min(0, rawAxialPower));  // Clamping output to negative values
 
-                fieldAxial = axialPower;
+                if (fieldAxial<0) {
+                    fieldAxial = Math.min(fieldAxial, axialPower);
+                }
+                else {
+                    fieldAxial = axialPower;
+                }
+
                 r.telemetry.addData("NEW Field Axial:", Double.toString(fieldAxial));
             }
         
@@ -170,9 +182,9 @@ public class DriveMediator {
 
 // Walls Enum
 enum Walls {
-    //CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 86.5 && pose.getY(DistanceUnit.INCH) > 57.5),
-    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X)),
-    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120 - DriveSystem.BOT_CENTER_X));
+    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 100 && pose.getY(DistanceUnit.INCH) > 44),
+    //CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X)),
+    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 124 - DriveSystem.BOT_CENTER_X));
 
 
     public enum WallType {
@@ -241,7 +253,7 @@ enum Walls {
             case DIAGONAL_LINE:
                 return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
             case VERTICAL_LINE_INCH_THICK:
-                return (x - equation.getX(y)) > 0 && (x - equation.getX(y)) < 24.0; // Adjust threshold as needed
+                return (x - equation.getX(y)) > 0 && (x - equation.getX(y)) < 16.0; // Adjust threshold as needed
             case DIAGONAL_LINE_ABOVE_COLLIDING:
                 return (y - equation.getY(x)) > 0; // Adjust threshold as needed
             default:

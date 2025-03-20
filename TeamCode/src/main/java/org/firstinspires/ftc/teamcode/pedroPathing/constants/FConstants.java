@@ -43,13 +43,12 @@ public class FConstants {
         FollowerConstants.zeroPowerAccelerationMultiplier = 4.5;
         FollowerConstants.centripetalScaling = 0.0001;
 
-<<<<<<< Updated upstream
         FollowerConstants.pathEndTimeoutConstraint = 500;
         FollowerConstants.pathEndTValueConstraint = 0.95;
-=======
+
         FollowerConstants.pathEndTimeoutConstraint = 200;
         FollowerConstants.pathEndTValueConstraint = 0.995;
->>>>>>> Stashed changes
+
         FollowerConstants.pathEndVelocityConstraint = 0.1;
         FollowerConstants.pathEndTranslationalConstraint = 0.1;
         FollowerConstants.pathEndHeadingConstraint = 0.007;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.pedropathing.localization.GoBildaPinpointDriver;
+import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -32,12 +33,13 @@ public class DriveSystem implements Subsystem {
 
     public Pose2D pos;
     public String data;
-    public final Pose2D START_POS = new Pose2D(DistanceUnit.INCH, BOT_CENTER_X, 0, AngleUnit.DEGREES, 0);
     public final double INCH_TO_MM = 25.4;
     public static final double ROBOT_WIDTH = 13.117; //Front to back
     public static final double ROBOT_HEIGHT = 13.413; //Side to side
     public static final double BOT_CENTER_X = ROBOT_WIDTH /2;
     public static final double BOT_CENTER_Y = ROBOT_HEIGHT /2;
+
+    public final Pose2D START_POS = new Pose2D(DistanceUnit.MM, BOT_CENTER_X*INCH_TO_MM, BOT_CENTER_Y*INCH_TO_MM, AngleUnit.RADIANS, 0);
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -64,6 +66,20 @@ public class DriveSystem implements Subsystem {
         manualDrive = true;
     }
 
+    public Pose2D updatePose() {
+
+        Pose2D robotcentric = odo.getPosition();
+
+        double newX = START_POS.getX(DistanceUnit.MM) + robotcentric.getX(DistanceUnit.MM);
+        double newY = START_POS.getY(DistanceUnit.MM) + robotcentric.getY(DistanceUnit.MM);
+        double newHead = START_POS.getHeading(AngleUnit.DEGREES) + robotcentric.getHeading(AngleUnit.DEGREES);
+
+        Pose2D newpos = new Pose2D(DistanceUnit.MM, newX, newY, AngleUnit.DEGREES, newHead);
+
+        return newpos;
+
+    }
+
     //Interface Methods
     @Override
     public void toInit(){
@@ -72,8 +88,8 @@ public class DriveSystem implements Subsystem {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
-        odo.setPosition(START_POS);
-        pos = odo.getPosition();
+        odo.update();
+        pos = updatePose();
 
 
     }
@@ -87,7 +103,7 @@ public class DriveSystem implements Subsystem {
         }
 
         odo.update();
-        pos = odo.getPosition();
+        pos = updatePose();
         data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
 
     }
