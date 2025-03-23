@@ -44,6 +44,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -59,9 +60,15 @@ public class OpenCVColor extends LinearOpMode
     private static double blueArea;
     private static double redArea;
     private static double yellowArea;
+    private static double smallestBlueArea;
+    private static double smallestRedArea;
+    private static double smallestYellowArea;
     private static double yellowCount;
     private static double blueCount;
     private static double redCount;
+    private static double smallestYellowDistance = 0;
+    private static double smallestRedDistance = 0;
+    private static double smallestBlueDistance = 0;
 
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
@@ -164,14 +171,16 @@ public class OpenCVColor extends LinearOpMode
             List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
 
 
-
             ColorBlobLocatorProcessor.Util.filterByArea(600, 20000, blobsBlue);  // filter out very small blobs.
             ColorBlobLocatorProcessor.Util.filterByArea(600, 20000, blobsRed);
             ColorBlobLocatorProcessor.Util.filterByArea(600, 20000, blobsYellow);
 
+
             yellowCount = blobsYellow.size();
             redCount = blobsRed.size();
             blueCount = blobsBlue.size();
+            ColorBlobLocatorProcessor.Util.sortByArea(SortOrder.ASCENDING, blobsYellow);
+
 
             telemetry.addLine(" Area Density Aspect  Center");
 
@@ -188,10 +197,12 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distance", dist);
                 blueArea = b.getContourArea();
                 telemetry.addData("BlueCount", blueCount);
-                //telemetry.addData("distCenter", edgeDistanceFromCenter);
-                //telemetry.addData("angle",angleFromCenter);
-                if (b.getContourArea() > 50)
-                    telemetry.addData("Blue is detected", "!");
+                if (dist < smallestBlueDistance)
+                    smallestBlueDistance = dist;
+
+               // if (b.getContourArea() > 50)
+                   // telemetry.addData("Blue is detected", "!");
+                telemetry.addData("Smallest Blue Distance", smallestBlueDistance);
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
@@ -206,12 +217,13 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distance", dist);
                 redArea = b.getContourArea();
                 telemetry.addData("RedCount", redCount);
-                //telemetry.addData("distCenter", edgeDistanceFromCenter);
-                //telemetry.addData("angle",angleFromCenter);
 
-                if (b.getContourArea() > 50)
-                    telemetry.addData("Red is detected", "!");
+                if (dist < smallestRedDistance)
+                    smallestRedDistance = dist;
 
+                //if (b.getContourArea() > 50)
+                  //  telemetry.addData("Red is detected", "!");
+                telemetry.addData("Smallest Red Distance", smallestRedDistance);
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsYellow)
@@ -226,11 +238,12 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("distance", dist);
                 yellowArea = b.getContourArea();
                 telemetry.addData("YellowCount", yellowCount);
-                //telemetry.addData("distCenter", edgeDistanceFromCenter);
-                //telemetry.addData("angle", angleFromCenter);
-                if (b.getContourArea() > 50)
-                    telemetry.addData("Yellow is detected", "!");
+                if (dist < smallestYellowDistance)
+                    smallestYellowDistance = dist;
 
+               // if (b.getContourArea() > 50)
+                 //   telemetry.addData("Yellow is detected", "!");
+                telemetry.addData("Smallest Yellow Distance", smallestYellowDistance);
             }
             telemetry.addData("Color to go to", (decideColorForPickup()));
             telemetry.update();
@@ -258,9 +271,17 @@ public class OpenCVColor extends LinearOpMode
     {
         if ((yellowCount > redCount && yellowCount > blueCount) || (yellowArea > blueArea && yellowArea > redArea))
         {
-            return "Go to Yellow";
+            if (redCount == 0 && blueCount == 0) {
+                return "Go you Yellow";
+            }
+            else{
+                if (smallestBlueDistance > 30 && smallestYellowDistance > 30 && smallestYellowDistance < 20)
+                {
+                    return "Go to Yellow at" + smallestYellowDistance;
+                }
+            }
         }
-        return "Go to Red";
+        return "Go to Blue";
     }
 
 }
