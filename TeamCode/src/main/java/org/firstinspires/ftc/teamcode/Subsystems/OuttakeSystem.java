@@ -40,7 +40,7 @@ public class OuttakeSystem implements Subsystem {
     public double CLAW_OPEN = 0.5;
     private double CLAW_CLOSE = 0.175;
     private double WRIST_DOWN = 0.6;
-    private double WRIST_TRANSFER = 0.3; //0.075
+    private double WRIST_TRANSFER = 0.35; //0.3
     private double WRIST_UP = 0.9;
     private double WRIST_GRAB = 0.1;
     private double WRIST_LOCK = 0.44; //0.6;
@@ -50,15 +50,15 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_UP = 435; //412;
     private int OUTTAKE_SWIVEL_MID = 370;
     private int OUTTAKE_SWIVEL_DOWN = 180;
-    private int OUTTAKE_SWIVEL_TRANSFER = 210; //208;
+    private int OUTTAKE_SWIVEL_TRANSFER = 220; //210;
     private int OUTTAKE_SWIVEL_GRAB = 160; //146;
     private int OUTTAKE_SWIVEL_LOCK = 125;
     //SLIDES
     private int OUTTAKE_SLIDES_HIGH = -2400; //-3290;
     private int OUTTAKE_SLIDES_LOW = -1100;//-1600;
-    private int OUTTAKE_SLIDES_DOWN = 0; //-35;
+    private int OUTTAKE_SLIDES_DOWN = -100; //-35;
     private int OUTTAKE_SLIDES_REST = -600; //-750;
-    private int OUTTAKE_SLIDES_GRAB_1 = 0; //-35;
+    private int OUTTAKE_SLIDES_GRAB_1 = OUTTAKE_SLIDES_DOWN; //-35;
     private int OUTTAKE_SLIDES_SCORE_1 = -1160; //-1700
     private int OUTTAKE_SLIDES_SCORE_2 = -700; //-1020
 
