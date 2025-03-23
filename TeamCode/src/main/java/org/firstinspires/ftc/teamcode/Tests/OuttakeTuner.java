@@ -33,7 +33,7 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Third PID for outtake slides
     private PIDController outtakeSlidesController;
-    public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
+    public static double p3 = 0.008, i3 = 0.00003, d3 = 0.00001;
     public static double f3 = 0.0;
     public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
