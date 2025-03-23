@@ -32,6 +32,10 @@ import com.qualcomm.robotcore.util.SortOrder;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
@@ -63,16 +67,20 @@ public class OpenCVColor extends LinearOpMode
     private static double smallestBlueArea;
     private static double smallestRedArea;
     private static double smallestYellowArea;
-    private static double yellowCount;
-    private static double blueCount;
-    private static double redCount;
-    private static double smallestYellowDistance = 0;
-    private static double smallestRedDistance = 0;
-    private static double smallestBlueDistance = 0;
+    private static double yellowCount = 0;
+    private static double blueCount = 0;
+    private static double redCount = 0;
+    private static double smallestYellowDistance = 60;
+    private static double smallestRedDistance = 60;
+    private static double smallestBlueDistance = 60;
 
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
     private static final int CAMERA_HEIGHT = 240;
+    private Position cameraPosition = new Position(DistanceUnit.INCH,
+            0, 0, 0, 0);
+    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+            20, -90, 90, 0);
 
     // will be used to calculate distance
     public static final double objectWidthInRealWorld = 38.1; // this is the width of the sample, change if incorrect
@@ -108,6 +116,7 @@ public class OpenCVColor extends LinearOpMode
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
+                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorRed = new ColorBlobLocatorProcessor.Builder()
@@ -116,6 +125,7 @@ public class OpenCVColor extends LinearOpMode
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
+                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorYellow = new ColorBlobLocatorProcessor.Builder()
@@ -124,6 +134,7 @@ public class OpenCVColor extends LinearOpMode
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
+                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         //int[] PortalList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
@@ -140,19 +151,6 @@ public class OpenCVColor extends LinearOpMode
                 .setAutoStopLiveView(true)
                 .build();
 
-        /*
-        VisionPortal portal1 = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
-                //.addProcessor(colorLocatorBlue)
-                //.addProcessor(colorLocatorRed)
-                //.addProcessor(colorLocatorYellow)
-                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .setLiveViewContainerId(PortalList[1])
-                //.enableLiveView(true)
-                .setAutoStopLiveView(true)
-                .build();
-        */
 
         // use to speed up debugging
         //telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -183,6 +181,9 @@ public class OpenCVColor extends LinearOpMode
 
 
             telemetry.addLine(" Area Density Aspect  Center");
+            smallestYellowDistance = 60;
+            smallestRedDistance = 60;
+            smallestBlueDistance = 60;
 
             // Display the size (area) and center location for each Blob.
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
@@ -196,13 +197,12 @@ public class OpenCVColor extends LinearOpMode
                 //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
                 telemetry.addData("distance", dist);
                 blueArea = b.getContourArea();
-                telemetry.addData("BlueCount", blueCount);
                 if (dist < smallestBlueDistance)
                     smallestBlueDistance = dist;
 
                // if (b.getContourArea() > 50)
-                   // telemetry.addData("Blue is detected", "!");
-                telemetry.addData("Smallest Blue Distance", smallestBlueDistance);
+                telemetry.addData("Blue is detected", "!");
+
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
@@ -216,14 +216,12 @@ public class OpenCVColor extends LinearOpMode
                 //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
                 telemetry.addData("distance", dist);
                 redArea = b.getContourArea();
-                telemetry.addData("RedCount", redCount);
 
                 if (dist < smallestRedDistance)
                     smallestRedDistance = dist;
 
                 //if (b.getContourArea() > 50)
-                  //  telemetry.addData("Red is detected", "!");
-                telemetry.addData("Smallest Red Distance", smallestRedDistance);
+                telemetry.addData("Red is detected", "!");
             }
 
             for(ColorBlobLocatorProcessor.Blob b : blobsYellow)
@@ -237,14 +235,18 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("width", boxFit.size.width);
                 telemetry.addData("distance", dist);
                 yellowArea = b.getContourArea();
-                telemetry.addData("YellowCount", yellowCount);
-                if (dist < smallestYellowDistance)
+                if (dist != smallestYellowDistance)
                     smallestYellowDistance = dist;
 
                // if (b.getContourArea() > 50)
-                 //   telemetry.addData("Yellow is detected", "!");
-                telemetry.addData("Smallest Yellow Distance", smallestYellowDistance);
+                telemetry.addData("Yellow is detected", "!");
             }
+            telemetry.addData("Number of Red Contours", redCount);
+            telemetry.addData("Number of Blue Contours", blueCount);
+            telemetry.addData("Number of Yellow Contours", yellowCount);
+            telemetry.addData("Smallest Red Distance", smallestRedDistance);
+            telemetry.addData("Smallest Blue Distance", smallestBlueDistance);
+            telemetry.addData("Smallest Yellow Distance", smallestYellowDistance);
             telemetry.addData("Color to go to", (decideColorForPickup()));
             telemetry.update();
             sleep(50);
@@ -269,13 +271,15 @@ public class OpenCVColor extends LinearOpMode
 
     public static String decideColorForPickup()
     {
-        if ((yellowCount > redCount && yellowCount > blueCount) || (yellowArea > blueArea && yellowArea > redArea))
+
+        if ((yellowCount >= redCount && yellowCount >= blueCount) || (yellowArea > blueArea && yellowArea > redArea))
         {
             if (redCount == 0 && blueCount == 0) {
-                return "Go you Yellow";
+                return "Go to Yellow " + smallestYellowDistance;
             }
             else{
-                if (smallestBlueDistance > 30 && smallestYellowDistance > 30 && smallestYellowDistance < 20)
+                if (((smallestBlueDistance > smallestYellowDistance) || (smallestRedDistance > smallestYellowDistance)) &&
+                     (smallestYellowDistance < 30))
                 {
                     return "Go to Yellow at" + smallestYellowDistance;
                 }
