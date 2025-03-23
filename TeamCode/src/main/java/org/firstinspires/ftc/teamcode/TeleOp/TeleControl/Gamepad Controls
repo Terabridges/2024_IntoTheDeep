@@ -1,29 +1,39 @@
 BUTTONS
 
 BOOLEANS
-A - sample intake FSM (DONE) / wall grab FSM
-B - sample transfer FSM (DONE) / raise specimen FSM
-Y - sample outtake FSM (DONE) / score specimen FSM
-X - alt input for FSMs (DONE)
-rightBumper - slow mode (DONE)
-leftBumper - specimen mode
-dLeft - move intake slides in (DONE)
-dRight - move intake slides out (DONE)
-dUp - claw open/close (DONE)
-dDown - hold to hold sweeper out (DONE)
-leftStickButton - low basket mode (DONE)
-rightStickButton - vertical slide manual mode (DONE)
-back button - reset states (DONE)
-start button - reset encoders
+A - sample intake FSM
+B - sample transfer FSM
+Y - sample outtake FSM
+X - slow mode
+rightBumper - specimen score FSM
+leftBumper - open/close claw
+dLeft - move intake slides in
+dRight - move intake slides out
+dUp -
+dDown - hold to hold sweeper out
+leftStickButton -
+rightStickButton - vertical slide manual mode
+back button - reset states
+
 
 DOUBLES
-rightTrigger - intake spin in (DONE) / vertical slides up (DONE)
-leftTrigger - intake spin out (DONE) / vertical slides down (DONE)
-leftStickX - strafe (DONE)
-leftStickY - forward/back (DONE)
-rightStickX - spin (DONE)
-rightStickY - spin (in field centric) (DONE)
-touchPadX -
-touchPadY -
+rightTrigger - intake spin in / vertical slides up
+leftTrigger - intake spin out / vertical slides down
+leftStickX - strafe
+leftStickY - forward/back
+rightStickX - spin
 
 
+
+GAMEPAD 2
+A - High Basket Mode Toggle
+Y - Light Mode Toggle
+X - Limit Switch Off/on
+
+DPAD
+up/down - outtake higher/lower
+left/right - intake left/right
+
+
+LeftStickButton - Slow Fall Delay Button
+Right Bump - Reset Encoders

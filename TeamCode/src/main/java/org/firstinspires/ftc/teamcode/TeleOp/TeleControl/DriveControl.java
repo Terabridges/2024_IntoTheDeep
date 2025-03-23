@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.TeleOp.VisionMediator;
 import org.firstinspires.ftc.teamcode.Utility.EdgeDetector;
 
 public class DriveControl implements Control {
@@ -14,26 +15,29 @@ public class DriveControl implements Control {
     DriveSystem driveSystem;
     public Robot robot;
     public Gamepad gp1;
-    public double speed = 1.0;
+    public Gamepad gp2;
+    VisionMediator vM;
+    public double FAST_MULT = 1.0;
     public double SLOW_MULT = 0.6;
-    boolean useSlowMode = false;
-    boolean manualDrive = true;
+    public double speed = FAST_MULT;
     EdgeDetector slowModeRE = new EdgeDetector( () -> toggleSlowMode());
 
     //Constructor
-    public DriveControl(DriveSystem d, Gamepad gp1) {
+    public DriveControl(DriveSystem d, Gamepad gp1, Gamepad gp2) {
         this.driveSystem = d;
         this.gp1 = gp1;
+        this.gp2 = gp2;
     }
 
-    public DriveControl(Robot robot, Gamepad gp1) {
-        this(robot.driveSystem, gp1);
+    public DriveControl(Robot robot, Gamepad gp1, Gamepad gp2) {
+        this(robot.driveSystem, gp1, gp2);
         this.robot = robot;
+        this.vM = robot.vM;
     }
 
     //Methods
     public void toggleSlowMode(){
-        useSlowMode = !useSlowMode;
+        driveSystem.useSlowMode = !driveSystem.useSlowMode;
     }
 
 
@@ -41,10 +45,10 @@ public class DriveControl implements Control {
     @Override
     public void update(){
 
-        slowModeRE.update(gp1.right_bumper);
-        speed = (useSlowMode) ? SLOW_MULT : 1.0;
+        slowModeRE.update(gp1.x);
+        speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
-        if(manualDrive){
+        if(driveSystem.manualDrive){
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = -gp1.left_stick_y;  // Note: pushing stick forward gives negative value
@@ -52,10 +56,10 @@ public class DriveControl implements Control {
             double yaw = gp1.right_stick_x;
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower = axial - lateral + yaw;
-            double rightBackPower = axial + lateral - yaw;
+            double leftFrontPower = axial + lateral + (yaw * driveSystem.turnFactor);
+            double rightFrontPower = axial - lateral - (yaw * driveSystem.turnFactor);
+            double leftBackPower = axial - lateral + (yaw * driveSystem.turnFactor);
+            double rightBackPower = axial + lateral - (yaw * driveSystem.turnFactor);
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -67,6 +71,10 @@ public class DriveControl implements Control {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
+            leftFrontPower *= speed;
+            rightFrontPower *= speed;
+            leftBackPower *= speed;
+            rightBackPower *= speed;
             driveSystem.leftFront.setPower(leftFrontPower);
             driveSystem.rightFront.setPower(rightFrontPower);
             driveSystem.leftBack.setPower(leftBackPower);
@@ -76,7 +84,7 @@ public class DriveControl implements Control {
 
     @Override
     public void addTelemetry(Telemetry telemetry){
-        telemetry.addData("SPEED", (useSlowMode ? "SLOW" : "FAST"));
+        telemetry.addData("SPEED", (driveSystem.useSlowMode ? "SLOW" : "FAST"));
     }
 
 }

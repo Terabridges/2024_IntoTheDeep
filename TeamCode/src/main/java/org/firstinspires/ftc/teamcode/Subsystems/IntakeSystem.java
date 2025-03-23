@@ -21,33 +21,44 @@ public class IntakeSystem implements Subsystem {
     public CRServo intakeLeftSwivel;
     public DcMotor intakeSpin;
     public Servo intakeSweeper;
-    public AnalogInput intakeRightSwivelAnalog;
-    public AnalogInput intakeRightSlidesAnalog;
-    public AbsoluteAnalogEncoder intakeRightSwivelEnc;
-    public AbsoluteAnalogEncoder intakeRightSlidesEnc;
+    public AnalogInput intakeSwivelAnalog;
+    public AnalogInput intakeSlidesAnalog;
+    public AbsoluteAnalogEncoder intakeSwivelEnc;
+    public AbsoluteAnalogEncoder intakeSlidesEnc;
 
     //SOFTWARE
     public boolean usePIDFIntakeSlides = true;
     public boolean usePIDFIntakeSwivel = true;
     public boolean manualIntake = true;
-    private int servoOffset = 15;
-    private int motorOffset = 50;
+    private int servoOffset = 10;
+    private int lowServoOffset = 7;
+    private int motorOffset = 40;
     public double intakeSwivelGearRatio = 40.0/48.0;
+    //private double intakeSwivelOffset = 80;
+    private double intakeSwivelOffset = 102;
+    private double intakeSlidesOffset = 100;
+    public int intakeCounter = 0;
 
     //Positions
-    private double INTAKE_SPIN_IN = -0.75;
-    private double INTAKE_SPIN_OUT = 0.75;
+    private double INTAKE_SPIN_IN = -1;
+    private double INTAKE_SPIN_OUT = 1;
     private double INTAKE_SPIN_STOP = 0;
-    private int INTAKE_SLIDES_EXTEND = 90;
-    private int INTAKE_SLIDES_RETRACT = 35;
-    private int INTAKE_SWIVEL_TRANSFER = 125;
-    private int INTAKE_SWIVEL_REST = 135;
-    private int INTAKE_SWIVEL_DOWN = 287;
+    private double INTAKE_SLOW_SPIN_OUT = 0.5;
+    private int INTAKE_SLIDES_EXTEND = 237;
+    private int INTAKE_SLIDES_SUPER_EXTEND = 275;
+    //MAX 283.5
+    private int INTAKE_SLIDES_HALF = 235;
+    private int INTAKE_SLIDES_QUARTER = 207;
+    private int INTAKE_SLIDES_RETRACT = 186;
+    private int INTAKE_SLIDES_SAM = 220;
+    private int INTAKE_SWIVEL_TRANSFER = 124;
+    private int INTAKE_SWIVEL_REST = 214;
+    private int INTAKE_SWIVEL_DOWN = 293; //292;
     private double INTAKE_SLIDES_MANUAL_OUT = 0.3;
     private double INTAKE_SLIDES_MANUAL_IN = -0.3;
     private double INTAKE_SLIDES_MANUAL_STOP = 0;
-    private double INTAKE_SWEEPER_OUT = 0.55;
-    private double INTAKE_SWEEPER_IN = 0.2;
+    private double INTAKE_SWEEPER_OUT = 0.65;
+    private double INTAKE_SWEEPER_IN = 0.26;
 
     //Targets
     public double intakeSpinTarget = 0;
@@ -57,6 +68,7 @@ public class IntakeSystem implements Subsystem {
     //Max
     private double INTAKE_SLIDES_MAX_POWER = 1.0;
     private double INTAKE_SWIVEL_MAX_POWER = 1.0;
+    private int SLIDES_MAX = 280;
 
     //PIDF
 
@@ -64,7 +76,7 @@ public class IntakeSystem implements Subsystem {
 
     //First PID for intake slides
     public PIDController intakeSlidesController;
-    public static double p = 0.009, i = 0.03, d = 0.00008;
+    public static double p = 0.0075, i = 0.04, d = 0.0003;
     public static double f = 0.0;
     public static int intakeSlidesTarget;
     double intakeSlidesPos;
@@ -72,8 +84,8 @@ public class IntakeSystem implements Subsystem {
 
     //Second PID for intake swivel
     public PIDController intakeSwivelController;
-    public static double p2 = 0.0035, i2 = 0.02, d2 = 0.00009;
-    public static double f2 = 0.04;
+    public static double p2 = 0.005, i2 = 0.03, d2 = 0.00005;
+    public static double f2 = 0.05;
     public static int intakeSwivelTarget;
     double intakeSwivelPos;
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
@@ -82,21 +94,21 @@ public class IntakeSystem implements Subsystem {
     //Constructor
     public IntakeSystem(HardwareMap map) {
         intakeLeftSlide = map.get(CRServo.class, "intake_left_slide");
-        intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSlide = map.get(CRServo.class, "intake_right_slide");
         intakeLeftSwivel = map.get(CRServo.class, "intake_left_swivel");
-        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel = map.get(CRServo.class, "intake_right_swivel");
         intakeSpin = map.get(DcMotor.class, "intake_spin");
-        intakeRightSwivelAnalog = map.get(AnalogInput.class, "intake_right_swivel_analog");
-        intakeRightSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
+        intakeSwivelAnalog = map.get(AnalogInput.class, "intake_left_swivel_analog");
+        intakeSlidesAnalog = map.get(AnalogInput.class, "intake_right_slide_analog");
         intakeSweeper = map.get(Servo.class, "intake_sweeper");
-        intakeRightSlidesEnc = new AbsoluteAnalogEncoder(intakeRightSlidesAnalog);
-        intakeRightSwivelEnc = new AbsoluteAnalogEncoder(intakeRightSwivelAnalog, 3.3, 87, intakeSwivelGearRatio);
+        intakeSlidesEnc = new AbsoluteAnalogEncoder(intakeSlidesAnalog, 3.3, intakeSlidesOffset, 1);
+        intakeSwivelEnc = new AbsoluteAnalogEncoder(intakeSwivelAnalog, 3.3, intakeSwivelOffset, intakeSwivelGearRatio);
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
+        //intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //intakeSwivelEnc.setInverted(true);
         intakeSlidesController = new PIDController(p, i, d);
         intakeSwivelController = new PIDController(p2, i2, d2);
     }
@@ -132,9 +144,19 @@ public class IntakeSystem implements Subsystem {
         intakeSlidesTarget = INTAKE_SLIDES_RETRACT;
     }
 
-    public void intakeSwivelDown(){
-        intakeSwivelTarget = INTAKE_SWIVEL_DOWN;
+    public void intakeSlidesHalf() {
+        intakeSlidesTarget = INTAKE_SLIDES_HALF;
     }
+
+    public void intakeSlidesQuarter() {
+        intakeSlidesTarget = INTAKE_SLIDES_QUARTER;
+    }
+
+    public void intakeSlidesSam(){intakeSlidesTarget = INTAKE_SLIDES_SAM;}
+
+    public void intakeSlidesSuperExtend(){intakeSlidesTarget = INTAKE_SLIDES_SUPER_EXTEND;}
+
+    public void intakeSwivelDown(){intakeSwivelTarget = INTAKE_SWIVEL_DOWN;}
 
     public void intakeSwivelRest(){
         intakeSwivelTarget = INTAKE_SWIVEL_REST;
@@ -156,11 +178,23 @@ public class IntakeSystem implements Subsystem {
         intakeSpinTarget = INTAKE_SPIN_STOP;
     }
 
-    public void intakeSlidesSetManualIn(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_IN;}
+    public void intakeSlowSpinOut(){intakeSpinTarget = INTAKE_SLOW_SPIN_OUT;}
 
-    public void intakeSlidesSetManualOut(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;}
+    public void intakeSlidesSetManualIn(){
+        usePIDFIntakeSlides = false;
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_IN;
+    }
 
-    public void intakeSlidesSetManualStop(){intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;}
+    public void intakeSlidesSetManualOut(){
+        usePIDFIntakeSlides = false;
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_OUT;
+    }
+
+    public void intakeSlidesSetManualStop(){
+        usePIDFIntakeSlides = true;
+        intakeSlidesTarget = (int)intakeSlidesEnc.getCurrentPosition();
+        intakeSlidesManualPower = INTAKE_SLIDES_MANUAL_STOP;
+    }
 
     public void intakeSweeperOut(){setSweeper(INTAKE_SWEEPER_OUT);}
 
@@ -169,24 +203,43 @@ public class IntakeSystem implements Subsystem {
     //isPositions
 
     public boolean isIntakeExtended(){
-        return Math.abs(intakeRightSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_EXTEND) <= lowServoOffset;
     }
 
     public boolean isIntakeRetracted(){
-        return Math.abs(intakeRightSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= servoOffset;
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_RETRACT) <= lowServoOffset;
+    }
+
+    public boolean isIntakeHalf(){
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_HALF) <= lowServoOffset;
+    }
+
+    public boolean isIntakeQuarter(){
+        return Math.abs(intakeSlidesEnc.getCurrentPosition() - INTAKE_SLIDES_QUARTER) <= lowServoOffset;
     }
 
     public boolean isSwivelTransfer(){
-        return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_TRANSFER) <= servoOffset;
+        return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_TRANSFER) <= servoOffset;
     }
 
+
     public boolean isSwivelRest(){
-        return Math.abs(intakeRightSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
+        return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
+    }
+
+    public void setIntakeHigher(){
+        INTAKE_SLIDES_SAM+= 3;
+        intakeCounter += 3;
+    }
+
+    public void setIntakeLower(){
+        INTAKE_SLIDES_SAM-= 3;
+        intakeCounter -= 3;
     }
 
     public double setIntakeSlidesPIDF(int target) {
         intakeSlidesController.setPID(p, i, d);
-        intakeSlidesPos = intakeRightSlidesEnc.getCurrentPosition();
+        intakeSlidesPos = intakeSlidesEnc.getCurrentPosition();
         pid = intakeSlidesController.calculate(intakeSlidesPos, target);
         targetIntakeSlidesAngle = target;
         ff = (Math.sin(Math.toRadians(targetIntakeSlidesAngle))) * f;
@@ -199,7 +252,7 @@ public class IntakeSystem implements Subsystem {
 
     public double setIntakeSwivelPIDF(int target) {
         intakeSwivelController.setPID(p2, i2, d2);
-        intakeSwivelPos = intakeRightSwivelEnc.getCurrentPosition();
+        intakeSwivelPos = intakeSwivelEnc.getCurrentPosition();
         pid2 = intakeSwivelController.calculate(intakeSwivelPos, target);
         targetIntakeSwivelAngle = target;
         ff2 = (Math.sin(Math.toRadians(targetIntakeSwivelAngle))) * f2;
@@ -223,7 +276,11 @@ public class IntakeSystem implements Subsystem {
         if (usePIDFIntakeSlides) {
             intakeSetSlides(setIntakeSlidesPIDF(intakeSlidesTarget));
         } else {
-            intakeSetSlides(intakeSlidesManualPower);
+            if (!(intakeSlidesEnc.getCurrentPosition() > SLIDES_MAX && (intakeSlidesManualPower > 0))) {
+                intakeSetSlides(intakeSlidesManualPower);
+            } else {
+                intakeSetSlides(0);
+            }
         }
         if (usePIDFIntakeSwivel) {
             intakeSetSwivel(setIntakeSwivelPIDF(intakeSwivelTarget));

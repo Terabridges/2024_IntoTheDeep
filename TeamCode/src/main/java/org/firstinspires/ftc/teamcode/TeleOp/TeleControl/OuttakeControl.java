@@ -12,28 +12,41 @@ public class OuttakeControl implements Control {
     //Software
     OuttakeSystem outtake;
     Gamepad gp1;
+    Gamepad gp2;
     Robot robot;
-    boolean isClawOpen = false;
-    EdgeDetector clawOpenRE = new EdgeDetector( () -> outtake.openClaw());
-    EdgeDetector clawCloseRE = new EdgeDetector( () -> outtake.closeClaw());
     EdgeDetector slidesManualRE = new EdgeDetector( () -> robot.setManualSlidesTrue());
-    EdgeDetector slidesManualFalseRE = new EdgeDetector( () -> robot.setManualIntakeTrue());
     EdgeDetector basketMode = new EdgeDetector( () -> toggleLowBasketMode());
+    EdgeDetector clawRE = new EdgeDetector( () -> toggleClaw());
+    EdgeDetector resetEncodersRE = new EdgeDetector(() -> outtake.resetEncodersButton());
+    EdgeDetector useLimitSwitchRE = new EdgeDetector(() -> robot.toggleLimitSwitch());
+    EdgeDetector increaseOuttakeRE = new EdgeDetector(() -> outtake.setOuttakeHigher());
+    EdgeDetector decreaseOuttakeRE = new EdgeDetector(() -> outtake.setOuttakeLower());
 
     //Constructor
-    public OuttakeControl(OuttakeSystem outtake, Gamepad gp1){
+    public OuttakeControl(OuttakeSystem outtake, Gamepad gp1, Gamepad gp2){
         this.outtake = outtake;
         this.gp1 = gp1;
+        this.gp2 = gp2;
     }
 
-    public OuttakeControl(Robot robot, Gamepad gp1) {
-        this(robot.outtakeSystem, gp1);
+    public OuttakeControl(Robot robot, Gamepad gp1, Gamepad gp2) {
+        this(robot.outtakeSystem, gp1, gp2);
         this.robot = robot;
     }
 
     //Methods
-    public void toggleLowBasketMode(){
+
+    public void toggleLowBasketMode() {
         outtake.highBasketMode = !outtake.highBasketMode;
+    }
+
+    public void toggleClaw(){
+        outtake.isClawOpen = !outtake.isClawOpen;
+        if (outtake.isClawOpen){
+            outtake.closeClaw();
+        } else {
+            outtake.openClaw();
+        }
     }
 
     //Interface Methods
@@ -42,36 +55,48 @@ public class OuttakeControl implements Control {
 
         //Set slides power with triggers
         if (outtake.manualOuttake) {
-            if (gp1.right_trigger > 0.1) {
+            if (gp1.right_trigger > 0) {
                 outtake.outtakeSetSlides(gp1.right_trigger);
+            } else if (gp1.left_trigger > 0) {
+                outtake.outtakeSetSlides(-gp1.left_trigger);
+            } else if (gp2.right_trigger > 0) {
+                outtake.outtakeSetSlides(gp2.right_trigger);
+            } else if (gp2.left_trigger > 0) {
+                outtake.outtakeSetSlides(-gp2.left_trigger);
+            } else {
+                //outtake.usePIDF = true;
+                outtake.outtakeSetSlides(0);
             }
-
-            if (gp1.left_trigger > 0.1) {
-                outtake.outtakeSetSlides(-gp1.right_trigger);
-            }
-        }
-
-        //Claw open/close with dpad up
-        if (isClawOpen){
-            clawCloseRE.update(gp1.dpad_up);
-        } else {
-            clawOpenRE.update(gp1.dpad_up);
         }
 
         //Outtake manual with right stick
-        if (outtake.manualOuttake){
-            slidesManualFalseRE.update(gp1.right_stick_button);
-        } else {
-            slidesManualRE.update(gp1.right_stick_button);
-        }
+        slidesManualRE.update(gp1.right_stick_button || gp2.right_stick_button);
 
-        //Basket Mode Toggle
-        basketMode.update(gp1.left_stick_button);
+        //GAMEPAD2 basketModeToggle A
+        basketMode.update(gp2.a);
+
+        //Claw open/close with right bumper
+        clawRE.update(gp1.right_bumper);
+
+        //GAMEPAD 2 Reset slide encoders with right bumper
+        resetEncodersRE.update(gp2.right_bumper);
+
+        //GAMEPAD 2 Use limit switch toggle X
+        useLimitSwitchRE.update(gp2.x);
+
+        increaseOuttakeRE.update(gp2.dpad_up);
+        decreaseOuttakeRE.update(gp2.dpad_down);
     }
 
     @Override
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
+        telemetry.addData("Manual Slides", outtake.manualOuttake);
+        telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
+        //telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
+        //telemetry.addData("Zero Power Behavior", outtake.outtakeBottomVertical.getZeroPowerBehavior());
+        telemetry.addData("Use Limit Switch", outtake.useLimitSwitch);
+        telemetry.addData("Outtake Slides Offset", outtake.outtakeCounter);
     }
 
 }

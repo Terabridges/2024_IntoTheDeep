@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -19,30 +20,52 @@ public class OuttakeSystem implements Subsystem {
     public CRServo outtakeRightSwivel;
     public Servo outtakeWrist;
     public Servo outtakeClaw;
-    public AnalogInput outtakeRightSwivelAnalog;
-    public AbsoluteAnalogEncoder outtakeRightSwivelEnc;
+    public AnalogInput outtakeSwivelAnalog;
+    public AbsoluteAnalogEncoder outtakeSwivelEnc;
+    public TouchSensor limit;
 
     //SOFTWARE
     private int servoOffset = 15;
-    private int motorOffset = 50;
+    private int motorOffset = 20;
+    private int oServoOffset = 12;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
     public double outtakeSwivelGearRatio = 40.0/30.0;
+    public boolean isClawOpen = false;
+    private double outtakeSwivelOffset = 180.0;
+    public boolean usePIDF = false;
+    public boolean useLimitSwitch = false;
 
     //Positions
-    private double CLAW_OPEN = 0.77;
-    private double CLAW_CLOSE = 0.43;
-    private double WRIST_DOWN = 0.68;
-    private double WRIST_TRANSFER = 0.3;
-    private double WRIST_UP = 0.98;
-    private int OUTTAKE_SWIVEL_UP = 345;
-    private int OUTTAKE_SWIVEL_MID = 275;
-    private int OUTTAKE_SWIVEL_DOWN = 123;
-    private int OUTTAKE_SWIVEL_TRANSFER = 161;
-    private int OUTTAKE_SLIDES_HIGH = -3400;
-    private int OUTTAKE_SLIDES_LOW = -1600;
-    private int OUTTAKE_SLIDES_DOWN = 0;
-    private int OUTTAKE_SLIDES_REST = -800;
+    public double CLAW_OPEN = 0.5;
+    private double CLAW_CLOSE = 0.175;
+    private double WRIST_DOWN = 0.6;
+    private double WRIST_TRANSFER = 0.3; //0.075
+    private double WRIST_UP = 0.9;
+    private double WRIST_GRAB = 0.1;
+    private double WRIST_LOCK = 0.44; //0.6;
+    //LIMIT BACK: 0
+    //LIMIT FORWARD: 1
+    //SPECIMEN LIMIT: 0.35
+    private int OUTTAKE_SWIVEL_UP = 435; //412;
+    private int OUTTAKE_SWIVEL_MID = 370;
+    private int OUTTAKE_SWIVEL_DOWN = 180;
+    private int OUTTAKE_SWIVEL_TRANSFER = 210; //208;
+    private int OUTTAKE_SWIVEL_GRAB = 160; //146;
+    private int OUTTAKE_SWIVEL_LOCK = 125;
+    //SLIDES
+    private int OUTTAKE_SLIDES_HIGH = -2400; //-3290;
+    private int OUTTAKE_SLIDES_LOW = -1100;//-1600;
+    private int OUTTAKE_SLIDES_DOWN = 0; //-35;
+    private int OUTTAKE_SLIDES_REST = -600; //-750;
+    private int OUTTAKE_SLIDES_GRAB_1 = 0; //-35;
+    private int OUTTAKE_SLIDES_SCORE_1 = -1160; //-1700
+    private int OUTTAKE_SLIDES_SCORE_2 = -700; //-1020
+
+    private int OUTTAKE_SLIDES_PARK = -452; //-600
+    private int OUTTAKE_SWIVEL_PARK = 283;
+
+    public int outtakeCounter = 0;
 
     //Max
     private double OUTTAKE_SLIDES_MAX_POWER = 1.0;
@@ -53,7 +76,7 @@ public class OuttakeSystem implements Subsystem {
 
     //Third PID for outtake slides
     public PIDController outtakeSlidesController;
-    public static double p3 = 0.008, i3 = 0.001, d3 = 0.0;
+    public static double p3 = 0.008, i3 = 0.00003, d3 = 0.00001;
     public static double f3 = 0.0;
     public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
@@ -61,26 +84,25 @@ public class OuttakeSystem implements Subsystem {
 
     //Fourth PID for outtake swivel
     public PIDController outtakeSwivelController;
-    public static double p4 = 0.0025, i4 = 0.001, d4 = 0.00005;
-    public static double f4 = 0.0;
+    public static double p4 = 0.003, i4 = 0.001, d4 = 0.00005;
+    public static double f4 = -0.02;
     public static int outtakeSwivelTarget;
     double outtakeSwivelPos;
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
     //Constructor
     public OuttakeSystem(HardwareMap map) {
-        outtakeTopVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
-        outtakeBottomVertical = map.get(DcMotor.class, "outtake_top_vertical");
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical = map.get(DcMotor.class, "outtake_top_vertical");
+        outtakeBottomVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
         outtakeLeftSwivel = map.get(CRServo.class, "outtake_left_swivel");
-        outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = map.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
         outtakeClaw = map.get(Servo.class, "outtake_claw");
-        outtakeRightSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
-        outtakeRightSwivelEnc = new AbsoluteAnalogEncoder(outtakeRightSwivelAnalog, 3.3, 180, outtakeSwivelGearRatio);
+        outtakeSwivelAnalog = map.get(AnalogInput.class, "outtake_right_swivel_analog");
+        outtakeSwivelEnc = new AbsoluteAnalogEncoder(outtakeSwivelAnalog, 3.3, outtakeSwivelOffset, outtakeSwivelGearRatio);
+        limit = map.get(TouchSensor.class, "limit");
 
-        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         outtakeSlidesController = new PIDController(p3, i3, d3);
@@ -128,6 +150,18 @@ public class OuttakeSystem implements Subsystem {
         outtakeSlidesTarget = OUTTAKE_SLIDES_REST;
     }
 
+    public void outtakeSlidesGrab1() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_GRAB_1;
+    }
+
+    public void outtakeSlidesScore1() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_1;
+    }
+
+    public void outtakeSlidesScore2() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_2;
+    }
+
     public void outtakeSwivelUp() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_UP;
     }
@@ -138,6 +172,14 @@ public class OuttakeSystem implements Subsystem {
 
     public void outtakeSwivelMid() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_MID;
+    }
+
+    public void outtakeSwivelGrab() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_GRAB;
+    }
+
+    public void outtakeSwivelLock() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_LOCK;
     }
 
     public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}
@@ -160,34 +202,93 @@ public class OuttakeSystem implements Subsystem {
 
     public void wristTransfer() {setWrist(WRIST_TRANSFER);}
 
+    public void wristGrab() {setWrist(WRIST_GRAB);}
+
+    public void wristLock() {setWrist(WRIST_LOCK);}
+
+    public void outtakeSwivelPark() {
+        outtakeSwivelTarget = OUTTAKE_SWIVEL_PARK;
+    }
+
+    public void outtakeSlidesPark(){
+        outtakeSlidesTarget = OUTTAKE_SLIDES_PARK;
+    }
+
+    public void resetSlideEncoders() {
+        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void resetEncodersButton() {
+        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     //isPositions
     public boolean isSlidesDown(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
+    }
+
+    public boolean isSlidesAlmostDown(){
+        return outtakeBottomVertical.getCurrentPosition() >= -60; //-100
     }
 
     public boolean isSlidesRest(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
     }
 
     public boolean isSlidesHigh(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_HIGH) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - (OUTTAKE_SLIDES_HIGH)) <= motorOffset;
+    }
+
+    public boolean isSlidesAlmostHigh(){
+        return outtakeBottomVertical.getCurrentPosition() <= (OUTTAKE_SLIDES_HIGH + 200); //350
+    }
+
+    public boolean isSlidesGrab1(){
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
+    }
+    public boolean isSlidesScore1(){
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset;
+    }
+    public boolean isSlidesScore2(){
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
     }
 
     public boolean isSlidesLow(){
-        return Math.abs(outtakeTopVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
+        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
     }
 
     public boolean isSwivelUp() {
-        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_UP) <= servoOffset;
     }
     public boolean isSwivelDown() {
-        return Math.abs(outtakeRightSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_DOWN) <= servoOffset;
+    }
+
+    public boolean isSwivelGrab() {
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_GRAB) <= servoOffset;
+    }
+
+    public boolean isSwivelTransfer() {
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_TRANSFER) <= oServoOffset;
+    }
+
+    public void setOuttakeHigher(){
+        OUTTAKE_SLIDES_HIGH -= 40; //50
+        OUTTAKE_SLIDES_LOW -= 40;
+        outtakeCounter += 1;
+    }
+
+    public void setOuttakeLower(){
+        OUTTAKE_SLIDES_HIGH += 40; //50
+        OUTTAKE_SLIDES_LOW += 40;
+        outtakeCounter -= 1;
     }
 
     //PIDF
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
-        outtakeSlidesPos = outtakeTopVertical.getCurrentPosition();
+        outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
         ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
@@ -200,7 +301,7 @@ public class OuttakeSystem implements Subsystem {
 
     public double setOuttakeSwivelPIDF(int target) {
         outtakeSwivelController.setPID(p4, i4, d4);
-        outtakeSwivelPos = outtakeRightSwivelEnc.getCurrentPosition();
+        outtakeSwivelPos = outtakeSwivelEnc.getCurrentPosition();
         pid4 = outtakeSwivelController.calculate(outtakeSwivelPos, target);
         targetOuttakeSwivelAngle = target;
         ff4 = (Math.sin(Math.toRadians(targetOuttakeSwivelAngle))) * f4;
@@ -214,8 +315,10 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        outtakeTopVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtakeSlidesRest();
+        if (!(outtakeBottomVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
+            outtakeSlidesRest();
+        }
+
         outtakeSwivelDown();
         closeClaw();
         wristDown();
@@ -223,8 +326,21 @@ public class OuttakeSystem implements Subsystem {
 
     @Override
     public void update(){
-        outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        if (!manualOuttake) {
+            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+        }
+//        if (usePIDF){
+//            outtakeSetSlides(setOuttakeSlidesPIDF(outtakeSlidesTarget));
+//        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
-    }
 
+        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 100))){ //150
+            resetEncodersButton();
+        }
+
+        //IDK ABOUT THIS
+        if(outtakeBottomVertical.getMode().equals(DcMotor.RunMode.STOP_AND_RESET_ENCODER)){
+            outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
 }

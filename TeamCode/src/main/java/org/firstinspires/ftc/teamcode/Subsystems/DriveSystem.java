@@ -20,6 +20,12 @@ public class DriveSystem implements Subsystem {
     public DcMotor rightBack;
 
     //Software
+    public boolean manualDrive = true;
+    public boolean isIntakeExtended = false;
+    public double fastTurn = 1;
+    public double turnFactor = fastTurn;
+    public double slowTurn = 0.4;
+    public boolean useSlowMode = false;
 
     //Constructor
     public DriveSystem(HardwareMap map) {
@@ -32,6 +38,17 @@ public class DriveSystem implements Subsystem {
     }
 
     //Methods
+    public void driveBack(){
+        manualDrive = false;
+        leftBack.setPower(0.6);
+        leftFront.setPower(0.6);
+        rightBack.setPower(0.6);
+        rightFront.setPower(0.6);
+    }
+
+    public void driveStop(){
+        manualDrive = true;
+    }
 
     //Interface Methods
     @Override
@@ -40,6 +57,11 @@ public class DriveSystem implements Subsystem {
 
     @Override
     public void update(){
+        if (isIntakeExtended){
+            turnFactor = slowTurn;
+        } else {
+            turnFactor = fastTurn;
+        }
     }
 
 }
