@@ -59,7 +59,8 @@ public class OpenCVColor extends LinearOpMode
     // initializes the width of the camera as well as its x and y direction
     double cX1 = 0;
     double cX2 = 0;
-    double width = 0;
+    private static double widthOfContour = 0;
+    private static double heightOfContour = 0;
     double theta = 0;
     private static double blueArea;
     private static double redArea;
@@ -77,30 +78,26 @@ public class OpenCVColor extends LinearOpMode
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
     private static final int CAMERA_HEIGHT = 240;
-    private Position cameraPosition = new Position(DistanceUnit.INCH,
-            0, 0, 0, 0);
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            20, -90, 90, 0);
 
     // will be used to calculate distance
-    public static final double objectWidthInRealWorld = 38.1; // this is the width of the sample, change if incorrect
+    public static final double objectWidthInRealWorld = 1.5; // this is the width of the sample, change if incorrect
     public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
 
     public static final ColorRange YELLOW1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar(100, 128,  0),
+            new Scalar(107, 128,  0),
             new Scalar(255, 170, 120)
     );
 
     public static final ColorRange BLUE1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 16,   0, 165),
+            new Scalar( 16,   0, 157),
             new Scalar(255, 127, 255)
     );
 
     public static final ColorRange RED1 = new ColorRange(
             ColorSpace.YCrCb,
-            new Scalar( 32, 175,  0),
+            new Scalar( 32, 165,  0),
             new Scalar(255, 255, 132)
     );
 
@@ -113,31 +110,26 @@ public class OpenCVColor extends LinearOpMode
         ColorBlobLocatorProcessor colorLocatorBlue = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(BLUE1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
-                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorRed = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(RED1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
-                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         ColorBlobLocatorProcessor colorLocatorYellow = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(YELLOW1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.875, 0.875, 0.875, -0.875))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
-                .setCameraPose(cameraPosition, cameraOrientation)
                 .build();
-
-        //int[] PortalList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
         VisionPortal portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
@@ -147,7 +139,6 @@ public class OpenCVColor extends LinearOpMode
                 .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .enableLiveView(true)
-                //.setLiveViewContainerId(PortalList[0])
                 .setAutoStopLiveView(true)
                 .build();
 
@@ -160,7 +151,6 @@ public class OpenCVColor extends LinearOpMode
         while (opModeIsActive() || opModeInInit())
         {
             portal.resumeLiveView();
-           // portal1.resumeLiveView();
             //telemetry.addData("preview on/off", "... Camera Stream\n");
 
             // Read the current list
@@ -189,12 +179,15 @@ public class OpenCVColor extends LinearOpMode
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
             {
                 RotatedRect boxFit = b.getBoxFit();
-
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                double dist = getDistance(boxFit.size.width);
-                //double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                double dist = getDistance(widthOfContour);
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
                 //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                telemetry.addData("width", widthOfContour);
+                telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 blueArea = b.getContourArea();
                 if (dist < smallestBlueDistance)
@@ -208,12 +201,15 @@ public class OpenCVColor extends LinearOpMode
             for(ColorBlobLocatorProcessor.Blob b : blobsRed)
             {
                 RotatedRect boxFit = b.getBoxFit();
-
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                double dist = getDistance(boxFit.size.width);
-                //double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                double dist = getDistance(widthOfContour);
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
                 //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                telemetry.addData("width", widthOfContour);
+                telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 redArea = b.getContourArea();
 
@@ -229,10 +225,13 @@ public class OpenCVColor extends LinearOpMode
                 RotatedRect boxFit = b.getBoxFit();
                    telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                           b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
-                double dist = getDistance(boxFit.size.width);
-                //double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.x) - (CAMERA_WIDTH / 2.0))));
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                double dist = getDistance(widthOfContour);
+                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
                 //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
-                telemetry.addData("width", boxFit.size.width);
+                telemetry.addData("width", widthOfContour);
+                telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 yellowArea = b.getContourArea();
                 if (dist != smallestYellowDistance)
@@ -253,8 +252,8 @@ public class OpenCVColor extends LinearOpMode
         }
     }
     public static double getDistance(double width)
-    {
-        double distance = (objectWidthInRealWorld * 12.0 * (focalLength))/width;
+    {  //406
+        double distance = 18.8 * (objectWidthInRealWorld * 12.0 * (focalLength))/width;
         return distance;
     }
 
