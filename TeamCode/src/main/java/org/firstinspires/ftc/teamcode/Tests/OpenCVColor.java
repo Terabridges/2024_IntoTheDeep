@@ -49,6 +49,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.firstinspires.ftc.teamcode.Tests.contourProperties;
 
@@ -75,7 +76,7 @@ public class OpenCVColor extends LinearOpMode
     private static double smallestYellowDistanceFromContour = 60;
     private static double smallestRedDistanceFromContour = 60;
     private static double smallestBlueDistanceFromContour = 60;
-    private ArrayList<contourProperties> contourPropList = new ArrayList<>();
+    private HashMap<Double, contourProperties> contourPropMap = new HashMap<>();
 
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
@@ -194,7 +195,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("Edge Distance From Center", blueEdgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 blueArea = b.getContourArea();
-                contourPropList.add(new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea));
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea));
                 if (dist < smallestBlueDistanceFromContour)
                     smallestBlueDistanceFromContour = dist;
 
@@ -219,7 +220,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 redArea = b.getContourArea();
-                contourPropList.add(new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
                 if (dist < smallestRedDistanceFromContour)
                     smallestRedDistanceFromContour = dist;
 
@@ -243,7 +244,7 @@ public class OpenCVColor extends LinearOpMode
                 telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 yellowArea = b.getContourArea();
-                contourPropList.add(new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
                 if (dist != smallestYellowDistanceFromContour)
                     smallestYellowDistanceFromContour = dist;
 
@@ -279,8 +280,13 @@ public class OpenCVColor extends LinearOpMode
     }
 
     // for this function, acceptable color is also red
-    public static String decideColorForPickup()
+    public String decideColorForPickup()
     {
+        for (double distance: contourPropMap.keySet())
+        {
+             contourProperties prop = contourPropMap.get(distance);
+             
+        }
         /*
         if ((yellowCount >= redCount && yellowCount >= blueCount)) //|| (yellowArea > blueArea && yellowArea > redArea))
         {
