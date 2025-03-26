@@ -177,6 +177,7 @@ public class OpenCVColor extends LinearOpMode
             smallestYellowDistanceFromContour = 60;
             smallestRedDistanceFromContour = 60;
             smallestBlueDistanceFromContour = 60;
+            contourPropMap.clear();
 
             // Display the size (area) and center location for each Blob.
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
@@ -282,11 +283,19 @@ public class OpenCVColor extends LinearOpMode
     // for this function, acceptable color is also red
     public String decideColorForPickup()
     {
+        contourPropMap.sort
         for (double distance: contourPropMap.keySet())
         {
              contourProperties prop = contourPropMap.get(distance);
-             
+             if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
+             {
+
+             }
+
+             else if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
         }
+
+        for (contourProperties property: contourPropMap.values())
         /*
         if ((yellowCount >= redCount && yellowCount >= blueCount)) //|| (yellowArea > blueArea && yellowArea > redArea))
         {

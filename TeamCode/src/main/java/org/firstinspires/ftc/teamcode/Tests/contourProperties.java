@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
 public class contourProperties {
-    public BlockColor color;
-    public double distance;
-    public double angle;
-    public int area;
+    private BlockColor color;
+    private double distance;
+    private double angle;
+    private int area;
 
     enum BlockColor
     {
@@ -19,5 +19,25 @@ public class contourProperties {
         this.distance = distance;
         this.angle = angle;
         this.area = area;
+    }
+
+    public BlockColor getColor()
+    {
+        return color;
+    }
+
+    public double getDistance()
+    {
+        return distance;
+    }
+
+    public double angle()
+    {
+        return angle;
+    }
+
+    public int getArea()
+    {
+        return area;
     }
 }
