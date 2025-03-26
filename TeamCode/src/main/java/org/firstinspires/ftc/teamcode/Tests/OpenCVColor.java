@@ -50,6 +50,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.firstinspires.ftc.teamcode.Tests.contourProperties;
 
 
 //@Disabled
@@ -62,18 +63,19 @@ public class OpenCVColor extends LinearOpMode
     private static double widthOfContour = 0;
     private static double heightOfContour = 0;
     double theta = 0;
-    private static double blueArea;
-    private static double redArea;
-    private static double yellowArea;
+    private static int blueArea;
+    private static int redArea;
+    private static int yellowArea;
     private static double smallestBlueArea;
     private static double smallestRedArea;
     private static double smallestYellowArea;
     private static double yellowCount = 0;
     private static double blueCount = 0;
     private static double redCount = 0;
-    private static double smallestYellowDistance = 60;
-    private static double smallestRedDistance = 60;
-    private static double smallestBlueDistance = 60;
+    private static double smallestYellowDistanceFromContour = 60;
+    private static double smallestRedDistanceFromContour = 60;
+    private static double smallestBlueDistanceFromContour = 60;
+    private ArrayList<contourProperties> contourPropList = new ArrayList<>();
 
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
@@ -171,9 +173,9 @@ public class OpenCVColor extends LinearOpMode
 
 
             telemetry.addLine(" Area Density Aspect  Center");
-            smallestYellowDistance = 60;
-            smallestRedDistance = 60;
-            smallestBlueDistance = 60;
+            smallestYellowDistanceFromContour = 60;
+            smallestRedDistanceFromContour = 60;
+            smallestBlueDistanceFromContour = 60;
 
             // Display the size (area) and center location for each Blob.
             for(ColorBlobLocatorProcessor.Blob b : blobsBlue)
@@ -184,14 +186,17 @@ public class OpenCVColor extends LinearOpMode
                 widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
                 heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
                 double dist = getDistance(widthOfContour);
-                double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
-                //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                double blueEdgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
+                double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist);
                 telemetry.addData("width", widthOfContour);
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
+                telemetry.addData("Edge Distance From Center", blueEdgeDistanceFromCenter);
+                telemetry.addData("Angle", angleFromCenter);
                 blueArea = b.getContourArea();
-                if (dist < smallestBlueDistance)
-                    smallestBlueDistance = dist;
+                contourPropList.add(new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea));
+                if (dist < smallestBlueDistanceFromContour)
+                    smallestBlueDistanceFromContour = dist;
 
                // if (b.getContourArea() > 50)
                 telemetry.addData("Blue is detected", "!");
@@ -207,14 +212,16 @@ public class OpenCVColor extends LinearOpMode
                 heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
                 double dist = getDistance(widthOfContour);
                 double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
-                //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
                 telemetry.addData("width", widthOfContour);
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
+                telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
+                telemetry.addData("Angle", angleFromCenter);
                 redArea = b.getContourArea();
-
-                if (dist < smallestRedDistance)
-                    smallestRedDistance = dist;
+                contourPropList.add(new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
+                if (dist < smallestRedDistanceFromContour)
+                    smallestRedDistanceFromContour = dist;
 
                 //if (b.getContourArea() > 50)
                 telemetry.addData("Red is detected", "!");
@@ -229,13 +236,16 @@ public class OpenCVColor extends LinearOpMode
                 heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
                 double dist = getDistance(widthOfContour);
                 double edgeDistanceFromCenter = (getDistanceFromCenter(Math.abs((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))));
-                //double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
                 telemetry.addData("width", widthOfContour);
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
+                telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
+                telemetry.addData("Angle", angleFromCenter);
                 yellowArea = b.getContourArea();
-                if (dist != smallestYellowDistance)
-                    smallestYellowDistance = dist;
+                contourPropList.add(new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
+                if (dist != smallestYellowDistanceFromContour)
+                    smallestYellowDistanceFromContour = dist;
 
                // if (b.getContourArea() > 50)
                 telemetry.addData("Yellow is detected", "!");
@@ -243,9 +253,9 @@ public class OpenCVColor extends LinearOpMode
             telemetry.addData("Number of Red Contours", redCount);
             telemetry.addData("Number of Blue Contours", blueCount);
             telemetry.addData("Number of Yellow Contours", yellowCount);
-            telemetry.addData("Smallest Red Distance", smallestRedDistance);
-            telemetry.addData("Smallest Blue Distance", smallestBlueDistance);
-            telemetry.addData("Smallest Yellow Distance", smallestYellowDistance);
+            telemetry.addData("Smallest Red Distance", smallestRedDistanceFromContour);
+            telemetry.addData("Smallest Blue Distance", smallestBlueDistanceFromContour);
+            telemetry.addData("Smallest Yellow Distance", smallestYellowDistanceFromContour);
             telemetry.addData("Color to go to", (decideColorForPickup()));
             telemetry.update();
             sleep(50);
@@ -268,11 +278,13 @@ public class OpenCVColor extends LinearOpMode
         return angle * (180.0/Math.PI);
     }
 
+    // for this function, acceptable color is also red
     public static String decideColorForPickup()
     {
-
-        if ((yellowCount >= redCount && yellowCount >= blueCount) || (yellowArea > blueArea && yellowArea > redArea))
+        /*
+        if ((yellowCount >= redCount && yellowCount >= blueCount)) //|| (yellowArea > blueArea && yellowArea > redArea))
         {
+
             if (redCount == 0 && blueCount == 0) {
                 return "Go to Yellow " + smallestYellowDistance;
             }
@@ -286,5 +298,13 @@ public class OpenCVColor extends LinearOpMode
         }
         return "Go to Blue";
     }
-
+     */
+        if (yellowCount >= 1)
+        {
+            if (redCount == 0)
+            {
+                return "Go To Yellow at dist: " + smallestYellowDistanceFromContour + "and at angle :" +
+            }
+        }
+    }
 }
