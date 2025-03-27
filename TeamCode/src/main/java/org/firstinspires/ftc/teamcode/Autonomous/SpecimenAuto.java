@@ -37,6 +37,7 @@ public class SpecimenAuto extends LinearOpMode
     OuttakeSystem o;
     //VisionSystem v;
 
+
     //Pedro
     private Follower follower;
 
@@ -141,6 +142,8 @@ public class SpecimenAuto extends LinearOpMode
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
+
+        FConstants.setTValue(0.98);
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);

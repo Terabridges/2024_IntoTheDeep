@@ -7,6 +7,10 @@ import com.pedropathing.util.CustomPIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
+    public static void setTValue(double tValue)
+    {
+        FollowerConstants.pathEndTValueConstraint = tValue;
+    }
     static {
         FollowerConstants.localizers = Localizers.PINPOINT;
 
