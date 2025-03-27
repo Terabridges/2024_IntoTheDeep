@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
-@Disabled
+//@Disabled
 @TeleOp(name="OuttakeTuner", group="Test")
 @Config
 public class OuttakeTuner extends LinearOpMode {
