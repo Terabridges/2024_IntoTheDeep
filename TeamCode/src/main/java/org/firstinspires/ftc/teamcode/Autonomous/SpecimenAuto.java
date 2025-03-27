@@ -49,8 +49,11 @@ public class SpecimenAuto extends LinearOpMode
     Pose score2b = new Pose(35.615, 68, Math.toRadians(180));
     Pose score3b = new Pose(35.615, 73, Math.toRadians(180));
     Pose score1 = new Pose(32, 63, Math.toRadians(180));
+    Pose scoreControl1 = new Pose(24, 60, Math.toRadians(180));
     Pose score2 = new Pose(32, 68, Math.toRadians(180));
+    Pose scoreControl2 = new Pose(24, 65, Math.toRadians(180));
     Pose score3 = new Pose(32, 73, Math.toRadians(180));
+    Pose scoreControl3 = new Pose(24, 70, Math.toRadians(180));
 
     Pose start1 = new Pose(60, 25.5, Math.toRadians(90));
     Pose end1 = new Pose(20, 25.5, Math.toRadians(90));
@@ -194,14 +197,17 @@ public class SpecimenAuto extends LinearOpMode
         goPick = buildLinearPath(prep, pickb);
         goPickb = buildLinearPath(pick, pickb);
         goPrep1 = buildLinearPath(push[3], prep);
-        goScore1 = buildLinearPath(pick, score1b);
+        //goScore1 = buildLinearPath(pick, score1b);
+        goScore1 = buildCurvedPath(pick, scoreControl1, score1b);
         goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
-        goScore2 = buildLinearPath(pick, score2b);
+        //goScore2 = buildLinearPath(pick, score2b);
+        goScore2 = buildCurvedPath(pick, scoreControl2, score2b);
         goScore2b = buildLinearPath(score2, score2b);
         goPrep3 = buildLinearPath(score2, prep);
         goPark = buildLinearPath(score2, pick);
-        goScore3 = buildLinearPath(pick, score3b);
+        //goScore3 = buildLinearPath(pick, score3b);
+        goScore3 = buildCurvedPath(pick, scoreControl3, score3b);
         goScore3b = buildLinearPath(score3, score3b);
 
         pushSamples1 = buildCurvedPath(score[0], control[0], push[0]);
