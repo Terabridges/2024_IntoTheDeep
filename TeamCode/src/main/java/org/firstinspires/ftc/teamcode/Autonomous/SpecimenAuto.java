@@ -51,11 +51,11 @@ public class SpecimenAuto extends LinearOpMode
     Pose score2 = new Pose(32, 68, Math.toRadians(180));
     Pose score3 = new Pose(32, 73, Math.toRadians(180));
 
-    Pose start1 = new Pose(60, 25.5, Math.toRadians(90));
+    Pose start1 = new Pose(50, 25.5, Math.toRadians(90));
     Pose end1 = new Pose(20, 25.5, Math.toRadians(90));
-    Pose start2 = new Pose(58, 16.5, Math.toRadians(90));
+    Pose start2 = new Pose(50, 16.5, Math.toRadians(90));
     Pose end2 = new Pose(20, 16.5, Math.toRadians(90));
-    Pose start3 = new Pose(58, 7, Math.toRadians(90));
+    Pose start3 = new Pose(50, 7, Math.toRadians(90));
     Pose end3 = new Pose(20, 7, Math.toRadians(90));
 
     Pose control1 = new Pose(24, 49, Math.toRadians(90));
@@ -194,11 +194,11 @@ public class SpecimenAuto extends LinearOpMode
         goScore1 = buildLinearPath(pick, score1b);
         goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
-        goScore2 = buildLinearPath(pick, score2);
+        goScore2 = buildLinearPath(pick, score2b);
         goScore2b = buildLinearPath(score2, score2b);
         goPrep3 = buildLinearPath(score2, prep);
         goPark = buildLinearPath(score2, pick);
-        goScore3 = buildLinearPath(pick, score3);
+        goScore3 = buildLinearPath(pick, score3b);
         goScore3b = buildLinearPath(score3, score3b);
 
         pushSamples1 = buildCurvedPath(score[0], control[0], push[0]);
@@ -276,15 +276,15 @@ public class SpecimenAuto extends LinearOpMode
                     //follower.setMaxPower(AConstants.MID_POWER);
                     //runtime.reset();
                     if (isPreload)
-                        follower.followPath(scorePreload, AConstants.MID_POWER, true);
+                        follower.followPath(scorePreload, AConstants.STANDARD_POWER, true);
                     else
                         //follower.followPath(goScore[curSpec], true);
                         if (curSpec == 0)
-                            follower.followPath(goScore1, AConstants.MID_POWER, true);
+                            follower.followPath(goScore1, AConstants.STANDARD_POWER, true);
                         else if (curSpec == 1)
-                            follower.followPath(goScore2, AConstants.MID_POWER, true);
+                            follower.followPath(goScore2, AConstants.STANDARD_POWER, true);
                         else if (curSpec == 2)
-                            follower.followPath(goScore3, AConstants.MID_POWER, true);
+                            follower.followPath(goScore3, AConstants.STANDARD_POWER, true);
                     o.outtakeSlidesScore1();
                     o.wristLock();
                     o.outtakeSwivelLock();
