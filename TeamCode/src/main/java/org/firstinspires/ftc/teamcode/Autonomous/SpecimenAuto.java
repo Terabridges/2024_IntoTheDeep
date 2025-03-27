@@ -146,7 +146,7 @@ public class SpecimenAuto extends LinearOpMode
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
 
-        follower.setMaxPower(AConstants.A_LOW);
+        follower.setMaxPower(AConstants.STANDARD_POWER);
 
         buildPaths();
 
@@ -188,10 +188,10 @@ public class SpecimenAuto extends LinearOpMode
         scorePreload = buildLinearPath(startPose, preloadPose);
         scorePreloadb = buildLinearPath(preloadPose, preloadPoseb);
 
-        goPick = buildLinearPath(prep, pick);
+        goPick = buildLinearPath(prep, pickb);
         goPickb = buildLinearPath(pick, pickb);
-        goPrep1 = buildLinearPath(push[1], prep);
-        goScore1 = buildLinearPath(pick, score1);
+        goPrep1 = buildLinearPath(push[3], prep);
+        goScore1 = buildLinearPath(pick, score1b);
         goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
         goScore2 = buildLinearPath(pick, score2);
@@ -250,20 +250,20 @@ public class SpecimenAuto extends LinearOpMode
                 .transition(() -> grab.getStateString().equals("STOP") && endCheck, mainStates.STOP)
                 .transition(() -> grab.getStateString().equals("STOP"), mainStates.SCORE)
                 .onExit(() -> {
-                    follower.setMaxPower(AConstants.A_LOW);
+                    //follower.setMaxPower(AConstants.A_LOW);
                     grab.reset();
                 })
 
                 .state(mainStates.PUSH)
                 .onEnter(() -> {
                     pushSpec.start();
-                    follower.setMaxPower(AConstants.STANDARD_POWER);
+                    //follower.setMaxPower(AConstants.STANDARD_POWER);
                 })
                 .loop(() -> pushSpec.update())
                 .transition(() -> pushSpec.getStateString().equals("STOP"), mainStates.GRAB)
                 .onExit(() -> {
                     pushSpec.reset();
-                    follower.setMaxPower(AConstants.A_LOW);
+                    //follower.setMaxPower(AConstants.A_LOW);
                 })
 
                 .state(mainStates.STOP)
@@ -273,23 +273,23 @@ public class SpecimenAuto extends LinearOpMode
         scoreSpec = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE1)
                 .onEnter(() -> {
-                    follower.setMaxPower(AConstants.MID_POWER);
-                    runtime.reset();
+                    //follower.setMaxPower(AConstants.MID_POWER);
+                    //runtime.reset();
                     if (isPreload)
-                        follower.followPath(scorePreload, true);
+                        follower.followPath(scorePreload, AConstants.MID_POWER, true);
                     else
                         //follower.followPath(goScore[curSpec], true);
                         if (curSpec == 0)
-                            follower.followPath(goScore1, true);
+                            follower.followPath(goScore1, AConstants.MID_POWER, true);
                         else if (curSpec == 1)
-                            follower.followPath(goScore2, true);
+                            follower.followPath(goScore2, AConstants.MID_POWER, true);
                         else if (curSpec == 2)
-                            follower.followPath(goScore3, true);
+                            follower.followPath(goScore3, AConstants.MID_POWER, true);
                     o.outtakeSlidesScore1();
                     o.wristLock();
                     o.outtakeSwivelLock();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > .5, scoreStates.GO_TO_SCORE2)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1(), scoreStates.CLIP)
 
                 .state(scoreStates.GO_TO_SCORE2)
                 .onEnter(() ->
@@ -329,11 +329,11 @@ public class SpecimenAuto extends LinearOpMode
                     {
                         //follower.followPath(goPrep[curSpec], true);
                         if (curSpec == 0)
-                            follower.followPath(goPrep1, true);
+                            follower.followPath(goPrep1, AConstants.MID_POWER, true);
                         else if (curSpec == 1)
-                            follower.followPath(goPrep2, true);
+                            follower.followPath(goPrep2, AConstants.MID_POWER, true);
                         else if (curSpec == 2)
-                            follower.followPath(goPark, true); //Was goPrep3
+                            follower.followPath(goPark, AConstants.MID_POWER, true); //Was goPrep3
                         o.wristGrab();
                         o.outtakeSwivelGrab();
                         o.openClaw();
@@ -350,16 +350,16 @@ public class SpecimenAuto extends LinearOpMode
                 })
 
                 .state(grabStates.ADVANCE1)
-                .onEnter(() -> follower.followPath(goPick,true))
-                .transition(() -> !follower.isBusy(), grabStates.ADVANCE2)
+                .onEnter(() -> follower.followPath(goPick, AConstants.MID_POWER,true))
+                .transition(() -> !follower.isBusy(), grabStates.STOP)
+                .onExit(() -> {
+                    o.closeClaw();
+                    //follower.setMaxPower(AConstants.A_LOW);
+                })
 
                 .state(grabStates.ADVANCE2)
                 .onEnter(() -> follower.followPath(goPickb,true))
                 .transition(() -> !follower.isBusy(), grabStates.STOP)
-                .onExit(() -> {
-                    o.closeClaw();
-                    follower.setMaxPower(AConstants.A_LOW);
-                })
 
                 .state(grabStates.STOP)
 
@@ -371,32 +371,32 @@ public class SpecimenAuto extends LinearOpMode
                     o.outtakeSlidesRest();
                     o.outtakeSwivelDown();
                     o.wristDown();
-                    follower.followPath(pushSamples1, true);
+                    follower.followPath(pushSamples1, AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), pushStates.PUSH2)
 
                 .state(pushStates.PUSH2)
-                .onEnter(() -> follower.followPath(pushSamples2, true))
-                .transition(() -> !follower.isBusy(), pushStates.STOP)
+                .onEnter(() -> follower.followPath(pushSamples2, AConstants.STANDARD_POWER, true))
+                .transition(() -> !follower.isBusy(), pushStates.PUSH3)
 
                 .state(pushStates.PUSH3)
-                .onEnter(() -> follower.followPath(pushSamples3, true))
+                .onEnter(() -> follower.followPath(pushSamples3, AConstants.STANDARD_POWER, true))
                 .transition(() -> !follower.isBusy(), pushStates.PUSH4)
 
                 .state(pushStates.PUSH4)
-                .onEnter(() -> follower.followPath(pushSamples4, true))
+                .onEnter(() -> follower.followPath(pushSamples4, AConstants.STANDARD_POWER, true))
                 .transition(() -> !follower.isBusy(), pushStates.STOP)
 
                 .state(pushStates.PUSH5)
-                .onEnter(() -> follower.followPath(pushSamples5, true))
+                .onEnter(() -> follower.followPath(pushSamples5, AConstants.STANDARD_POWER, true))
                 .transition(() -> !follower.isBusy(), pushStates.PUSH6)
 
                 .state(pushStates.PUSH6)
-                .onEnter(() -> follower.followPath(pushSamples6, true))
+                .onEnter(() -> follower.followPath(pushSamples6, AConstants.STANDARD_POWER, true))
                 .transition(() -> !follower.isBusy(), pushStates.STOP)
 
                 .state(pushStates.STOP)
-                .onEnter(() -> follower.setMaxPower(AConstants.A_LOW))
+                //.onEnter(() -> follower.setMaxPower(AConstants.A_LOW))
 
                 .build();
     }
