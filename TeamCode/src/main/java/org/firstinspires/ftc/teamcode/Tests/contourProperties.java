@@ -31,7 +31,7 @@ public class contourProperties {
         return distance;
     }
 
-    public double angle()
+    public double getAngle()
     {
         return angle;
     }

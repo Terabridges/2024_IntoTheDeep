@@ -77,6 +77,7 @@ public class OpenCVColor extends LinearOpMode
     private static double smallestRedDistanceFromContour = 60;
     private static double smallestBlueDistanceFromContour = 60;
     private HashMap<Double, contourProperties> contourPropMap = new HashMap<>();
+    ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
     // initializes camera and constants for camera resolution
     private static final int CAMERA_WIDTH = 320;
@@ -252,6 +253,8 @@ public class OpenCVColor extends LinearOpMode
                // if (b.getContourArea() > 50)
                 telemetry.addData("Yellow is detected", "!");
             }
+
+
             telemetry.addData("Number of Red Contours", redCount);
             telemetry.addData("Number of Blue Contours", blueCount);
             telemetry.addData("Number of Yellow Contours", yellowCount);
@@ -283,19 +286,47 @@ public class OpenCVColor extends LinearOpMode
     // for this function, acceptable color is also red
     public String decideColorForPickup()
     {
-        contourPropMap.sort
+        for (double distance: contourPropMap.keySet())
+        {
+            contourPropsList.add(contourPropMap.get(distance));
+        }
         for (double distance: contourPropMap.keySet())
         {
              contourProperties prop = contourPropMap.get(distance);
+             contourPropsList.add(prop);
              if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
+             {
+                int i = 0;
+                for (int index = 1; index < contourPropsList.size(); index++)
+                {
+                    double currAngle = contourPropsList.get(i).getAngle();
+                    if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
+                    {
+                        if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
+                            if (index < contourPropsList.size() - 1) {
+                                i++;
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
+                    }
+                }
+                 if (i < contourPropsList.size() - 1)
+                 {
+                     return "Go to " + contourPropsList.get(i).getColor() + " at distance : " +
+                             contourPropsList.get(i).getDistance() + "and at angle: " + contourPropsList.get(i).getAngle()
+                 }
+             }
+
+             else if (prop != null && prop.getColor() == contourProperties.BlockColor.RED)
              {
 
              }
-
-             else if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
         }
 
-        for (contourProperties property: contourPropMap.values())
+
         /*
         if ((yellowCount >= redCount && yellowCount >= blueCount)) //|| (yellowArea > blueArea && yellowArea > redArea))
         {
