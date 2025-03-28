@@ -287,79 +287,61 @@ public class OpenCVColor extends LinearOpMode
     }
 
 
+    public void logicForPickup(contourProperties prop, contourProperties.BlockColor color){
+        if (prop != null && prop.getColor() == color)
+        {
+            int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
+            boolean obstructionIsFound = false;
+            for (int index = indexOfCurrentYellowContour-1; index >= 0; index--)
+            {
+                double currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle();
+                if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
+                {
+                    if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
+                        obstructionIsFound = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     // for this function, acceptable color is also red
     public String decideColorForPickup()
     {
         for (double distance: contourPropMap.keySet())
         {
-            contourPropsList.add(contourPropMap.get(distance));
-        }
-        for (double distance: contourPropMap.keySet())
-        {
              contourProperties prop = contourPropMap.get(distance);
-             if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
-             {
-                int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
-                boolean obstructionIsFound = false;
-                for (int index = indexOfCurrentYellowContour-1; index >= 0; index--)
+             contourPropsList.add(prop);
+             boolean obstructionIsFound = false;
+             int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
+
+             logicForPickup(prop, contourProperties.BlockColor.YELLOW);
+                if (!obstructionIsFound)
                 {
-                    double currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle();
-                    if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
-                    {
-                        if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
-                            obstructionIsFound = true;
-                            break;
-                        }
-                    }
+                    return "Go to "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getColor()
+                            + " at distance : "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
+                            + "and at angle: "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
                 }
-                if (obstructionIsFound)
+                logicForPickup(prop, contourProperties.BlockColor.RED);
+                if (!obstructionIsFound)
                 {
-                    continue;
+                    return "Go to "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getColor()
+                            + " at distance : "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
+                            + "and at angle: "
+                            + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
                 }
-                 if (indexOfCurrentYellowContour < contourPropsList.size())
-                 {
-                     return "Go to "
-                             + contourPropsList.get(indexOfCurrentYellowContour).getColor()
-                             + " at distance : "
-                             + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
-                             + "and at angle: "
-                             + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
-                 }
              }
-             else if (prop != null && prop.getColor() == contourProperties.BlockColor.RED)
-             {
-                 int indexOfCurrentRedContour = contourPropsList.indexOf(prop);
-                 for (int index = indexOfCurrentRedContour; index >= 0; index--)
-                 {
-                     double currAngle = contourPropsList.get(indexOfCurrentRedContour).getAngle();
-                     if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
-                     {
-                         if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
-                             indexOfCurrentRedContour++;
-                             while (indexOfCurrentRedContour < contourPropsList.size() &&
-                                     contourPropsList.get(indexOfCurrentRedContour).getColor() != contourProperties.BlockColor.RED) {
-                                 indexOfCurrentRedContour++;
-                             }
-                             if (indexOfCurrentRedContour == contourPropsList.size())
-                             {
-                                 break;
-                             }
-                         }
-                     }
-                 }
-                 if (indexOfCurrentRedContour < contourPropsList.size())
-                 {
-                     return "Go to "
-                             + contourPropsList.get(indexOfCurrentRedContour).getColor()
-                             + " at distance : "
-                             + contourPropsList.get(indexOfCurrentRedContour).getDistance()
-                             + "and at angle: "
-                             + contourPropsList.get(indexOfCurrentRedContour).getAngle();
-                 }
+        return "No possible block to Pickup from here. Move over";
              }
 
 
         }
-        return "No possible block to Pickup from here. Move over";
-    }
-}
+
+
+
