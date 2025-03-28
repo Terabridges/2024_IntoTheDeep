@@ -297,18 +297,16 @@ public class OpenCVColor extends LinearOpMode
              if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
              {
                 int i = 0;
-                for (int index = 1; index < contourPropsList.size(); index++)
+                for (int index = 0; index < contourPropsList.size(); index++)
                 {
                     double currAngle = contourPropsList.get(i).getAngle();
                     if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
                     {
                         if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
                             if (index < contourPropsList.size() - 1) {
-                                i++;
-                            }
-                            else
-                            {
-                                
+                                while (contourPropsList.get(i).getColor() != contourProperties.BlockColor.YELLOW) {
+                                    i++;
+                                }
                             }
                         }
                     }
