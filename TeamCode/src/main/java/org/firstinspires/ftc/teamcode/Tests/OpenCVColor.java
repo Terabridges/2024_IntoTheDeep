@@ -51,6 +51,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+
 import org.firstinspires.ftc.teamcode.Tests.contourProperties;
 
 
@@ -76,7 +78,8 @@ public class OpenCVColor extends LinearOpMode
     private static double smallestYellowDistanceFromContour = 60;
     private static double smallestRedDistanceFromContour = 60;
     private static double smallestBlueDistanceFromContour = 60;
-    private HashMap<Double, contourProperties> contourPropMap = new HashMap<>();
+    private TreeMap<Double, contourProperties> contourPropMap = new TreeMap<>();
+
     ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
     // initializes camera and constants for camera resolution
@@ -283,6 +286,7 @@ public class OpenCVColor extends LinearOpMode
         return angle * (180.0/Math.PI);
     }
 
+
     // for this function, acceptable color is also red
     public String decideColorForPickup()
     {
@@ -293,62 +297,69 @@ public class OpenCVColor extends LinearOpMode
         for (double distance: contourPropMap.keySet())
         {
              contourProperties prop = contourPropMap.get(distance);
-             contourPropsList.add(prop);
              if (prop != null && prop.getColor() == contourProperties.BlockColor.YELLOW)
              {
-                int i = 0;
-                for (int index = 0; index < contourPropsList.size(); index++)
+                int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
+                boolean obstructionIsFound = false;
+                for (int index = indexOfCurrentYellowContour-1; index >= 0; index--)
                 {
-                    double currAngle = contourPropsList.get(i).getAngle();
+                    double currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle();
                     if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
                     {
                         if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
-                            if (index < contourPropsList.size() - 1) {
-                                while (contourPropsList.get(i).getColor() != contourProperties.BlockColor.YELLOW) {
-                                    i++;
-                                }
-                            }
+                            obstructionIsFound = true;
+                            break;
                         }
                     }
                 }
-                 if (i < contourPropsList.size() - 1)
+                if (obstructionIsFound)
+                {
+                    continue;
+                }
+                 if (indexOfCurrentYellowContour < contourPropsList.size())
                  {
-                     return "Go to " + contourPropsList.get(i).getColor() + " at distance : " +
-                             contourPropsList.get(i).getDistance() + "and at angle: " + contourPropsList.get(i).getAngle()
+                     return "Go to "
+                             + contourPropsList.get(indexOfCurrentYellowContour).getColor()
+                             + " at distance : "
+                             + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
+                             + "and at angle: "
+                             + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
+                 }
+             }
+             else if (prop != null && prop.getColor() == contourProperties.BlockColor.RED)
+             {
+                 int indexOfCurrentRedContour = contourPropsList.indexOf(prop);
+                 for (int index = indexOfCurrentRedContour; index >= 0; index--)
+                 {
+                     double currAngle = contourPropsList.get(indexOfCurrentRedContour).getAngle();
+                     if (contourPropsList.get(index).getColor() == contourProperties.BlockColor.BLUE)
+                     {
+                         if (Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 1.50) {
+                             indexOfCurrentRedContour++;
+                             while (indexOfCurrentRedContour < contourPropsList.size() &&
+                                     contourPropsList.get(indexOfCurrentRedContour).getColor() != contourProperties.BlockColor.RED) {
+                                 indexOfCurrentRedContour++;
+                             }
+                             if (indexOfCurrentRedContour == contourPropsList.size())
+                             {
+                                 break;
+                             }
+                         }
+                     }
+                 }
+                 if (indexOfCurrentRedContour < contourPropsList.size())
+                 {
+                     return "Go to "
+                             + contourPropsList.get(indexOfCurrentRedContour).getColor()
+                             + " at distance : "
+                             + contourPropsList.get(indexOfCurrentRedContour).getDistance()
+                             + "and at angle: "
+                             + contourPropsList.get(indexOfCurrentRedContour).getAngle();
                  }
              }
 
-             else if (prop != null && prop.getColor() == contourProperties.BlockColor.RED)
-             {
 
-             }
         }
-
-
-        /*
-        if ((yellowCount >= redCount && yellowCount >= blueCount)) //|| (yellowArea > blueArea && yellowArea > redArea))
-        {
-
-            if (redCount == 0 && blueCount == 0) {
-                return "Go to Yellow " + smallestYellowDistance;
-            }
-            else{
-                if (((smallestBlueDistance > smallestYellowDistance) || (smallestRedDistance > smallestYellowDistance)) &&
-                     (smallestYellowDistance < 30))
-                {
-                    return "Go to Yellow at" + smallestYellowDistance;
-                }
-            }
-        }
-        return "Go to Blue";
-    }
-     */
-        if (yellowCount >= 1)
-        {
-            if (redCount == 0)
-            {
-                return "Go To Yellow at dist: " + smallestYellowDistanceFromContour + "and at angle :" +
-            }
-        }
+        return "No possible block to Pickup from here. Move over";
     }
 }
