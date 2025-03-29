@@ -126,8 +126,7 @@ public class BucketAuto extends LinearOpMode
 
         FConstants.setTValue(0.95);
 
-        Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(b.getStartPose());
 
         follower.setMaxPower(AConstants.STANDARD_POWER);
