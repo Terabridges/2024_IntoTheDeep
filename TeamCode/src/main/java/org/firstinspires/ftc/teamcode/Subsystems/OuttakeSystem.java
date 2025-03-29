@@ -43,8 +43,8 @@ public class OuttakeSystem implements Subsystem {
     private double WRIST_DOWN = 0.6;
     private double WRIST_TRANSFER = 0.35; //0.3
     private double WRIST_UP = 0.9;
-    private double WRIST_GRAB = 0.15; //0.1
-    private double WRIST_LOCK = 0.55; //0.44;
+    private double WRIST_GRAB = 0.15;
+    private double WRIST_LOCK = 0.55;
     //LIMIT BACK: 0
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
@@ -52,8 +52,8 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_MID = 370;
     private int OUTTAKE_SWIVEL_DOWN = 180;
     private int OUTTAKE_SWIVEL_TRANSFER = 220; //210;
-    private int OUTTAKE_SWIVEL_GRAB = 184; //160;
-    private int OUTTAKE_SWIVEL_LOCK = 124; //125
+    private int OUTTAKE_SWIVEL_GRAB = 184; //146;
+    private int OUTTAKE_SWIVEL_LOCK = 124;
     //SLIDES
     private int OUTTAKE_SLIDES_HIGH = -2400; //-3290;
     private int OUTTAKE_SLIDES_LOW = -1100;//-1600;
