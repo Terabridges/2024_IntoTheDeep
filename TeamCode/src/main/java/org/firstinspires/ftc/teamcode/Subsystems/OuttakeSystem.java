@@ -16,6 +16,7 @@ public class OuttakeSystem implements Subsystem {
     //Hardware
     public DcMotor outtakeTopVertical;
     public DcMotor outtakeBottomVertical;
+    public DcMotor outtakeMiddleVertical;
     public CRServo outtakeLeftSwivel;
     public CRServo outtakeRightSwivel;
     public Servo outtakeWrist;
@@ -94,6 +95,7 @@ public class OuttakeSystem implements Subsystem {
     public OuttakeSystem(HardwareMap map) {
         outtakeTopVertical = map.get(DcMotor.class, "outtake_top_vertical");
         outtakeBottomVertical = map.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeMiddleVertical = map.get(DcMotor.class, "outtake_middle_vertical");
         outtakeLeftSwivel = map.get(CRServo.class, "outtake_left_swivel");
         outtakeRightSwivel = map.get(CRServo.class, "outtake_right_swivel");
         outtakeWrist = map.get(Servo.class, "outtake_wrist");
@@ -103,6 +105,8 @@ public class OuttakeSystem implements Subsystem {
         limit = map.get(TouchSensor.class, "limit");
 
         outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         outtakeSlidesController = new PIDController(p3, i3, d3);
@@ -116,6 +120,7 @@ public class OuttakeSystem implements Subsystem {
         if(pow < -OUTTAKE_SLIDES_MAX_POWER) pow = -OUTTAKE_SLIDES_MAX_POWER;
         outtakeBottomVertical.setPower(pow);
         outtakeTopVertical.setPower(pow);
+        outtakeMiddleVertical.setPower(pow);
     }
 
     public void outtakeSetSwivel(double pow) {
@@ -215,47 +220,46 @@ public class OuttakeSystem implements Subsystem {
     }
 
     public void resetSlideEncoders() {
-        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        outtakeMiddleVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void resetEncodersButton() {
-        outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeMiddleVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     //isPositions
     public boolean isSlidesDown(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_DOWN) <= motorOffset;
     }
 
     public boolean isSlidesAlmostDown(){
-        return outtakeBottomVertical.getCurrentPosition() >= -60; //-100
+        return outtakeMiddleVertical.getCurrentPosition() >= -60; //-100
     }
 
     public boolean isSlidesRest(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_REST) <= motorOffset;
     }
 
     public boolean isSlidesHigh(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - (OUTTAKE_SLIDES_HIGH)) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - (OUTTAKE_SLIDES_HIGH)) <= motorOffset;
     }
 
     public boolean isSlidesAlmostHigh(){
-        return outtakeBottomVertical.getCurrentPosition() <= (OUTTAKE_SLIDES_HIGH + 200); //350
+        return outtakeMiddleVertical.getCurrentPosition() <= (OUTTAKE_SLIDES_HIGH + 200); //350
     }
 
     public boolean isSlidesGrab1(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
     }
     public boolean isSlidesScore1(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset;
     }
     public boolean isSlidesScore2(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
     }
 
     public boolean isSlidesLow(){
-        return Math.abs(outtakeBottomVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
     }
 
     public boolean isSwivelUp() {
@@ -288,7 +292,7 @@ public class OuttakeSystem implements Subsystem {
     //PIDF
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
-        outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
+        outtakeSlidesPos = outtakeMiddleVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
         ff3 = (Math.sin(Math.toRadians(targetOuttakeSlidesAngle))) * f3;
@@ -315,7 +319,7 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        if (!(outtakeBottomVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
+        if (!(outtakeMiddleVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
             outtakeSlidesRest();
         }
 
@@ -334,13 +338,13 @@ public class OuttakeSystem implements Subsystem {
 //        }
         outtakeSetSwivel(setOuttakeSwivelPIDF(outtakeSwivelTarget));
 
-        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeBottomVertical.getCurrentPosition()) > 100))){ //150
+        if (useLimitSwitch && (limit.isPressed() && (Math.abs(outtakeMiddleVertical.getCurrentPosition()) > 100))){ //150
             resetEncodersButton();
         }
 
         //IDK ABOUT THIS
-        if(outtakeBottomVertical.getMode().equals(DcMotor.RunMode.STOP_AND_RESET_ENCODER)){
-            outtakeBottomVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(outtakeMiddleVertical.getMode().equals(DcMotor.RunMode.STOP_AND_RESET_ENCODER)){
+            outtakeMiddleVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 }

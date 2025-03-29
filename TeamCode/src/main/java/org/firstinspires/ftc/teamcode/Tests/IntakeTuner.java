@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
@@ -55,6 +56,9 @@ public class IntakeTuner extends LinearOpMode {
     public double intakeSwivelGearRatio = 40.0/48.0;
 //    public static double otherIntakeSwivelOffset = 80;
 
+    public Gamepad currentGamepad1;
+    public Gamepad previousGamepad1;
+
     @Override
     public void runOpMode() {
         intakeLeftSlide = hardwareMap.get(CRServo.class, "intake_left_slide");
@@ -73,7 +77,8 @@ public class IntakeTuner extends LinearOpMode {
 //        intakeLeftSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_left_swivel_analog");
 //        intakeLeftSwivelEnc = new AbsoluteAnalogEncoder(intakeLeftSwivelAnalog, 3.3, otherIntakeSwivelOffset, intakeSwivelGearRatio);
 
-
+        currentGamepad1 = new Gamepad();
+        previousGamepad1 = new Gamepad();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -84,7 +89,10 @@ public class IntakeTuner extends LinearOpMode {
 
         while (opModeIsActive()){
 
-            if (gamepad1.a){
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
+            if (currentGamepad1.a && !previousGamepad1.a){
                 runSlides = !runSlides;
             }
 

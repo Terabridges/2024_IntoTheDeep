@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -23,6 +24,7 @@ public class OuttakeTuner extends LinearOpMode {
 
     public DcMotor outtakeTopVertical;
     public DcMotor outtakeBottomVertical;
+    public DcMotor outtakeMiddleVertical;
     public CRServo outtakeLeftSwivel;
     public CRServo outtakeRightSwivel;
     public Servo outtakeWrist;
@@ -32,6 +34,9 @@ public class OuttakeTuner extends LinearOpMode {
     public TouchSensor limit;
 
     private double ticks_in_degree = 144.0 / 180.0;
+
+    public Gamepad currentGamepad1;
+    public Gamepad previousGamepad1;
 
     //Third PID for outtake slides
     private PIDController outtakeSlidesController;
@@ -58,7 +63,9 @@ public class OuttakeTuner extends LinearOpMode {
 
         outtakeTopVertical = hardwareMap.get(DcMotor.class, "outtake_top_vertical");
         outtakeBottomVertical = hardwareMap.get(DcMotor.class, "outtake_bottom_vertical");
+        outtakeMiddleVertical = hardwareMap.get(DcMotor.class, "outtake_middle_vertical");
         outtakeTopVertical.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeBottomVertical.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeLeftSwivel = hardwareMap.get(CRServo.class, "outtake_left_swivel");
         outtakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
         outtakeRightSwivel = hardwareMap.get(CRServo.class, "outtake_right_swivel");
@@ -72,15 +79,21 @@ public class OuttakeTuner extends LinearOpMode {
         outtakeSlidesController = new PIDController(p3, i3, d3);
         outtakeSwivelController = new PIDController(p4, i4, d4);
 
+        currentGamepad1 = new Gamepad();
+        previousGamepad1 = new Gamepad();
+
         waitForStart();
 
         while (opModeIsActive()){
 
-            if (limit.isPressed()){
-                outtakeBottomVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
 
-            if (gamepad1.a){
+//            if (limit.isPressed()){
+//                outtakeMiddleVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            }
+
+            if (currentGamepad1.a && !previousGamepad1.a){
                 runSlides = !runSlides;
             }
 
@@ -94,7 +107,7 @@ public class OuttakeTuner extends LinearOpMode {
 
             if (runSlides) {
                 telemetry.addData("Linear Slides Target", outtakeSlidesTarget);
-                telemetry.addData("Linear Slides Pos", outtakeBottomVertical.getCurrentPosition());
+                telemetry.addData("Linear Slides Pos", outtakeMiddleVertical.getCurrentPosition());
             } else {
                 telemetry.addData("Swivel Target", outtakeSwivelTarget);
                 telemetry.addData("Swivel Pos", outtakeRightSwivelEnc.getCurrentPosition());
@@ -109,7 +122,7 @@ public class OuttakeTuner extends LinearOpMode {
 
     public double setOuttakeSlidesPIDF(int target) {
         outtakeSlidesController.setPID(p3, i3, d3);
-        outtakeSlidesPos = outtakeBottomVertical.getCurrentPosition();
+        outtakeSlidesPos = outtakeMiddleVertical.getCurrentPosition();
         pid3 = outtakeSlidesController.calculate(outtakeSlidesPos, target);
         targetOuttakeSlidesAngle = target;
         ff3 = f3;
@@ -136,6 +149,7 @@ public class OuttakeTuner extends LinearOpMode {
     public void outtakeSlidesSetPower(double pow){
         outtakeTopVertical.setPower(pow);
         outtakeBottomVertical.setPower(pow);
+        outtakeMiddleVertical.setPower(pow);
     }
     public void outtakeSwivelSetPower(double pow){
         outtakeLeftSwivel.setPower(pow);

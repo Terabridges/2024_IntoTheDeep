@@ -5,7 +5,8 @@
         <LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5201SeriesMotor name="left_back" port="0" />
             <goBILDA5201SeriesMotor name="left_front" port="1" />
-            <goBILDA5201SeriesMotor name="outtake_bottom_vertical" port="2" />
+            <goBILDA5201SeriesMotor name="outtake_middle_vertical" port="2" />
+            <goBILDA5201SeriesMotor name="outtake_top_vertical" port="3" />
             <ContinuousRotationServo name="intake_right_slide" port="4" />
             <Servo name="right_light" port="2" />
             <AnalogInput name="intake_right_slide_analog" port="2" />
@@ -22,7 +23,7 @@
         <LynxModule name="Control Hub" port="173">
             <goBILDA5201SeriesMotor name="right_front" port="0" />
             <goBILDA5201SeriesMotor name="right_back" port="1" />
-            <goBILDA5201SeriesMotor name="outtake_top_vertical" port="2" />
+            <goBILDA5201SeriesMotor name="outtake_bottom_vertical" port="2" />
             <goBILDA5201SeriesMotor name="intake_spin" port="3" />
             <ContinuousRotationServo name="intake_left_slide" port="5" />
             <ContinuousRotationServo name="intake_left_swivel" port="1" />
