@@ -37,37 +37,33 @@ public class SpecimenAuto extends LinearOpMode
     OuttakeSystem o;
     //VisionSystem v;
 
-
     //Pedro
     private Follower follower;
 
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
     Pose preloadPose = new Pose(32, 60, Math.toRadians(180));
-    Pose preloadPoseb = new Pose(35.615, 60, Math.toRadians(180));
-    Pose score1b = new Pose(35.615, 63, Math.toRadians(180));
-    Pose score2b = new Pose(35.615, 68, Math.toRadians(180));
-    Pose score3b = new Pose(35.615, 73, Math.toRadians(180));
+    Pose preloadPoseb = new Pose(35.595, 60, Math.toRadians(180));
+    Pose score1b = new Pose(35.675, 63, Math.toRadians(180));
+    Pose score2b = new Pose(35.675, 68, Math.toRadians(180));
+    Pose score3b = new Pose(35.675, 73, Math.toRadians(180));
     Pose score1 = new Pose(32, 63, Math.toRadians(180));
-    Pose scoreControl1 = new Pose(24, 60, Math.toRadians(180));
     Pose score2 = new Pose(32, 68, Math.toRadians(180));
-    Pose scoreControl2 = new Pose(24, 65, Math.toRadians(180));
     Pose score3 = new Pose(32, 73, Math.toRadians(180));
-    Pose scoreControl3 = new Pose(24, 70, Math.toRadians(180));
 
     Pose start1 = new Pose(60, 25.5, Math.toRadians(90));
     Pose end1 = new Pose(20, 25.5, Math.toRadians(90));
-    Pose start2 = new Pose(55, 18.5, Math.toRadians(90));
-    Pose end2 = new Pose(20, 18.5, Math.toRadians(90));
-    Pose start3 = new Pose(50, 7, Math.toRadians(90));
+    Pose start2 = new Pose(58, 16.5, Math.toRadians(90));
+    Pose end2 = new Pose(20, 16.5, Math.toRadians(90));
+    Pose start3 = new Pose(58, 7, Math.toRadians(90));
     Pose end3 = new Pose(20, 7, Math.toRadians(90));
 
     Pose control1 = new Pose(24, 49, Math.toRadians(90));
-    Pose control2 = new Pose(50, 35, Math.toRadians(90));
-    Pose control3 = new Pose(50, 25, Math.toRadians(90));
+    Pose control2 = new Pose(45, 35, Math.toRadians(90));
+    Pose control3 = new Pose(45, 25, Math.toRadians(90));
 
     Pose prep = new Pose(20, 24, Math.toRadians(0));
-    Pose pick = new Pose(11.65, 24, Math.toRadians(0));
+    Pose pick = new Pose(12, 24, Math.toRadians(0));
     Pose pickb = new Pose(6, 24, Math.toRadians(0));
 
     private PathChain scorePreload, scorePreloadb, goPick, goPickb, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
@@ -146,8 +142,6 @@ public class SpecimenAuto extends LinearOpMode
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
 
-        FConstants.setTValue(0.98);
-
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -191,23 +185,20 @@ public class SpecimenAuto extends LinearOpMode
 
     public void buildPaths()
     {
-        scorePreload = buildLinearPath(startPose, preloadPoseb);
+        scorePreload = buildLinearPath(startPose, preloadPose);
         scorePreloadb = buildLinearPath(preloadPose, preloadPoseb);
 
-        goPick = buildLinearPath(prep, pickb);
+        goPick = buildLinearPath(prep, pick);
         goPickb = buildLinearPath(pick, pickb);
-        goPrep1 = buildLinearPath(push[3], prep);
-        //goScore1 = buildLinearPath(pick, score1b);
-        goScore1 = buildCurvedPath(pick, scoreControl1, score1b);
+        goPrep1 = buildLinearPath(push[1], prep);
+        goScore1 = buildLinearPath(pick, score1);
         goScore1b = buildLinearPath(score1, score1b);
         goPrep2 = buildLinearPath(score1, prep);
-        //goScore2 = buildLinearPath(pick, score2b);
-        goScore2 = buildCurvedPath(pick, scoreControl2, score2b);
+        goScore2 = buildLinearPath(pick, score2);
         goScore2b = buildLinearPath(score2, score2b);
         goPrep3 = buildLinearPath(score2, prep);
         goPark = buildLinearPath(score2, pick);
-        //goScore3 = buildLinearPath(pick, score3b);
-        goScore3 = buildCurvedPath(pick, scoreControl3, score3b);
+        goScore3 = buildLinearPath(pick, score3);
         goScore3b = buildLinearPath(score3, score3b);
 
         pushSamples1 = buildCurvedPath(score[0], control[0], push[0]);
@@ -283,7 +274,7 @@ public class SpecimenAuto extends LinearOpMode
                 .state(scoreStates.GO_TO_SCORE1)
                 .onEnter(() -> {
                     //follower.setMaxPower(AConstants.MID_POWER);
-                    //runtime.reset();
+                    runtime.reset();
                     if (isPreload)
                         follower.followPath(scorePreload, AConstants.STANDARD_POWER, true);
                     else
@@ -298,7 +289,7 @@ public class SpecimenAuto extends LinearOpMode
                     o.wristLock();
                     o.outtakeSwivelLock();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1(), scoreStates.CLIP)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > .5, scoreStates.GO_TO_SCORE2)
 
                 .state(scoreStates.GO_TO_SCORE2)
                 .onEnter(() ->
