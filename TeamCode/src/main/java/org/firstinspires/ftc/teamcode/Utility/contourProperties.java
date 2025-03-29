@@ -6,7 +6,7 @@ public class contourProperties {
     private double angle;
     private int area;
 
-    enum BlockColor
+    public enum BlockColor
     {
         RED,
         YELLOW,
