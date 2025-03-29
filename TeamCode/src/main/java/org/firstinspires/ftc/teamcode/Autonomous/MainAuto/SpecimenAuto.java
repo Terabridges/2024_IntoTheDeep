@@ -105,9 +105,8 @@ public class SpecimenAuto extends LinearOpMode
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
-
-        Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(hardwareMap);
+        
+        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(s.getStartPose());
 
         follower.setMaxPower(AConstants.STANDARD_POWER);
@@ -253,15 +252,13 @@ public class SpecimenAuto extends LinearOpMode
 
                 .state(grabStates.ADVANCE1)
                 .onEnter(() -> follower.followPath(s.goPick,  AConstants.MID_POWER,true))
-                .transition(() -> !follower.isBusy(), grabStates.ADVANCE2)
+                .transition(() -> !follower.isBusy(), grabStates.STOP)
+                .onExit(() -> o.closeClaw())
 
                 .state(grabStates.ADVANCE2)
                 .onEnter(() -> follower.followPath(s.goPickb,  AConstants.MID_POWER,true))
                 .transition(() -> !follower.isBusy(), grabStates.STOP)
-                .onExit(() -> {
-                    o.closeClaw();
-                    //follower.setMaxPower(AConstants.A_LOW);
-                })
+                //.onExit(() -> o.closeClaw())
 
                 .state(grabStates.STOP)
 
@@ -279,7 +276,7 @@ public class SpecimenAuto extends LinearOpMode
 
                 .state(pushStates.PUSH2)
                 .onEnter(() -> follower.followPath(s.pushSamples2, AConstants.STANDARD_POWER, true))
-                .transition(() -> !follower.isBusy(), pushStates.STOP)
+                .transition(() -> !follower.isBusy(), pushStates.PUSH3)
 
                 .state(pushStates.PUSH3)
                 .onEnter(() -> follower.followPath(s.pushSamples3, AConstants.STANDARD_POWER, true))

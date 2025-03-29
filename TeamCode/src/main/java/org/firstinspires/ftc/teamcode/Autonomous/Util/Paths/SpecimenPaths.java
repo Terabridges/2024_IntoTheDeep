@@ -51,7 +51,8 @@ public class SpecimenPaths extends PathUtil
         scorePreload = buildLinearPath(startPose, preloadPose);
         scorePreloadb = buildLinearPath(preloadPose, preloadPoseb);
 
-        goPick = buildLinearPath(prep, pick);
+        //goPick = buildLinearPath(prep, pick);
+        goPick = buildLinearPath(prep, pickb);
         goPickb = buildLinearPath(pick, pickb);
         goPrep1 = buildLinearPath(push[1], prep);
         goScore1 = buildLinearPath(pick, score1);
