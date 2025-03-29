@@ -40,8 +40,8 @@ public class OuttakeTuner extends LinearOpMode {
 
     //Third PID for outtake slides
     private PIDController outtakeSlidesController;
-    public static double p3 = 0.008, i3 = 0.00003, d3 = 0.00001;
-    public static double f3 = 0.0;
+    public static double p3 = 0.0021, i3 = 0.1, d3 = 0.0001;
+    public static double f3 = -0.06;
     public static int outtakeSlidesTarget;
     double outtakeSlidesPos;
     double pid3, targetOuttakeSlidesAngle, ff3, currentOuttakeSlidesAngle, outtakeSlidesPower;
@@ -55,8 +55,10 @@ public class OuttakeTuner extends LinearOpMode {
     double pid4, targetOuttakeSwivelAngle, ff4, currentOuttakeSwivelAngle, outtakeSwivelPower;
 
     public boolean runSlides = false;
-    public static double outtakeSwivelOffset = 180.0;
+    public static double outtakeSwivelOffset = -5;
     public double outtakeSwivelGearRatio = 40.0 / 30.0;
+
+    public int highLimit = -1600;
 
     @Override
     public void runOpMode() {
@@ -147,9 +149,15 @@ public class OuttakeTuner extends LinearOpMode {
     }
 
     public void outtakeSlidesSetPower(double pow){
-        outtakeTopVertical.setPower(pow);
-        outtakeBottomVertical.setPower(pow);
-        outtakeMiddleVertical.setPower(pow);
+        telemetry.addData("Power", pow);
+        if (!(outtakeMiddleVertical.getCurrentPosition() < highLimit+20 && pow < 0)){
+            outtakeTopVertical.setPower(pow);
+            outtakeBottomVertical.setPower(pow);
+            outtakeMiddleVertical.setPower(pow);
+        } else {
+            outtakeSlidesTarget = highLimit;
+        }
+        telemetry.update();
     }
     public void outtakeSwivelSetPower(double pow){
         outtakeLeftSwivel.setPower(pow);
