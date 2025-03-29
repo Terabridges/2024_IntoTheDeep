@@ -1,24 +1,20 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.MainAuto;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.localization.PoseUpdater;
-import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.PathBuilder;
-import com.pedropathing.util.DashboardPoseTracker;
-import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Autonomous.Util.Paths.BucketPaths;
+import org.firstinspires.ftc.teamcode.Autonomous.Util.AConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Subsystems.VisionSystem;
-import org.firstinspires.ftc.teamcode.TeleOp.MainTeleOp;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -26,10 +22,6 @@ import com.sfdev.assembly.state.StateMachine;
 import com.sfdev.assembly.state.StateMachineBuilder;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 
 @Config
@@ -41,6 +33,7 @@ public class BucketAuto extends LinearOpMode
     IntakeSystem i;
     OuttakeSystem o;
     VisionSystem v;
+    BucketPaths b;
 
     //State Factory
     StateMachine main;
@@ -54,39 +47,6 @@ public class BucketAuto extends LinearOpMode
 
     //Pedro
     private Follower follower;
-
-    //Starting pose
-    Pose startPose = new Pose(AConstants.BOT_CENTER_X, 108+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
-
-    //Scoring poses
-    Pose scorePoseP = new Pose(17.8, 135, Math.toRadians(335)); //Preload
-    Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(348.5));
-    Pose scorePose2 = new Pose(18.25, 135.5, Math.toRadians(348.5));
-    Pose scorePose3 = new Pose(15.5, 131.5, Math.toRadians(315));
-    Pose scorePose4 = new Pose(15.5, 131.5, Math.toRadians(315)); //From sub
-
-    Pose firstSampleEnd = new Pose(21.5, 134.4, Math.toRadians(335));
-    Pose secondSampleEnd = new Pose(20, 135.5, Math.toRadians(352));
-    Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(30));
-
-    Pose lane1 = new Pose(57, 93.25, Math.toRadians(270));
-    Pose lane2 = new Pose(60, 93.25, Math.toRadians(270));
-    Pose lane3 = new Pose(63, 93.25, Math.toRadians(270));
-    Pose lane4 = new Pose(65, 93.25, Math.toRadians(270));
-    Pose lane1C = new Pose(57, 108, Math.toRadians(270));
-    Pose lane2C = new Pose(60, 108, Math.toRadians(270));
-    Pose lane3C = new Pose(63, 108, Math.toRadians(270));
-    Pose lane4C = new Pose(65, 108, Math.toRadians(270));
-    Pose[] lanes = {lane1, lane2, lane3, lane4};
-    Pose[] lanesC = {lane1C, lane2C, lane3C, lane4C};
-
-    Pose placeHolder = new Pose(0, 0, Math.toRadians(0));
-    Pose controlPointScore = new Pose(65, 128, Math.toRadians(0));
-
-    Pose[] scoreFrom = {placeHolder, firstSampleEnd, secondSampleEnd, thirdSampleEnd, placeHolder};
-    Pose[] scoreTo = {scorePoseP, scorePose1, scorePose2, scorePose3, placeHolder};
-
-    private PathChain goToScore, goToScoreFinal, intakeSample, goToSub1, goToSub2;
 
     //Enums
     enum mainStates
@@ -155,6 +115,7 @@ public class BucketAuto extends LinearOpMode
         i = new IntakeSystem(hardwareMap);
         o = new OuttakeSystem(hardwareMap);
         v = new VisionSystem(hardwareMap);
+        b = new BucketPaths();
 
         currentGamepad2 = new Gamepad();
         previousGamepad2 = new Gamepad();
@@ -167,11 +128,11 @@ public class BucketAuto extends LinearOpMode
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(startPose);
+        follower.setStartingPose(b.getStartPose());
 
         follower.setMaxPower(AConstants.STANDARD_POWER);
 
-        buildPaths();
+        b.buildPathsBucket(curSample, selectedLane);
         buildStateMachines();
 
         while (opModeInInit()){
@@ -184,7 +145,7 @@ public class BucketAuto extends LinearOpMode
 
             if(currentGamepad2.b && !previousGamepad2.b){
                 selectedLane++;
-                if (selectedLane == lanes.length){ selectedLane = 0;}
+                if (selectedLane == b.getLanesLength()){ selectedLane = 0;}
             }
 
             telemetry.addData("Is Red", isRed);
@@ -222,21 +183,6 @@ public class BucketAuto extends LinearOpMode
         }
     }
 
-    public void buildPaths()
-    {
-        goToScore = buildLinearPath(scoreFrom[curSample], scoreTo[curSample]);
-
-        if (curSample > 0)
-            intakeSample = buildLinearPath(scoreTo[curSample-1], scoreFrom[curSample]);
-        else
-            intakeSample = buildLinearPath(scoreTo[curSample], scoreFrom[curSample]);
-
-        goToSub1 = buildLinearPath(scorePose3, lanesC[selectedLane]);
-        goToSub2 = buildLinearPath(lanesC[selectedLane], lanes[selectedLane]);
-
-        goToScoreFinal = buildCurvedPath(lanes[selectedLane], controlPointScore, scorePose4);
-    }
-
     public void buildStateMachines()
     {
         main = new StateMachineBuilder()
@@ -269,8 +215,8 @@ public class BucketAuto extends LinearOpMode
         score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
-                    buildPaths();
-                    follower.followPath(goToScore, ( curSample == 0 ? AConstants.MID_POWER+.1 : ( curSample == 3 ? AConstants.MID_POWER-.1 : AConstants.LOW_POWER) ), true);
+                    b.buildPathsBucket(curSample, selectedLane);
+                    follower.followPath(b.goToScore, ( curSample == 0 ? AConstants.MID_POWER+.1 : ( curSample == 3 ? AConstants.MID_POWER-.1 : AConstants.LOW_POWER) ), true);
 
                     o.outtakeSlidesHigh();
                     o.outtakeSwivelMid();
@@ -281,13 +227,10 @@ public class BucketAuto extends LinearOpMode
 
                 .state(scoreStates.EXTEND)
                 .onEnter(() -> {
-                    if (curSample == 3) {
-
-                    } else if (curSample == 2){
-                        //TODO was 220, make it shorter (214)
+                    if (curSample == 2){
                         i.intakeSlidesSam();
                         i.intakeSwivelDown();
-                    } else {
+                    } else if (curSample != 3) {
                         i.intakeSlidesExtend();
                         i.intakeSwivelDown();
                     }
@@ -321,8 +264,8 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     if (curSample == 3)
                     {
-                        buildPaths();
-                        follower.followPath(intakeSample, AConstants.MID_POWER, true);
+                        b.buildPathsBucket(curSample, selectedLane);
+                        follower.followPath(b.intakeSample, AConstants.MID_POWER, true);
                         o.outtakeSlidesRest();
                     }
                 })
@@ -333,8 +276,8 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     if (curSample != 3)
                     {
-                        buildPaths();
-                        follower.followPath(intakeSample, AConstants.MID_POWER-.05, true);
+                        b.buildPathsBucket(curSample, selectedLane);
+                        follower.followPath(b.intakeSample, AConstants.MID_POWER-.05, true);
                     }
                     if (curSample == 3){
                         i.intakeSlidesSuperExtend();
@@ -384,19 +327,19 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.GO_TO_SUB1)
                 .onEnter(() -> {
                     o.outtakeSlidesRest();
-                    buildPaths();
-                    follower.followPath(goToSub1, AConstants.STANDARD_POWER, true);
+                    b.buildPathsBucket(curSample, selectedLane);
+                    follower.followPath(b.goToSub1, AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.GO_TO_SUB2)
 
                 .state(diveStates.GO_TO_SUB2)
                 .onEnter(() -> {
-                    buildPaths();
-                    follower.followPath(goToSub2, AConstants.MID_POWER, true);
+                    b.buildPathsBucket(curSample, selectedLane);
+                    follower.followPath(b.goToSub2, AConstants.MID_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.SWEEP)
                 .transitionTimed(subResetTime, diveStates.SWEEP, () -> {
-                    buildPaths();
+                    b.buildPathsBucket(curSample, selectedLane);
                     follower.breakFollowing();
                 })
                 .onExit(() -> i.intakeSweeperOut())
@@ -467,7 +410,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     o.outtakeSlidesDown();
                     curSample++;
-                    follower.followPath(goToScoreFinal, AConstants.STANDARD_POWER, true);
+                    follower.followPath(b.goToScoreFinal, AConstants.STANDARD_POWER, true);
                 })
                 .transition( () -> (o.isSlidesDown() && o.isSwivelTransfer()), diveStates.WAIT_STATE, () -> {
                     o.closeClaw();
@@ -537,27 +480,5 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("Loop Time", loopTime.milliseconds());
         telemetry.update();
         loopTime.reset();
-    }
-
-    private PathChain buildLinearPath(Pose start, Pose end) {
-        return new PathBuilder()
-                .addPath(bezierLine(start, end))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
-    }
-    private BezierLine bezierLine(Pose start, Pose end)
-    {
-        return new BezierLine(new Point(start), new Point(end));
-    }
-
-    private PathChain buildCurvedPath(Pose start, Pose control, Pose end) {
-        return new PathBuilder()
-                .addPath(bezierCurve(start, control, end))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
-    }
-    private BezierCurve bezierCurve(Pose start, Pose control, Pose end)
-    {
-        return new BezierCurve(new Point(start), new Point(control), new Point(end));
     }
 }
