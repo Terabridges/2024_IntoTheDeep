@@ -55,9 +55,9 @@ public class OpenCVColor extends LinearOpMode {
     private static int blueArea;
     private static int redArea;
     private static int yellowArea;
-    private static double yellowCount = 0;
-    private static double blueCount = 0;
-    private static double redCount = 0;
+    private static double yellowContourCount = 0;
+    private static double blueContourCount = 0;
+    private static double redContourCount = 0;
     private static double smallestYellowDistanceFromContour = 60;
     private static double smallestRedDistanceFromContour = 60;
     private static double smallestBlueDistanceFromContour = 60;
@@ -76,11 +76,13 @@ public class OpenCVColor extends LinearOpMode {
     public static final double objectWidthInRealWorld = 1.5; // this is the width of the sample, change if incorrect
     public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
 
-    public OpenCVColor(contourProperties.BlockColor currColor)
-    {
-        this.currColor = currColor;
-    }
+    // Constructor where the current color we are on can be inputted
+  //  public OpenCVColor(contourProperties.BlockColor currColor)
+    //{
+    //    this.currColor = currColor;
+    //}
 
+    // defines the colorrange for yellow, blue, and red
     public static final ColorRange YELLOW1 = new ColorRange(
             ColorSpace.YCrCb,
             new Scalar(107, 128, 0),
@@ -102,13 +104,15 @@ public class OpenCVColor extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        // allows the telemetry to be shown in FTCDashboard
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
+        // created the color blob processors for red, blue,and yellow.
         ColorBlobLocatorProcessor colorLocatorBlue = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(BLUE1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 95% of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
@@ -116,7 +120,7 @@ public class OpenCVColor extends LinearOpMode {
         ColorBlobLocatorProcessor colorLocatorRed = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(RED1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 95% of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
@@ -124,11 +128,12 @@ public class OpenCVColor extends LinearOpMode {
         ColorBlobLocatorProcessor colorLocatorYellow = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(YELLOW1)         // use a predefined color match
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.95, 0.95, 0.95, -0.95))  // search central 95% of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
 
+        // inputted all the colorLocators into a vision portal to be checked by vision.
         VisionPortal portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(colorLocatorBlue)
@@ -155,18 +160,17 @@ public class OpenCVColor extends LinearOpMode {
             List<ColorBlobLocatorProcessor.Blob> blobsRed = colorLocatorRed.getBlobs();
             List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
 
-
+            // Filter out the external colors that are not blocks by area
             ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsBlue);  // filter out very small blobs.
             ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsRed);
             ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsYellow);
 
+            // checks the number of CONTOURS shown on screen
+            yellowContourCount = blobsYellow.size();
+            redContourCount = blobsRed.size();
+            blueContourCount = blobsBlue.size();
 
-            yellowCount = blobsYellow.size();
-            redCount = blobsRed.size();
-            blueCount = blobsBlue.size();
-            ColorBlobLocatorProcessor.Util.sortByArea(SortOrder.ASCENDING, blobsYellow);
-
-
+            // these are the values if nothing is detected. Resets all the values in that case
             telemetry.addLine(" Area Density Aspect  Center");
             smallestYellowDistanceFromContour = 60;
             smallestRedDistanceFromContour = 60;
@@ -180,19 +184,19 @@ public class OpenCVColor extends LinearOpMode {
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
                 double dist = getDistance(widthOfContour);
-                double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
-                double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist);
-                telemetry.addData("width", widthOfContour);
+                double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
+                double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
+                telemetry.addData("width", widthOfContour); // add all telemetry like width, height, and other things
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 telemetry.addData("Edge Distance From Center", blueEdgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 blueArea = b.getContourArea();
-                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea));
-                if (dist < smallestBlueDistanceFromContour)
-                    smallestBlueDistanceFromContour = dist;
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
+               // if (dist < smallestBlueDistanceFromContour)
+                 //   smallestBlueDistanceFromContour = dist; // locates the closest color
 
                 telemetry.addData("Blue is detected", "!");
 
@@ -203,19 +207,19 @@ public class OpenCVColor extends LinearOpMode {
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
                 double dist = getDistance(widthOfContour);
                 double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
-                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
-                telemetry.addData("width", widthOfContour);
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
+                telemetry.addData("width", widthOfContour); // add all telemetry like width, height, and other things
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 redArea = b.getContourArea();
                 contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
-                if (dist < smallestRedDistanceFromContour)
-                    smallestRedDistanceFromContour = dist;
+                //if (dist < smallestRedDistanceFromContour) // locates the closest color
+                  //  smallestRedDistanceFromContour = dist;
 
                 telemetry.addData("Red is detected", "!");
             }
@@ -225,45 +229,46 @@ public class OpenCVColor extends LinearOpMode {
                 telemetry.addLine(String.format("%5d  %4.2f   %5.2f  (%3d,%3d)",
                         b.getContourArea(), b.getDensity(), b.getAspectRatio(), (int) boxFit.center.x, (int) boxFit.center.y));
                 widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
                 double dist = getDistance(widthOfContour);
                 double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
-                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist);
-                telemetry.addData("width", widthOfContour);
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
+                telemetry.addData("width", widthOfContour); // add all telemetry like width, height, and other things
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
                 telemetry.addData("Edge Distance From Center", edgeDistanceFromCenter);
                 telemetry.addData("Angle", angleFromCenter);
                 yellowArea = b.getContourArea();
                 contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
-                if (dist != smallestYellowDistanceFromContour)
-                    smallestYellowDistanceFromContour = dist;
+                //if (dist != smallestYellowDistanceFromContour) // locates the closest color
+                  //  smallestYellowDistanceFromContour = dist;
 
                 telemetry.addData("Yellow is detected", "!");
             }
 
-
-            telemetry.addData("Number of Red Contours", redCount);
-            telemetry.addData("Number of Blue Contours", blueCount);
-            telemetry.addData("Number of Yellow Contours", yellowCount);
+            // print all necessary information for troubleshooting
+            telemetry.addData("Number of Red Contours", redContourCount);
+            telemetry.addData("Number of Blue Contours", blueContourCount);
+            telemetry.addData("Number of Yellow Contours", yellowContourCount);
             telemetry.addData("Smallest Red Distance", smallestRedDistanceFromContour);
             telemetry.addData("Smallest Blue Distance", smallestBlueDistanceFromContour);
             telemetry.addData("Smallest Yellow Distance", smallestYellowDistanceFromContour);
-            telemetry.addData("Color to go to ", (decideColorForPickup()) + determineLane());
+            telemetry.addData("Color to go to ", (decideColorForPickup()) + " Lane: " + determineLane());
             telemetry.update();
             sleep(50);
         }
     }
-
+    // distance calculation; dependent on width
     public static double getDistance(double width) {  //406
         double distance = 18.8 * (objectWidthInRealWorld * 12.0 * (focalLength)) / width;
         return distance;
     }
 
+    // distance center of contour is from the center of the camera
     public static double getDistanceFromCenter(double distFromCenter) {
         return (focalLength * distFromCenter) / 72;
     }
-
+    // uses distance from center in order to calculate angle of center contour in respect to camera
     public static double angleFromCenter(double adjacent, double hypotenuse) {
         double angle = (Math.asin(adjacent / hypotenuse));
         return angle * (180.0 / Math.PI);
@@ -271,13 +276,13 @@ public class OpenCVColor extends LinearOpMode {
 
 
     public void logicForPickup(contourProperties prop) {
-        int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
+        int indexOfCurrentYellowContour = contourPropsList.indexOf(prop); // find the closest yellow contour
         for (int index = indexOfCurrentYellowContour - 1; index >= 0; index--) {
-            currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle();
-            double currDistance = contourPropsList.get(indexOfCurrentYellowContour).getDistance();
-            if (contourPropsList.get(index).getColor() != currColor
+            currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle(); // get the contour angle
+            double currDistance = contourPropsList.get(indexOfCurrentYellowContour).getDistance(); // get the contour distance
+            if (contourPropsList.get(index).getColor() != contourProperties.BlockColor.RED
                     && contourPropsList.get(index).getColor() != contourProperties.BlockColor.YELLOW) {
-                if ((Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 2.50)
+                if ((Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 2.50) // checks if the yellow is obstructed
                         && Math.abs(currDistance - contourPropsList.get(index).getDistance()) <= 6.00) {
                     telemetry.addData("Obstruction", "is found");
                     obstructionIsFound = true;
@@ -295,11 +300,11 @@ public class OpenCVColor extends LinearOpMode {
     public String decideColorForPickup() {
         for (double distance : contourPropMap.keySet()) {
             contourProperties prop = contourPropMap.get(distance);
-            contourPropsList.add(prop);
+            contourPropsList.add(prop); // add the props to the treemap
             int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
 
             if (prop != null && prop.getDistance() < 30 &&
-                    (prop.getColor() == contourProperties.BlockColor.YELLOW
+                    (prop.getColor() == contourProperties.BlockColor.YELLOW // checks if the contour is red or yellow;
                             || prop.getColor() == contourProperties.BlockColor.RED)) {
                 logicForPickup(prop);
                 if (!obstructionIsFound) {
@@ -307,7 +312,7 @@ public class OpenCVColor extends LinearOpMode {
                             + contourPropsList.get(indexOfCurrentYellowContour).getColor()
                             + " at distance : "
                             + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
-                            + "and at angle: "
+                            + " and at angle: "
                             + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
                 }
             }
@@ -327,9 +332,11 @@ public class OpenCVColor extends LinearOpMode {
             }
         }*/
         }
-        return "No possible block to Pickup from here. Move over";
+        return "No possible block to Pickup from here. Move over. ";
     }
 
+    // code to determine lane the robot should go to during bucket auto.
+    // this is dependent on the angle the block is in respect to the camera
     public int determineLane()
     {
         if (currAngle > 0)
@@ -340,7 +347,12 @@ public class OpenCVColor extends LinearOpMode {
         {
             return 2;
         }
+
+        else if (currAngle <= -3)
+        {
             return 3;
+        }
+        return 0;
     }
 }
 
