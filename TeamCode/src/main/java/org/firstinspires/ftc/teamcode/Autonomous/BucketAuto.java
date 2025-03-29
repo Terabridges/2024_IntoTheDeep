@@ -293,7 +293,7 @@ public class BucketAuto extends LinearOpMode
                     }
                     i.intakeSlowSpinOut();
                 })
-                .transition(() -> o.isSlidesAlmostHigh() && !follower.isBusy(), scoreStates.DUNK)
+                .transition(() -> o.isSlidesHigh() && !follower.isBusy(), scoreStates.DUNK)
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {

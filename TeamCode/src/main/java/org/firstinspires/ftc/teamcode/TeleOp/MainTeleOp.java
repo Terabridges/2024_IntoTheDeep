@@ -202,6 +202,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             telemetry.addData("CURRENT STATE", robot.currentState);
+            telemetry.addData("OuttakeSlidesPos", robot.outtakeSystem.outtakeMiddleVertical.getCurrentPosition());
             telemetry.update();
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -343,10 +344,11 @@ public class MainTeleOp extends LinearOpMode {
                         outtake.outtakeSlidesLow();
                     }
                 })
-                .transition( () -> ((outtake.highBasketMode && outtake.isSlidesHigh()) || (!outtake.highBasketMode && outtake.isSlidesLow())), outtakeStates.DROP_WAIT)
-
-                .state(outtakeStates.DROP_WAIT)
+                //.transition( () -> ((outtake.highBasketMode && outtake.isSlidesHigh()) || (!outtake.highBasketMode && outtake.isSlidesLow())), outtakeStates.DROP_WAIT)
                 .transition( () -> yPressed(), outtakeStates.SCORE_SAMPLE)
+
+                //.state(outtakeStates.DROP_WAIT)
+                //.transition( () -> yPressed(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> {
