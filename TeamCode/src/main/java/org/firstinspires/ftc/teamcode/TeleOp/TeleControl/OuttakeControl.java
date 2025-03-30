@@ -41,12 +41,12 @@ public class OuttakeControl implements Control {
     }
 
     public void toggleClaw(){
-        outtake.isClawOpen = !outtake.isClawOpen;
         if (outtake.isClawOpen){
             outtake.closeClaw();
         } else {
             outtake.openClaw();
         }
+        outtake.isClawOpen = !outtake.isClawOpen;
     }
 
     //Interface Methods
@@ -92,7 +92,7 @@ public class OuttakeControl implements Control {
     public void addTelemetry(Telemetry telemetry){
         telemetry.addData("Basket Mode", (outtake.highBasketMode ? "HIGH" : "LOW"));
         telemetry.addData("Manual Slides", outtake.manualOuttake);
-        telemetry.addData("Slides Pos", outtake.outtakeBottomVertical.getCurrentPosition());
+        //telemetry.addData("Slides Pos", outtake.outtakeMiddleVertical.getCurrentPosition());
         //telemetry.addData("Slides Mode", outtake.outtakeBottomVertical.getMode());
         //telemetry.addData("Zero Power Behavior", outtake.outtakeBottomVertical.getZeroPowerBehavior());
         telemetry.addData("Use Limit Switch", outtake.useLimitSwitch);

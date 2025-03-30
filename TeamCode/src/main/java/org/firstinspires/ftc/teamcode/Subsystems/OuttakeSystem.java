@@ -320,9 +320,9 @@ public class OuttakeSystem implements Subsystem {
             outtakeSlidesRest();
         }
 
-        outtakeSwivelDown();
         closeClaw();
-        wristDown();
+        outtakeSwivelTransfer();
+        wristTransfer();
     }
 
     @Override

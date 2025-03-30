@@ -107,9 +107,7 @@ public class IntakeSystem implements Subsystem {
 
         intakeLeftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRightSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
-        //intakeLeftSwivel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //intakeSwivelEnc.setInverted(true);
         intakeSlidesController = new PIDController(p, i, d);
         intakeSwivelController = new PIDController(p2, i2, d2);
     }

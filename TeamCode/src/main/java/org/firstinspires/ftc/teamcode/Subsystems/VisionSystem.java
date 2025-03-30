@@ -72,6 +72,7 @@ public class VisionSystem implements Subsystem {
     private TreeMap<Double, contourProperties> contourPropMap = new TreeMap<>();
     private boolean obstructionIsFound = false;
     private contourProperties.BlockColor currColor;
+    public boolean runCamera = false;
 
     ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
@@ -340,13 +341,15 @@ public class VisionSystem implements Subsystem {
     }
 
     @Override
-    public void update(){
+    public void update() {
         detectColor();
-        if(!specimenVisionMode){setLightColor(getColorVal());}
+        if (!specimenVisionMode) {
+            setLightColor(getColorVal());
+        }
         getDistances();
 
         if (specimenVisionMode) {
-            if (isClose()){
+            if (isClose()) {
                 rightLight.setPosition(0.444);
             } else {
                 rightLight.setPosition(0);
@@ -355,73 +358,75 @@ public class VisionSystem implements Subsystem {
         }
 
         //Camera stuff
-        portal.resumeLiveView();
-        //telemetry.addData("preview on/off", "... Camera Stream\n");
+        if (runCamera) {
+            portal.resumeLiveView();
+            //telemetry.addData("preview on/off", "... Camera Stream\n");
 
-        // Read the current list
-        List<ColorBlobLocatorProcessor.Blob> blobsBlue = colorLocatorBlue.getBlobs();
-        List<ColorBlobLocatorProcessor.Blob> blobsRed = colorLocatorRed.getBlobs();
-        List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
+            // Read the current list
+            List<ColorBlobLocatorProcessor.Blob> blobsBlue = colorLocatorBlue.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobsRed = colorLocatorRed.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobsYellow = colorLocatorYellow.getBlobs();
 
-        // Filter out the external colors that are not blocks by area
-        ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsBlue);  // filter out very small blobs.
-        ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsRed);
-        ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsYellow);
+            // Filter out the external colors that are not blocks by area
+            ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsBlue);  // filter out very small blobs.
+            ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsRed);
+            ColorBlobLocatorProcessor.Util.filterByArea(1200, 20000, blobsYellow);
 
-        // checks the number of CONTOURS shown on screen
-        yellowContourCount = blobsYellow.size();
-        redContourCount = blobsRed.size();
-        blueContourCount = blobsBlue.size();
+            // checks the number of CONTOURS shown on screen
+            yellowContourCount = blobsYellow.size();
+            redContourCount = blobsRed.size();
+            blueContourCount = blobsBlue.size();
 
-        // these are the values if nothing is detected. Resets all the values in that case
-        smallestYellowDistanceFromContour = 60;
-        smallestRedDistanceFromContour = 60;
-        smallestBlueDistanceFromContour = 60;
-        obstructionIsFound = false;
-        contourPropMap.clear();
+            // these are the values if nothing is detected. Resets all the values in that case
+            smallestYellowDistanceFromContour = 60;
+            smallestRedDistanceFromContour = 60;
+            smallestBlueDistanceFromContour = 60;
+            obstructionIsFound = false;
+            contourPropMap.clear();
 
-        // Display the size (area) and center location for each Blob.
-        for (ColorBlobLocatorProcessor.Blob b : blobsBlue) {
-            RotatedRect boxFit = b.getBoxFit();
-            widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-            heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
-            double dist = getDistance(widthOfContour);
-            double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
-            double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
-            blueArea = b.getContourArea();
-            contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
-            // if (dist < smallestBlueDistanceFromContour)
-            //   smallestBlueDistanceFromContour = dist; // locates the closest color
+            // Display the size (area) and center location for each Blob.
+            for (ColorBlobLocatorProcessor.Blob b : blobsBlue) {
+                RotatedRect boxFit = b.getBoxFit();
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
+                double dist = getDistance(widthOfContour);
+                double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
+                double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
+                blueArea = b.getContourArea();
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
+                // if (dist < smallestBlueDistanceFromContour)
+                //   smallestBlueDistanceFromContour = dist; // locates the closest color
 
 
-        }
+            }
 
-        for (ColorBlobLocatorProcessor.Blob b : blobsRed) {
-            RotatedRect boxFit = b.getBoxFit();
-            widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-            heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
-            double dist = getDistance(widthOfContour);
-            double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
-            double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
-            redArea = b.getContourArea();
-            contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
-            //if (dist < smallestRedDistanceFromContour) // locates the closest color
-            //  smallestRedDistanceFromContour = dist;
+            for (ColorBlobLocatorProcessor.Blob b : blobsRed) {
+                RotatedRect boxFit = b.getBoxFit();
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
+                double dist = getDistance(widthOfContour);
+                double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
+                redArea = b.getContourArea();
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
+                //if (dist < smallestRedDistanceFromContour) // locates the closest color
+                //  smallestRedDistanceFromContour = dist;
 
-        }
+            }
 
-        for (ColorBlobLocatorProcessor.Blob b : blobsYellow) {
-            RotatedRect boxFit = b.getBoxFit();
-            widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-            heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
-            double dist = getDistance(widthOfContour);
-            double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
-            double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
-            yellowArea = b.getContourArea();
-            contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
-            //if (dist != smallestYellowDistanceFromContour) // locates the closest color
-            //  smallestYellowDistanceFromContour = dist;
+            for (ColorBlobLocatorProcessor.Blob b : blobsYellow) {
+                RotatedRect boxFit = b.getBoxFit();
+                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
+                double dist = getDistance(widthOfContour);
+                double edgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0)));
+                double angleFromCenter = angleFromCenter(edgeDistanceFromCenter, dist); // calculates angle
+                yellowArea = b.getContourArea();
+                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
+                //if (dist != smallestYellowDistanceFromContour) // locates the closest color
+                //  smallestYellowDistanceFromContour = dist;
 
+            }
         }
     }
 }

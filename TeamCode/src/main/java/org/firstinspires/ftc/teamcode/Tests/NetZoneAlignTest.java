@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Autonomous.Util.AConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @Disabled
 @TeleOp(name="NetZoneAlignTest", group="Test")
@@ -47,7 +49,7 @@ public class NetZoneAlignTest extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftBackDistance = hardwareMap.get(AnalogInput.class, "left_back_distance");
         rightBackDistance = hardwareMap.get(AnalogInput.class, "right_back_distance");
-        follower = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
 
         waitForStart();

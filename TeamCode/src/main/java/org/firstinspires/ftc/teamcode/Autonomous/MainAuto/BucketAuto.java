@@ -79,8 +79,10 @@ public class BucketAuto extends LinearOpMode
     enum diveStates
     {
         GO_TO_SUB1,
+        CAMERA_SELECT1,
         GO_TO_SUB2,
         SWEEP,
+        CAMERA_SELECT2,
         EXTEND_INTAKE,
         EXTEND,
         DETECT_COLOR,
@@ -219,11 +221,14 @@ public class BucketAuto extends LinearOpMode
 
                     o.outtakeSlidesHigh();
                     o.outtakeSwivelMid();
+                    //TODO See if this matters
                     o.wristDown();
+                    //o.wristUp();
                     i.intakeSwivelRest();
                 })
                 .transition(() -> i.isSwivelRest(), scoreStates.EXTEND)
 
+                //TODO if swivel and extension can happen simultaneously, combine this state with prior
                 .state(scoreStates.EXTEND)
                 .onEnter(() -> {
                     if (curSample == 2){
@@ -331,6 +336,13 @@ public class BucketAuto extends LinearOpMode
                 })
                 .transition(() -> !follower.isBusy(), diveStates.GO_TO_SUB2)
 
+                //TODO Define this state
+                .state(diveStates.CAMERA_SELECT1)
+                .onEnter(() -> {
+
+
+                })
+
                 .state(diveStates.GO_TO_SUB2)
                 .onEnter(() -> {
                     b.buildPathsBucket(curSample, selectedLane);
@@ -347,6 +359,9 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> i.intakeSwivelRest())
                 .transitionTimed(0.4, diveStates.EXTEND_INTAKE)
                 .onExit(() -> i.intakeSweeperIn())
+
+                //TODO DEFINE THIS STATE
+                .state(diveStates.CAMERA_SELECT2)
 
                 .state(diveStates.EXTEND_INTAKE)
                 .onEnter(() -> {
