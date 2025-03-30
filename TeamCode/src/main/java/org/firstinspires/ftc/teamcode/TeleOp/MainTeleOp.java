@@ -60,7 +60,9 @@ public class MainTeleOp extends LinearOpMode {
     public enum outtakeStates {
         START,
         OUTTAKE_RISE,
-        SCORE_SAMPLE
+        WAIT_STATE,
+        SCORE_SAMPLE,
+        CLAW_OPEN
     }
 
     public enum specimenStates {
@@ -271,21 +273,22 @@ public class MainTeleOp extends LinearOpMode {
                 .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
-
                 //TODO if past a certain point, make intake swivel rest at the same time as intake retracts. Maybe intake quarter
-                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
+                .transition( () -> vision.isSomething(), intakeStates.SWIVEL_DOWN, () -> {
                     intake.intakeSwivelRest();
+                    intake.intakeSlidesRetract();
                 })
-                .transition( () -> aPressed(), intakeStates.RETRACT, () -> {
+                .transition( () -> aPressed(), intakeStates.SWIVEL_DOWN, () -> {
                     intake.intakeSwivelRest();
+                    intake.intakeSlidesRetract();
                 })
 
-                .state(intakeStates.RETRACT)
-                .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
+//                .state(intakeStates.RETRACT)
+//                .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
 
                 .state(intakeStates.SWIVEL_DOWN)
                 .onEnter(() -> {
-                    intake.intakeSlidesRetract();
+                    //intake.intakeSlidesRetract();
                     drive.isIntakeExtended = false;
                 })
                 .transition(() -> intake.isIntakeRetracted(), intakeStates.START, ()-> intake.intakeSwivelTransfer())
@@ -336,11 +339,19 @@ public class MainTeleOp extends LinearOpMode {
                         outtake.outtakeSlidesLow();
                     }
                 })
+                .transitionTimed(0.2, outtakeStates.WAIT_STATE)
+
+                .state(outtakeStates.WAIT_STATE)
                 .transition( () -> yPressed(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> {
                     outtake.openClaw();
+                })
+                .transitionTimed(0.1, outtakeStates.CLAW_OPEN)
+
+                .state(outtakeStates.CLAW_OPEN)
+                .onEnter(() -> {
                     outtake.outtakeSwivelTransfer();
                     outtake.wristTransfer();
                     outtake.outtakeSlidesRest();

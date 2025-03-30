@@ -55,19 +55,19 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_GRAB = 184; //146;
     private int OUTTAKE_SWIVEL_LOCK = 124;
     //SLIDES
-    private int OUTTAKE_SLIDES_HIGH = -1570;
-    private int OUTTAKE_SLIDES_LOW = -810;
+    private int OUTTAKE_SLIDES_HIGH = -1680;
+    private int OUTTAKE_SLIDES_LOW = -870;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -420;
     private int OUTTAKE_SLIDES_GRAB_1 = OUTTAKE_SLIDES_DOWN;
     private int OUTTAKE_SLIDES_SCORE_1 = -750;
     private int OUTTAKE_SLIDES_SCORE_2 = -700;
 
-    private int OUTTAKE_SLIDES_PARK = -452; //-600
+    private int OUTTAKE_SLIDES_PARK = -452;
     private int OUTTAKE_SWIVEL_PARK = 283;
 
     public int outtakeCounter = 0;
-    public int highLimit = -1600;
+    public int highLimit = -1700;
 
     //PIDF
     private double ticks_in_degree = 144.0 / 180.0;
@@ -316,9 +316,10 @@ public class OuttakeSystem implements Subsystem {
     //Interface Methods
     @Override
     public void toInit(){
-        if (!(outtakeMiddleVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
-            outtakeSlidesRest();
-        }
+//        if (!(outtakeMiddleVertical.getCurrentPosition() < OUTTAKE_SLIDES_LOW)){
+//            outtakeSlidesRest();
+//        }
+        outtakeSlidesRest();
 
         closeClaw();
         outtakeSwivelTransfer();

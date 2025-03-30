@@ -140,16 +140,16 @@ public class VisionSystem implements Subsystem {
                 .build();
 
         // inputted all the colorLocators into a vision portal to be checked by vision.
-        portal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(colorLocatorBlue)
-                .addProcessor(colorLocatorRed)
-                .addProcessor(colorLocatorYellow)
-                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .enableLiveView(true)
-                .setAutoStopLiveView(true)
-                .build();
+//        portal = new VisionPortal.Builder()
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+//                .addProcessor(colorLocatorBlue)
+//                .addProcessor(colorLocatorRed)
+//                .addProcessor(colorLocatorYellow)
+//                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
+//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+//                .enableLiveView(true)
+//                .setAutoStopLiveView(true)
+//                .build();
     }
 
     //Methods

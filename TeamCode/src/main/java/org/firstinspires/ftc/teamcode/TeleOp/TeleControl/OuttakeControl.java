@@ -54,6 +54,7 @@ public class OuttakeControl implements Control {
     public void update(){
 
         //Set slides power with triggers
+        //TODO Add limits for triggers
         if (outtake.manualOuttake) {
             if (gp1.right_trigger > 0) {
                 outtake.outtakeSetSlides(gp1.right_trigger);
