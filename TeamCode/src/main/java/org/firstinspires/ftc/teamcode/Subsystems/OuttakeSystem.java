@@ -27,7 +27,7 @@ public class OuttakeSystem implements Subsystem {
 
     //SOFTWARE
     private int servoOffset = 15;
-    private int motorOffset = 50;
+    private int motorOffset = 40;
     private int oServoOffset = 12;
     public boolean highBasketMode = true;
     public boolean manualOuttake = false;
@@ -52,16 +52,16 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_MID = 370;
     private int OUTTAKE_SWIVEL_DOWN = 180;
     private int OUTTAKE_SWIVEL_TRANSFER = 210;
-    private int OUTTAKE_SWIVEL_GRAB = 184; //146;
-    private int OUTTAKE_SWIVEL_LOCK = 124;
+    private int OUTTAKE_SWIVEL_GRAB = 160;
+    private int OUTTAKE_SWIVEL_LOCK = 115;
     //SLIDES
     private int OUTTAKE_SLIDES_HIGH = -1680;
     private int OUTTAKE_SLIDES_LOW = -870;
     private int OUTTAKE_SLIDES_DOWN = 0;
     private int OUTTAKE_SLIDES_REST = -420;
     private int OUTTAKE_SLIDES_GRAB_1 = OUTTAKE_SLIDES_DOWN;
-    private int OUTTAKE_SLIDES_SCORE_1 = -750;
-    private int OUTTAKE_SLIDES_SCORE_2 = -700;
+    private int OUTTAKE_SLIDES_SCORE_1 = -875;
+    private int OUTTAKE_SLIDES_SCORE_2 = -475;
 
     private int OUTTAKE_SLIDES_PARK = -452;
     private int OUTTAKE_SWIVEL_PARK = 283;
@@ -249,10 +249,10 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_GRAB_1) <= motorOffset;
     }
     public boolean isSlidesScore1(){
-        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset+50;
     }
     public boolean isSlidesScore2(){
-        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset+10;
     }
 
     public boolean isSlidesLow(){

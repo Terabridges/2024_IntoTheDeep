@@ -10,14 +10,14 @@ public class SpecimenPaths extends PathUtil
 {
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(32, 60, Math.toRadians(180));
-    Pose preloadPoseb = new Pose(35.595, 60, Math.toRadians(180));
-    Pose score1b = new Pose(35.675, 63, Math.toRadians(180));
-    Pose score2b = new Pose(35.675, 68, Math.toRadians(180));
-    Pose score3b = new Pose(35.675, 73, Math.toRadians(180));
-    Pose score1 = new Pose(32, 63, Math.toRadians(180));
-    Pose score2 = new Pose(32, 68, Math.toRadians(180));
-    Pose score3 = new Pose(32, 73, Math.toRadians(180));
+    Pose preloadPose = new Pose(31, 60, Math.toRadians(180));
+    Pose preloadPoseb = new Pose(35.55, 60, Math.toRadians(180));
+    Pose score1b = new Pose(36.35, 63, Math.toRadians(180));
+    Pose score2b = new Pose(36.35, 68, Math.toRadians(180));
+    Pose score3b = new Pose(36.35, 73, Math.toRadians(180));
+    Pose score1 = new Pose(32.5, 63, Math.toRadians(180));
+    Pose score2 = new Pose(32.5, 68, Math.toRadians(180));
+    Pose score3 = new Pose(32.5, 73, Math.toRadians(180));
 
     Pose start1 = new Pose(60, 25.5, Math.toRadians(90));
     Pose end1 = new Pose(20, 25.5, Math.toRadians(90));
@@ -41,10 +41,9 @@ public class SpecimenPaths extends PathUtil
     Pose[] push = {start1, end1, start2, end2, start3, end3};
     Pose[] control = {control1, control2, control3};
 
-    PathChain[] goPrep = {goPrep1, goPrep2, goPrep3};
-
-    PathChain[] goScore = {goScore1, goScore2, goScore3};
-    PathChain[] goScoreB = {goScore1b, goScore2b, goScore3b};
+    PathChain[] goPrep;
+    PathChain[] goScore;
+    PathChain[] goScoreB;
 
     public void buildPathsSpecimen()
     {
@@ -72,24 +71,9 @@ public class SpecimenPaths extends PathUtil
         pushSamples5 = buildCurvedPath(push[3], control[2], push[4]);
         pushSamples6 = buildLinearPath(push[4], push[5]);
 
-//        pushSamples = follower.pathBuilder()
-//                .addPath(bezierCurve(score[0], control[0], push[0]))
-//                .setLinearHeadingInterpolation(score[0].getHeading(), push[0].getHeading())
-//
-//                .addPath(bezierLine(push[0], push[1]))
-//                .setLinearHeadingInterpolation(push[0].getHeading(), push[1].getHeading())
-//                .addPath(bezierCurve(push[1], control[1], push[2]))
-//                .setLinearHeadingInterpolation(push[1].getHeading(), push[2].getHeading())
-//
-//                .addPath(bezierLine(push[2], push[3]))
-//                .setLinearHeadingInterpolation(push[2].getHeading(), push[3].getHeading())
-//                .addPath(bezierCurve(push[3], control[2], push[4]))
-//                .setLinearHeadingInterpolation(push[3].getHeading(), push[4].getHeading())
-//
-//                .addPath(bezierLine(push[4], push[5]))
-//                .setLinearHeadingInterpolation(push[4].getHeading(), push[5].getHeading())
-//
-//                .build();
+        goPrep = new PathChain[]{goPrep1, goPrep2, goPrep3};
+        goScore = new PathChain[]{goScore1, goScore2, goScore3};
+        goScoreB = new PathChain[]{goScore1b, goScore2b, goScore3b};
     }
 
     public Pose getStartPose()

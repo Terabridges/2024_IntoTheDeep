@@ -311,10 +311,10 @@ public class SpecimenAuto extends LinearOpMode
         telemetry.addData("heading", follower.getPose().getHeading());
         //telemetry.addData("see something", v.isSomething());
         telemetry.addData("current specimen", curSpec);
-        telemetry.addData("spinTarget", i.intakeSpinTarget);
-        telemetry.addData("Outtake pos", o.outtakeBottomVertical.getCurrentPosition());
-        telemetry.addData("Manual slides", o.manualOuttake);
-        telemetry.addData("Mode", o.outtakeBottomVertical.getMode());
+        //telemetry.addData("spinTarget", i.intakeSpinTarget);
+        telemetry.addData("Outtake pos", o.outtakeMiddleVertical.getCurrentPosition());
+        //telemetry.addData("Manual slides", o.manualOuttake);
+        //telemetry.addData("Mode", o.outtakeBottomVertical.getMode());
         telemetry.update();
     }
 

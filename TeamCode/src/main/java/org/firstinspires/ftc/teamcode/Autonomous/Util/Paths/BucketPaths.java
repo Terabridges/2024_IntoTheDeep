@@ -11,7 +11,7 @@ public class BucketPaths extends PathUtil
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 108+ AConstants.BOT_CENTER_Y, Math.toRadians(0));
 
     Pose scorePoseP = new Pose(17.8, 135, Math.toRadians(335)); //Preload
-    Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(348.5));
+    Pose scorePose1 = new Pose(18.25, 135.5, Math.toRadians(351));
     Pose scorePose2 = new Pose(18.25, 135.5, Math.toRadians(348.5));
     Pose scorePose3 = new Pose(15.5, 131.5, Math.toRadians(315));
     Pose scorePose4 = new Pose(15.5, 131.5, Math.toRadians(315)); //From sub

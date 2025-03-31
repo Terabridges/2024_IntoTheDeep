@@ -221,16 +221,7 @@ public class BucketAuto extends LinearOpMode
 
                     o.outtakeSlidesHigh();
                     o.outtakeSwivelMid();
-                    //TODO See if this matters
                     o.wristDown();
-                    //o.wristUp();
-                    i.intakeSwivelRest();
-                })
-                .transition(() -> i.isSwivelRest(), scoreStates.EXTEND)
-
-                //TODO if swivel and extension can happen simultaneously, combine this state with prior
-                .state(scoreStates.EXTEND)
-                .onEnter(() -> {
                     if (curSample == 2){
                         i.intakeSlidesSam();
                         i.intakeSwivelDown();
@@ -244,8 +235,8 @@ public class BucketAuto extends LinearOpMode
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {
-                    o.outtakeSwivelUp();
                     o.wristUp();
+                    o.outtakeSwivelUp();
                     i.intakeStopSpin();
                 })
                 .transition(() -> o.isSwivelUp(), scoreStates.OPEN_CLAW)
@@ -465,10 +456,10 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.PARK)
                 .onEnter(() -> {
                     i.intakeStopSpin();
-                    o.outtakeSlidesPark();
-                    o.outtakeSwivelPark();
-                    o.closeClaw();
-                    o.wristDown();
+//                    o.outtakeSlidesPark();
+//                    o.outtakeSwivelPark();
+//                    o.closeClaw();
+//                    o.wristDown();
                 })
 
                 .state(diveStates.STOP)

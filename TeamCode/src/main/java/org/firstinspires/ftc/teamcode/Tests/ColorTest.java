@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,7 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @TeleOp(name="ColorTest", group="Test")
 @Config
 public class ColorTest extends LinearOpMode {
@@ -22,6 +25,7 @@ public class ColorTest extends LinearOpMode {
     public void runOpMode(){
         intakeColorSensor = hardwareMap.get(RevColorSensorV3.class, "intake_color_sensor");
         rightLight = hardwareMap.get(Servo.class, "right_light");
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         waitForStart();
 
