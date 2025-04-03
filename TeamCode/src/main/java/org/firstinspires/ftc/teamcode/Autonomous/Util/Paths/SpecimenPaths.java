@@ -10,17 +10,17 @@ public class SpecimenPaths extends PathUtil
 {
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(31, 60, Math.toRadians(180));
-    Pose preloadPoseb = new Pose(35.55, 60, Math.toRadians(180));
-    Pose score1b = new Pose(36.35, 63, Math.toRadians(180));
-    Pose score2b = new Pose(36.35, 68, Math.toRadians(180));
-    Pose score3b = new Pose(36.35, 73, Math.toRadians(180));
-    Pose score1 = new Pose(32.5, 63, Math.toRadians(180));
-    Pose score2 = new Pose(32.5, 68, Math.toRadians(180));
-    Pose score3 = new Pose(32.5, 73, Math.toRadians(180));
+    Pose preloadPose = new Pose(28.5, 60, Math.toRadians(180));
+    Pose preloadPoseb = new Pose(36, 60, Math.toRadians(180));
+    Pose score1b = new Pose(36.85, 63.5, Math.toRadians(180));
+    Pose score2b = new Pose(36.85, 67, Math.toRadians(180));
+    Pose score3b = new Pose(36.85, 70.5, Math.toRadians(180));
+    Pose score1 = new Pose(32.5, 63.5, Math.toRadians(180));
+    Pose score2 = new Pose(32.5, 67, Math.toRadians(180));
+    Pose score3 = new Pose(32.5, 70.5, Math.toRadians(180));
 
-    Pose start1 = new Pose(60, 25.5, Math.toRadians(90));
-    Pose end1 = new Pose(20, 25.5, Math.toRadians(90));
+    Pose start1 = new Pose(58, 28.5, Math.toRadians(90));
+    Pose end1 = new Pose(20, 24.5, Math.toRadians(90));
     Pose start2 = new Pose(58, 16.5, Math.toRadians(90));
     Pose end2 = new Pose(20, 16.5, Math.toRadians(90));
     Pose start3 = new Pose(58, 7, Math.toRadians(90));

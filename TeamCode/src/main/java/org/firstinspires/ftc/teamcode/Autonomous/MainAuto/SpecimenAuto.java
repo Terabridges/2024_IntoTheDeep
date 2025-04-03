@@ -58,6 +58,7 @@ public class SpecimenAuto extends LinearOpMode
     {
         GO_TO_SCORE1,
         GO_TO_SCORE2,
+        WAIT,
         CLIP,
         STOP
     }
@@ -105,10 +106,11 @@ public class SpecimenAuto extends LinearOpMode
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
-        
+
+        FConstants.setTValue(.98);
+
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(s.getStartPose());
-
         follower.setMaxPower(AConstants.STANDARD_POWER);
 
         s.buildPathsSpecimen();
@@ -123,6 +125,8 @@ public class SpecimenAuto extends LinearOpMode
         runtime.reset();
         r.toInit();
         main.start();
+        i.intakeSlidesRetract();
+        i.intakeSwivelRest();
 
         //Main Loop
         while (opModeIsActive())
@@ -201,18 +205,21 @@ public class SpecimenAuto extends LinearOpMode
                     o.wristLock();
                     o.outtakeSwivelLock();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1() && runtime.seconds() > .5, scoreStates.GO_TO_SCORE2)
+                .transition(() -> !follower.isBusy() && o.isSlidesScore1(), scoreStates.GO_TO_SCORE2)
 
                 .state(scoreStates.GO_TO_SCORE2)
                 .onEnter(() ->
                 {
                     runtime.reset();
                     if (isPreload)
-                        follower.followPath(s.scorePreloadb, AConstants.MID_POWER, true);
+                        follower.followPath(s.scorePreloadb, AConstants.LOW_POWER, true);
                     else
                         follower.followPath(s.getScoreB(curSpec), AConstants.MID_POWER, true);
                 })
-                .transition(() -> !follower.isBusy() && runtime.seconds() > .4, scoreStates.CLIP)
+                .transition(() -> !follower.isBusy(), scoreStates.WAIT)
+
+                .state(scoreStates.WAIT)
+                .transitionTimed(0.25, scoreStates.CLIP)
 
                 .state(scoreStates.CLIP)
                 .onEnter(() -> {
