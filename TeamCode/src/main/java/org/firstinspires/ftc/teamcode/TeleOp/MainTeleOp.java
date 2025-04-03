@@ -376,7 +376,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(specimenStates.SLIDES_RISE)
                 .onEnter(() -> {
-                    outtake.wristGrab();
+                    outtake.wristDown();
                     outtake.outtakeSwivelGrab();
                     outtake.openClaw();
                     outtake.isClawOpen = true;
@@ -385,7 +385,10 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(() -> intake.isSwivelRest(), specimenStates.SLIDES_FALL)
 
                 .state(specimenStates.SLIDES_FALL)
-                .onEnter(() -> outtake.outtakeSlidesGrab1())
+                .onEnter(() -> {
+                    outtake.outtakeSlidesGrab1();
+                    outtake.wristGrab();
+                })
                 .transition(() -> leftBumpPressed(), specimenStates.PICKUP)
 
                 .state(specimenStates.PICKUP)

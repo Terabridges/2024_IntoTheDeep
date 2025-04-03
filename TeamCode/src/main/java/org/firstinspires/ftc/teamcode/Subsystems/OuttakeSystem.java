@@ -61,7 +61,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_REST = -420;
     private int OUTTAKE_SLIDES_GRAB_1 = OUTTAKE_SLIDES_DOWN;
     private int OUTTAKE_SLIDES_SCORE_1 = -875;
-    private int OUTTAKE_SLIDES_SCORE_2 = -475;
+    private int OUTTAKE_SLIDES_SCORE_2 = -375;
 
     private int OUTTAKE_SLIDES_PARK = -452;
     private int OUTTAKE_SWIVEL_PARK = 283;
@@ -252,7 +252,7 @@ public class OuttakeSystem implements Subsystem {
         return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_1) <= motorOffset+50;
     }
     public boolean isSlidesScore2(){
-        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset+10;
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset+30;
     }
 
     public boolean isSlidesLow(){

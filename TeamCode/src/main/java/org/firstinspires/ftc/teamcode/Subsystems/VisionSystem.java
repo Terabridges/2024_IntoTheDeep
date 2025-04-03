@@ -41,7 +41,7 @@ public class VisionSystem implements Subsystem {
     public Servo rightLight;
 
     //Software
-    NormalizedRGBA colors;
+    public NormalizedRGBA colors;
     private boolean camInited = false;
 
     public DataSampler rightDistanceSampling;
@@ -114,6 +114,8 @@ public class VisionSystem implements Subsystem {
         rightBackDistance = map.get(AnalogInput.class, "right_back_distance");
         rightLight = map.get(Servo.class, "right_light");
 
+        colors = new NormalizedRGBA();
+
         // created the color blob processors for red, blue,and yellow.
         colorLocatorBlue = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(BLUE1)         // use a predefined color match
@@ -167,25 +169,11 @@ public class VisionSystem implements Subsystem {
     }
 
     public String getColorVal(){
-        colors = intakeColorSensor.getNormalizedColors();
-        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
+        if ((colors.red > 0.016 && colors.green > 0.016) && !(Math.abs(colors.red - colors.green) > 0.02)){
             return "yellow";
-        } else if (colors.red > 0.019){
+        } else if ((colors.red > 0.01) && (colors.green < 0.0125)){
             return "red";
-        } else if (colors.blue > 0.015){
-            return "blue";
-        } else {
-            return "none";
-        }
-    }
-
-    public String getColorValSensitive(){
-        colors = intakeColorSensor.getNormalizedColors();
-        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
-            return "yellow";
-        } else if (colors.red > 0.014){
-            return "red";
-        } else if (colors.blue > 0.014){
+        } else if ((colors.blue > 0.008) && (colors.red < 0.01)){
             return "blue";
         } else {
             return "none";

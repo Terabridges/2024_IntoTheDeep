@@ -32,7 +32,7 @@ public class BucketAuto extends LinearOpMode
     Robot r;
     IntakeSystem i;
     OuttakeSystem o;
-    VisionSystem v;
+    VisionSystem visionSystem;
     BucketPaths b;
 
     //State Factory
@@ -48,6 +48,8 @@ public class BucketAuto extends LinearOpMode
     //Pedro
     private Follower follower;
 
+
+    String currColor = "none";
     //Enums
     enum mainStates
     {
@@ -116,7 +118,7 @@ public class BucketAuto extends LinearOpMode
         r = new Robot(hardwareMap, telemetry);
         i = new IntakeSystem(hardwareMap);
         o = new OuttakeSystem(hardwareMap);
-        v = new VisionSystem(hardwareMap);
+        visionSystem = new VisionSystem(hardwareMap);
         b = new BucketPaths();
 
         currentGamepad2 = new Gamepad();
@@ -327,13 +329,6 @@ public class BucketAuto extends LinearOpMode
                 })
                 .transition(() -> !follower.isBusy(), diveStates.GO_TO_SUB2)
 
-                //TODO Define this state
-                .state(diveStates.CAMERA_SELECT1)
-                .onEnter(() -> {
-
-
-                })
-
                 .state(diveStates.GO_TO_SUB2)
                 .onEnter(() -> {
                     b.buildPathsBucket(curSample, selectedLane);
@@ -350,9 +345,6 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> i.intakeSwivelRest())
                 .transitionTimed(0.4, diveStates.EXTEND_INTAKE)
                 .onExit(() -> i.intakeSweeperIn())
-
-                //TODO DEFINE THIS STATE
-                .state(diveStates.CAMERA_SELECT2)
 
                 .state(diveStates.EXTEND_INTAKE)
                 .onEnter(() -> {
@@ -373,23 +365,28 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> i.intakeSlowSpinOut())
                 .transitionTimed(0.15, diveStates.DETECT_COLOR, () -> i.intakeStopSpin())
 
-
                 .state(diveStates.DETECT_COLOR)
+                .onEnter(() -> {
+                    currColor = r.visionSystem.getColorVal();
+                })
+                .loop(() -> {
+                    currColor = r.visionSystem.getColorVal();
+                })
                 .transition(() -> {
                     if (isRed){
-                        return v.getColorValSensitive().equals("blue");
+                        return currColor.equals("blue");
                     } else {
-                        return v.getColorValSensitive().equals("red");
+                        return currColor.equals("red");
                     }
                 }, diveStates.SPIT)
                 .transition(() -> {
                     if (isRed){
-                        return (v.getColorValSensitive().equals("red") || v.isColor("yellow"));
+                        return currColor.equals("red") || currColor.equals("yellow");
                     } else {
-                        return (v.getColorValSensitive().equals("blue") || v.isColor("yellow"));
+                        return currColor.equals("blue") || currColor.equals("yellow");
                     }
                 }, diveStates.RETRACT_INTAKE)
-                .transitionTimed(2.5, diveStates.PARK)
+                .transitionTimed(4, diveStates.PARK)
 
                 .state(diveStates.SPIT)
                 .onEnter(() -> i.intakeSpinOut())
@@ -472,6 +469,7 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("main state", main.getStateString());
         telemetry.addData("pickup state", pickup.getStateString());
         telemetry.addData("score state", score.getStateString());
+        telemetry.addData("dive state", dive.getStateString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
@@ -483,6 +481,8 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("Linear SLides POs", i.intakeSlidesEnc.getCurrentPosition());
         telemetry.addData("Swivel Pos", i.intakeSwivelEnc.getCurrentPosition());
         telemetry.addData("Loop Time", loopTime.milliseconds());
+        telemetry.addData("aCOLOR", currColor);
+        telemetry.addData("aColors", " " + r.visionSystem.colors.red + " " + r.visionSystem.colors.blue + " " + r.visionSystem.colors.green);
         telemetry.update();
         loopTime.reset();
     }

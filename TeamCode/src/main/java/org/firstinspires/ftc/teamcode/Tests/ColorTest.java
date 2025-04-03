@@ -54,11 +54,11 @@ public class ColorTest extends LinearOpMode {
     }
 
     public String getColorVal(){
-        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
+        if ((colors.red > 0.016 && colors.green > 0.016) && !(Math.abs(colors.red - colors.green) > 0.02)){
             return "yellow";
-        } else if (colors.red > 0.019){
+        } else if ((colors.red > 0.01) && (colors.green < 0.0125)){
             return "red";
-        } else if (colors.blue > 0.015){
+        } else if ((colors.blue > 0.008) && (colors.red < 0.01)){
             return "blue";
         } else {
             return "none";
