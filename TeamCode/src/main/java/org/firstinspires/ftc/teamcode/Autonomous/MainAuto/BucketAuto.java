@@ -323,6 +323,7 @@ public class BucketAuto extends LinearOpMode
         dive = new StateMachineBuilder()
                 .state(diveStates.GO_TO_SUB1)
                 .onEnter(() -> {
+                    selectedLane = visionSystem.determineLane();
                     o.outtakeSlidesRest();
                     b.buildPathsBucket(curSample, selectedLane);
                     follower.followPath(b.goToSub1, AConstants.STANDARD_POWER, true);
