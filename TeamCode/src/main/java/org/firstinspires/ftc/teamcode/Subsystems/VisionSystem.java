@@ -278,21 +278,6 @@ public class VisionSystem implements Subsystem {
                             + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
                 }
             }
-
-
-            /*
-            if (prop != null && prop.getDistance() < 30 && prop.getColor() == contourProperties.BlockColor.RED) {
-                logicForPickup(prop);
-                if (!obstructionIsFound) {
-                    return "Go to "
-                            + contourPropsList.get(indexOfCurrentYellowContour).getColor()
-                            + " at distance : "
-                            + contourPropsList.get(indexOfCurrentYellowContour).getDistance()
-                            + "and at angle: "
-                            + contourPropsList.get(indexOfCurrentYellowContour).getAngle();
-                }
-            }
-        }*/
         }
         return "No possible block to Pickup from here. Move over. ";
     }
