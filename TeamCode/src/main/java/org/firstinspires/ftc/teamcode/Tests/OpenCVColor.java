@@ -76,10 +76,10 @@ public class OpenCVColor extends LinearOpMode {
     public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
 
     // Constructor where the current color we are on can be inputted
-    //  public OpenCVColor(contourProperties.BlockColor currColor)
-    //{
-    //    this.currColor = currColor;
-    //}
+      public OpenCVColor(contourProperties.BlockColor currColor)
+    {
+        this.currColor = currColor;
+    }
 
     // defines the colorrange for yellow, blue, and red
     public static final ColorRange YELLOW1 = new ColorRange(
@@ -279,7 +279,7 @@ public class OpenCVColor extends LinearOpMode {
         for (int index = indexOfCurrentYellowContour - 1; index >= 0; index--) {
             currAngle = contourPropsList.get(indexOfCurrentYellowContour).getAngle(); // get the contour angle
             double currDistance = contourPropsList.get(indexOfCurrentYellowContour).getDistance(); // get the contour distance
-            if (contourPropsList.get(index).getColor() != contourProperties.BlockColor.RED
+            if (contourPropsList.get(index).getColor() != currColor
                     && contourPropsList.get(index).getColor() != contourProperties.BlockColor.YELLOW) {
                 if ((Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 2.50) // checks if the yellow is obstructed
                         && Math.abs(currDistance - contourPropsList.get(index).getDistance()) <= 6.00) {
@@ -304,7 +304,7 @@ public class OpenCVColor extends LinearOpMode {
 
             if (prop != null && prop.getDistance() < 30 &&
                     (prop.getColor() == contourProperties.BlockColor.YELLOW // checks if the contour is red or yellow;
-                            || prop.getColor() == contourProperties.BlockColor.RED)) {
+                            || prop.getColor() == currColor)) {
                 logicForPickup(prop);
                 if (!obstructionIsFound) {
                     return "Go to "
