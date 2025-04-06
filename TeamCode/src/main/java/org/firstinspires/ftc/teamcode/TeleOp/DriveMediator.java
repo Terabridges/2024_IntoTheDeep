@@ -20,6 +20,13 @@ public class DriveMediator {
     public double paxial = 0.03, iaxial = 0.0005, daxial = 0.00005, faxial = 0.0;
     public PIDFController axialPIDF = new PIDFController(paxial, iaxial, daxial, faxial);
 
+    //Static
+    public static final double ROBOT_WIDTH = DriveSystem.ROBOT_WIDTH; //Front to back
+    public static final double ROBOT_HEIGHT = DriveSystem.ROBOT_HEIGHT; //Side to side
+    public static final double BOT_CENTER_X = DriveSystem.BOT_CENTER_X;
+    public static final double BOT_CENTER_Y = DriveSystem.BOT_CENTER_Y;
+
+
     // Instance Variables
     private VisionSystem vision;
     private DriveSystem drive;
@@ -182,10 +189,10 @@ public class DriveMediator {
 
 // Walls Enum
 enum Walls {
-    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 100 && pose.getY(DistanceUnit.INCH) > 44),
-    //CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveSystem.BOT_CENTER_X)),
-    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 124 - DriveSystem.BOT_CENTER_X));
-
+    CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveMediator.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) < 100 && pose.getY(DistanceUnit.INCH) > 44),
+    //CHAMBERS(WallType.VERTICAL_LINE_INCH_THICK, 0, new Equation(0, 0, 42.5 - DriveMediator.BOT_CENTER_X)),
+    NET_ZONE(WallType.DIAGONAL_LINE_ABOVE_COLLIDING, 135, new Equation(0, 1, 120 - Math.sqrt(Math.pow(DriveMediator.BOT_CENTER_X, 2) + Math.pow(DriveMediator.BOT_CENTER_Y, 2)))),
+    OBSERVATION_ZONE(WallType.VERTICAL_LINE, 180, new Equation(0, 0, 2 + DriveMediator.BOT_CENTER_X), pose -> pose.getY(DistanceUnit.INCH) > 18 && pose.getY(DistanceUnit.INCH) < 36);
 
     public enum WallType {
         VERTICAL_LINE,
@@ -247,7 +254,7 @@ enum Walls {
 
         switch (wallType) {
             case VERTICAL_LINE:
-                return Math.abs(x - equation.getX(y)) < 1.0; // Adjust threshold as needed
+                return Math.abs(x - equation.getX(y)) < 4.0; // Adjust threshold as needed
             case HORIZONTAL_LINE:
                 return Math.abs(y - equation.getY(x)) < 1.0; // Adjust threshold as needed
             case DIAGONAL_LINE:
