@@ -15,6 +15,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import java.util.List;
 
+@Disabled
 @TeleOp(name = "Concept: AprilTag Switchable Cameras", group = "Concept")
 public class SwitchCamerasTest extends LinearOpMode {
 

@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp(name="ColorTest", group="Test")
 @Config
@@ -20,6 +25,7 @@ public class ColorTest extends LinearOpMode {
     public void runOpMode(){
         intakeColorSensor = hardwareMap.get(RevColorSensorV3.class, "intake_color_sensor");
         rightLight = hardwareMap.get(Servo.class, "right_light");
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         waitForStart();
 
@@ -48,11 +54,11 @@ public class ColorTest extends LinearOpMode {
     }
 
     public String getColorVal(){
-        if ((colors.red > 0.02 && colors.green > 0.02) && (!(Math.abs(colors.red - colors.green) > 0.04)) && colors.blue < 0.6){
+        if ((colors.red > 0.016 && colors.green > 0.016) && !(Math.abs(colors.red - colors.green) > 0.02)){
             return "yellow";
-        } else if (colors.red > 0.019){
+        } else if ((colors.red > 0.01) && (colors.green < 0.0125)){
             return "red";
-        } else if (colors.blue > 0.015){
+        } else if ((colors.blue > 0.008) && (colors.red < 0.01)){
             return "blue";
         } else {
             return "none";

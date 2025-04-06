@@ -72,18 +72,20 @@ public class Robot {
         } else {
             outtakeSystem.manualOuttake = false;
             intakeSystem.manualIntake = true;
-            outtakeSystem.outtakeSlidesTarget = outtakeSystem.outtakeBottomVertical.getCurrentPosition();
+            outtakeSystem.outtakeSlidesTarget = outtakeSystem.outtakeMiddleVertical.getCurrentPosition();
         }
     }
 
     public void slowFall(){
         outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeSystem.outtakeMiddleVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void regularFall(){
         outtakeSystem.outtakeTopVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outtakeSystem.outtakeBottomVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        outtakeSystem.outtakeMiddleVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void toggleLimitSwitch(){

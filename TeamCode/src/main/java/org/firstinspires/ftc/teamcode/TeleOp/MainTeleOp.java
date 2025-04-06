@@ -28,7 +28,7 @@ public class MainTeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     ElapsedTime hangTimer = new ElapsedTime();
 
-    private LoopTimer loopTimer = new LoopTimer();
+    //private LoopTimer loopTimer = new LoopTimer();
 
     public boolean isHanging = false;
 
@@ -47,7 +47,6 @@ public class MainTeleOp extends LinearOpMode {
         SWIVEL_UP,
         EXTEND,
         COLOR_WAIT,
-        LIL_SPIT,
         RETRACT,
         SWIVEL_DOWN
     }
@@ -61,9 +60,9 @@ public class MainTeleOp extends LinearOpMode {
     public enum outtakeStates {
         START,
         OUTTAKE_RISE,
-        DROP_WAIT,
+        WAIT_STATE,
         SCORE_SAMPLE,
-        OUTTAKE_RESET
+        CLAW_OPEN
     }
 
     public enum specimenStates {
@@ -173,7 +172,7 @@ public class MainTeleOp extends LinearOpMode {
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //Main Loop
         while (opModeIsActive()) {
-            loopTimer.updateTime(telemetry);
+            //loopTimer.updateTime(telemetry);
 
             gamepadUpdate();
             robot.update();
@@ -202,6 +201,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             telemetry.addData("CURRENT STATE", robot.currentState);
+            telemetry.addData("OuttakeSlidesPos", robot.outtakeSystem.outtakeMiddleVertical.getCurrentPosition());
             telemetry.update();
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -257,43 +257,38 @@ public class MainTeleOp extends LinearOpMode {
         DriveSystem drive = robot.driveSystem;
         return new StateMachineBuilder()
                 .state(intakeStates.START)
-                .transition(() -> (!currentGamepad1.a && previousGamepad1.a) && robot.currentState.equals("intake"), intakeStates.SWIVEL_UP)
+                .transition(() -> (!currentGamepad1.a && previousGamepad1.a) && robot.currentState.equals("intake"), intakeStates.EXTEND)
 
-                .state(intakeStates.SWIVEL_UP)
-                .onEnter(() -> intake.intakeSwivelRest())
-                .transition(() -> intake.isSwivelRest(), intakeStates.EXTEND)
+                //TODO see if this is unnecessary
+//                .state(intakeStates.SWIVEL_UP)
+//                .onEnter(() -> intake.intakeSwivelRest())
+//                .transition(() -> intake.isSwivelRest(), intakeStates.EXTEND)
 
                 .state(intakeStates.EXTEND)
                 .onEnter( () -> {
+                    intake.intakeSwivelRest();
                     intake.intakeSlidesSam();
                     drive.isIntakeExtended = true;
                 })
                 .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
 
                 .state(intakeStates.COLOR_WAIT)
-                .transition( () -> vision.isSomething(), intakeStates.RETRACT, () -> {
-//                    intake.manualIntake = false;
-//                    intake.intakeSlowSpinOut();
+                //TODO if past a certain point, make intake swivel rest at the same time as intake retracts. Maybe intake quarter
+                .transition( () -> vision.isSomething(), intakeStates.SWIVEL_DOWN, () -> {
                     intake.intakeSwivelRest();
+                    intake.intakeSlidesRetract();
                 })
-                .transition( () -> aPressed(), intakeStates.RETRACT, () -> {
-//                    intake.manualIntake = false;
-//                    intake.intakeSlowSpinOut();
+                .transition( () -> aPressed(), intakeStates.SWIVEL_DOWN, () -> {
                     intake.intakeSwivelRest();
+                    intake.intakeSlidesRetract();
                 })
 
-//                .state(intakeStates.LIL_SPIT)
-//                .transitionTimed(0.15, intakeStates.RETRACT, () -> {
-//                    intake.manualIntake = true;
-//                    intake.intakeStopSpin();
-//                })
-
-                .state(intakeStates.RETRACT)
-                .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
+//                .state(intakeStates.RETRACT)
+//                .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
 
                 .state(intakeStates.SWIVEL_DOWN)
                 .onEnter(() -> {
-                    intake.intakeSlidesRetract();
+                    //intake.intakeSlidesRetract();
                     drive.isIntakeExtended = false;
                 })
                 .transition(() -> intake.isIntakeRetracted(), intakeStates.START, ()-> intake.intakeSwivelTransfer())
@@ -315,12 +310,13 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.wristTransfer();
                     outtake.outtakeSlidesDown();
                 })
-                .transition(() -> outtake.isSlidesAlmostDown(), transferStates.CLOSE, () -> {
+                .transition(() -> outtake.isSlidesDown(), transferStates.CLOSE, () -> {
                     outtake.closeClaw();
                 })
 
                 .state(transferStates.CLOSE)
-                .transitionTimed(0.2, transferStates.START)
+                //TODO see if transition timed is too long or short, just changed from 0.2
+                .transitionTimed(0.1, transferStates.START)
                 .onExit(() -> outtake.outtakeSlidesRest())
 
                 .build();
@@ -343,15 +339,21 @@ public class MainTeleOp extends LinearOpMode {
                         outtake.outtakeSlidesLow();
                     }
                 })
-                .transition( () -> ((outtake.highBasketMode && outtake.isSlidesHigh()) || (!outtake.highBasketMode && outtake.isSlidesLow())), outtakeStates.DROP_WAIT)
+                .transitionTimed(0.2, outtakeStates.WAIT_STATE)
 
-                .state(outtakeStates.DROP_WAIT)
+                .state(outtakeStates.WAIT_STATE)
                 .transition( () -> yPressed(), outtakeStates.SCORE_SAMPLE)
 
                 .state(outtakeStates.SCORE_SAMPLE)
                 .onEnter( () -> {
                     outtake.openClaw();
-                    outtake.outtakeSwivelDown();
+                })
+                .transitionTimed(0.1, outtakeStates.CLAW_OPEN)
+
+                .state(outtakeStates.CLAW_OPEN)
+                .onEnter(() -> {
+                    outtake.outtakeSwivelTransfer();
+                    outtake.wristTransfer();
                     outtake.outtakeSlidesRest();
                     driveSystem.useSlowMode = false;
                     if (!(Math.abs(gamepad1.left_stick_x) > 0.05 || Math.abs(gamepad1.left_stick_y) > 0.05 || Math.abs(gamepad1.right_stick_x) > 0.05 || Math.abs(gamepad1.right_stick_y) > 0.05)) {
@@ -374,7 +376,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(specimenStates.SLIDES_RISE)
                 .onEnter(() -> {
-                    outtake.wristGrab();
+                    outtake.wristDown();
                     outtake.outtakeSwivelGrab();
                     outtake.openClaw();
                     outtake.isClawOpen = true;
@@ -383,7 +385,10 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(() -> intake.isSwivelRest(), specimenStates.SLIDES_FALL)
 
                 .state(specimenStates.SLIDES_FALL)
-                .onEnter(() -> outtake.outtakeSlidesGrab1())
+                .onEnter(() -> {
+                    outtake.outtakeSlidesGrab1();
+                    outtake.wristGrab();
+                })
                 .transition(() -> leftBumpPressed(), specimenStates.PICKUP)
 
                 .state(specimenStates.PICKUP)
@@ -399,8 +404,8 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.openClaw();
                     outtake.isClawOpen = true;
                     outtake.outtakeSlidesRest();
-                    outtake.outtakeSwivelDown();
-                    outtake.wristDown();
+                    outtake.outtakeSwivelTransfer();
+                    outtake.wristTransfer();
                     drive.useSlowMode = false;
                 })
 

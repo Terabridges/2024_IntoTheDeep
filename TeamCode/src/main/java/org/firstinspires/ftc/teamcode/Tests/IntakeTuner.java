@@ -4,15 +4,18 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
+//@Disabled
 @TeleOp(name="IntakeTuner", group="Test")
 @Config
 public class IntakeTuner extends LinearOpMode {
@@ -48,10 +51,13 @@ public class IntakeTuner extends LinearOpMode {
     double pid2, targetIntakeSwivelAngle, ff2, currentIntakeSwivelAngle, intakeSwivelPower;
 
     boolean runSlides = false;
-    public static double intakeSwivelOffset = 102;
+    public static double intakeSwivelOffset = 190;
     public static double intakeSlidesOffset = 100;
     public double intakeSwivelGearRatio = 40.0/48.0;
 //    public static double otherIntakeSwivelOffset = 80;
+
+    public Gamepad currentGamepad1;
+    public Gamepad previousGamepad1;
 
     @Override
     public void runOpMode() {
@@ -71,7 +77,8 @@ public class IntakeTuner extends LinearOpMode {
 //        intakeLeftSwivelAnalog = hardwareMap.get(AnalogInput.class, "intake_left_swivel_analog");
 //        intakeLeftSwivelEnc = new AbsoluteAnalogEncoder(intakeLeftSwivelAnalog, 3.3, otherIntakeSwivelOffset, intakeSwivelGearRatio);
 
-
+        currentGamepad1 = new Gamepad();
+        previousGamepad1 = new Gamepad();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -82,7 +89,10 @@ public class IntakeTuner extends LinearOpMode {
 
         while (opModeIsActive()){
 
-            if (gamepad1.a){
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
+            if (currentGamepad1.a && !previousGamepad1.a){
                 runSlides = !runSlides;
             }
 

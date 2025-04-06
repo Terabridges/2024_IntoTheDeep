@@ -7,6 +7,10 @@ import com.pedropathing.util.CustomPIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
+    public static void setTValue(double tValue)
+    {
+        FollowerConstants.pathEndTValueConstraint = tValue;
+    }
     static {
         FollowerConstants.localizers = Localizers.PINPOINT;
 
@@ -20,7 +24,8 @@ public class FConstants {
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 12.5191;
+        FollowerConstants.mass = 13.0634602;
+        //12.5191
 
         FollowerConstants.xMovement = 77.40505734;
         FollowerConstants.yMovement = 63.52404765;

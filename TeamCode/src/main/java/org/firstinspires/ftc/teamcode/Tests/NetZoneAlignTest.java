@@ -5,21 +5,21 @@ import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
 
-import org.firstinspires.ftc.teamcode.Autonomous.AConstants;
+import org.firstinspires.ftc.teamcode.Autonomous.Util.AConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
+@Disabled
 @TeleOp(name="NetZoneAlignTest", group="Test")
 @Config
 
@@ -49,7 +49,7 @@ public class NetZoneAlignTest extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftBackDistance = hardwareMap.get(AnalogInput.class, "left_back_distance");
         rightBackDistance = hardwareMap.get(AnalogInput.class, "right_back_distance");
-        follower = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
 
         waitForStart();
