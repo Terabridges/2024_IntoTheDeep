@@ -236,6 +236,17 @@ public class VisionSystem implements Subsystem {
         double angle = (Math.asin(adjacent / hypotenuse));
         return angle * (180.0 / Math.PI);
     }
+    // allows the current color to be set in Bucket Auto
+    public void setColor(boolean isRed)
+    {
+        if (isRed){
+            currColor = contourProperties.BlockColor.RED;
+        }
+        else
+        {
+            currColor = contourProperties.BlockColor.BLUE;
+        }
+    }
 
 
     public void logicForPickup(contourProperties prop) {

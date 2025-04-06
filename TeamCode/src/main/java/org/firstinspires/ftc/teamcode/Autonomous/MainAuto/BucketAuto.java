@@ -165,6 +165,7 @@ public class BucketAuto extends LinearOpMode
         loopTime.reset();
         r.toInit();
         main.start();
+        visionSystem.setColor(isRed);
 
         //Main Loop
         while (opModeIsActive())
