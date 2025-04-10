@@ -486,6 +486,7 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("aCOLOR", currColor);
         telemetry.addData("aColors", " " + r.visionSystem.colors.red + " " + r.visionSystem.colors.blue + " " + r.visionSystem.colors.green);
         telemetry.addData("Properties of Contour Found", visionSystem.decideColorForPickup());
+        telemetry.addData("Lane", visionSystem.determineLane());
         telemetry.update();
         loopTime.reset();
     }
