@@ -83,7 +83,8 @@ public class OuttakeControl implements Control {
         resetEncodersRE.update(gp2.right_bumper);
 
         //GAMEPAD 2 Use limit switch toggle X
-        useLimitSwitchRE.update(gp2.x);
+        //No longer in use
+//        useLimitSwitchRE.update(gp2.x);
 
         increaseOuttakeRE.update(gp2.dpad_up);
         decreaseOuttakeRE.update(gp2.dpad_down);
