@@ -21,13 +21,13 @@ public class BucketPaths extends PathUtil
     Pose thirdSampleEnd = new Pose(25, 130, Math.toRadians(30));
 
     Pose lane1 = new Pose(57, 93.25, Math.toRadians(270));
-    Pose lane2 = new Pose(60, 93.25, Math.toRadians(270));
-    Pose lane3 = new Pose(63, 93.25, Math.toRadians(270));
-    Pose lane4 = new Pose(65, 93.25, Math.toRadians(270));
+    Pose lane2 = new Pose(63, 93.25, Math.toRadians(270));
+    Pose lane3 = new Pose(69, 93.25, Math.toRadians(270));
+    Pose lane4 = new Pose(75, 93.25, Math.toRadians(270));
     Pose lane1C = new Pose(57, 108, Math.toRadians(270));
-    Pose lane2C = new Pose(60, 108, Math.toRadians(270));
-    Pose lane3C = new Pose(63, 108, Math.toRadians(270));
-    Pose lane4C = new Pose(65, 108, Math.toRadians(270));
+    Pose lane2C = new Pose(63, 108, Math.toRadians(270));
+    Pose lane3C = new Pose(69, 108, Math.toRadians(270));
+    Pose lane4C = new Pose(75, 108, Math.toRadians(270));
     Pose[] lanes = {lane1, lane2, lane3, lane4};
     Pose[] lanesC = {lane1C, lane2C, lane3C, lane4C};
 
@@ -39,7 +39,7 @@ public class BucketPaths extends PathUtil
 
     public PathChain goToScore, goToScoreFinal, intakeSample, goToSub1, goToSub2;
 
-    public void buildPathsBucket(int curSample, int selectedLane)
+    public void buildPathsBucket(int curSample, int selectedLane, int PreSelectedLane)
     {
         goToScore = buildLinearPath(scoreFrom[curSample], scoreTo[curSample]);
 
@@ -48,8 +48,8 @@ public class BucketPaths extends PathUtil
         else
             intakeSample = buildLinearPath(scoreTo[curSample], scoreFrom[curSample]);
 
-        goToSub1 = buildLinearPath(scorePose3, lanesC[selectedLane]);
-        goToSub2 = buildLinearPath(lanesC[selectedLane], lanes[selectedLane]);
+        goToSub1 = buildLinearPath(scorePose3, lanesC[PreSelectedLane]);
+        goToSub2 = buildLinearPath(lanesC[PreSelectedLane], lanes[selectedLane]);
 
         goToScoreFinal = buildCurvedPath(lanes[selectedLane], controlPointScore, scorePose4);
     }
