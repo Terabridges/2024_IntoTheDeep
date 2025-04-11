@@ -49,7 +49,7 @@ public class VisionSystem implements Subsystem {
     public SamplingMethod samplingMethod = SamplingMethod.AVERAGE;
     public int sampleSize = 10;
 
-    HardwareMap hardwareMap;
+    //HardwareMap hardwareMap;
     public double leftBackDistVal;
     public double rightBackDistVal;
     public boolean willStopAtObstacle = false;
@@ -72,7 +72,7 @@ public class VisionSystem implements Subsystem {
     private TreeMap<Double, contourProperties> contourPropMap = new TreeMap<>();
     private boolean obstructionIsFound = false;
     private contourProperties.BlockColor currColor = contourProperties.BlockColor.BLUE;
-    public boolean runCamera = false;
+    public boolean runCamera = true;
 
     ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
@@ -141,19 +141,19 @@ public class VisionSystem implements Subsystem {
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
 
-        // inputted all the colorLocators into a vision portal to be checked by vision.
-//        portal = new VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-//                .addProcessor(colorLocatorBlue)
-//                .addProcessor(colorLocatorRed)
-//                .addProcessor(colorLocatorYellow)
-//                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
-//                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-//                .enableLiveView(true)
-//                .setAutoStopLiveView(true)
-//                .build();
-    }
+        //inputted all the colorLocators into a vision portal to be checked by vision.
+        portal = new VisionPortal.Builder()
+                .setCamera(map.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(colorLocatorBlue)
+                .addProcessor(colorLocatorRed)
+                .addProcessor(colorLocatorYellow)
+                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
+                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .enableLiveView(true)
+                .setAutoStopLiveView(true)
+                .build();
 
+    }
     //Methods
 
     public double getColorPWN(String color){
