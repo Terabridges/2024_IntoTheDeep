@@ -44,10 +44,9 @@ public class MainTeleOp extends LinearOpMode {
     //Other FSMs
     public enum intakeStates {
         START,
-        SWIVEL_UP,
         EXTEND,
+        WAIT_STATE,
         COLOR_WAIT,
-        RETRACT,
         SWIVEL_DOWN
     }
 
@@ -259,36 +258,29 @@ public class MainTeleOp extends LinearOpMode {
                 .state(intakeStates.START)
                 .transition(() -> (!currentGamepad1.a && previousGamepad1.a) && robot.currentState.equals("intake"), intakeStates.EXTEND)
 
-                //TODO see if this is unnecessary
-//                .state(intakeStates.SWIVEL_UP)
-//                .onEnter(() -> intake.intakeSwivelRest())
-//                .transition(() -> intake.isSwivelRest(), intakeStates.EXTEND)
-
                 .state(intakeStates.EXTEND)
                 .onEnter( () -> {
                     intake.intakeSwivelRest();
                     intake.intakeSlidesSam();
                     drive.isIntakeExtended = true;
                 })
-                .transition( () -> aPressed(), intakeStates.COLOR_WAIT, () -> intake.intakeSwivelDown())
+                .transition( () -> aPressed(), intakeStates.WAIT_STATE, () -> intake.intakeSwivelDown())
+
+                .state(intakeStates.WAIT_STATE)
+                .transitionTimed(0.1, intakeStates.COLOR_WAIT)
 
                 .state(intakeStates.COLOR_WAIT)
-                //TODO if past a certain point, make intake swivel rest at the same time as intake retracts. Maybe intake quarter
-                .transition( () -> vision.isSomething(), intakeStates.SWIVEL_DOWN, () -> {
-                    intake.intakeSwivelRest();
-                    intake.intakeSlidesRetract();
-                })
+//                .transition( () -> vision.isSomething(), intakeStates.SWIVEL_DOWN, () -> {
+//                    intake.intakeSwivelRest();
+//                    intake.intakeSlidesRetract();
+//                })
                 .transition( () -> aPressed(), intakeStates.SWIVEL_DOWN, () -> {
                     intake.intakeSwivelRest();
                     intake.intakeSlidesRetract();
                 })
 
-//                .state(intakeStates.RETRACT)
-//                .transition( () -> intake.isSwivelRest(), intakeStates.SWIVEL_DOWN, () -> intake.intakeSlidesRetract())
-
                 .state(intakeStates.SWIVEL_DOWN)
                 .onEnter(() -> {
-                    //intake.intakeSlidesRetract();
                     drive.isIntakeExtended = false;
                 })
                 .transition(() -> intake.isIntakeRetracted(), intakeStates.START, ()-> intake.intakeSwivelTransfer())

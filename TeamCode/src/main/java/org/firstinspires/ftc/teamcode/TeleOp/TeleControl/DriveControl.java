@@ -45,7 +45,7 @@ public class DriveControl implements Control {
     @Override
     public void update(){
 
-        slowModeRE.update(gp1.x);
+        slowModeRE.update(gp1.x || gp2.x);
         speed = (driveSystem.useSlowMode ? SLOW_MULT : FAST_MULT);
 
         if(driveSystem.manualDrive){
