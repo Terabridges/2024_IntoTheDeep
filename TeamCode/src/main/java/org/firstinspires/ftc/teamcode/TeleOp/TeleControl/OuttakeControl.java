@@ -56,7 +56,15 @@ public class OuttakeControl implements Control {
         //Set slides power with triggers
         //TODO Add limits for triggers
         if (outtake.manualOuttake) {
-            if (gp1.right_trigger > 0) {
+            if (gp1.right_trigger > 0.5) {
+                outtake.outtakeSetSlides(1.2);
+            } else if (gp1.left_trigger > 0.5) {
+                outtake.outtakeSetSlides(-1.2);
+            } else if (gp2.right_trigger > 0.5) {
+                outtake.outtakeSetSlides(1.2);
+            } else if (gp2.left_trigger > 0.5) {
+                outtake.outtakeSetSlides(-1.2);
+            } else if (gp1.right_trigger > 0) {
                 outtake.outtakeSetSlides(gp1.right_trigger);
             } else if (gp1.left_trigger > 0) {
                 outtake.outtakeSetSlides(-gp1.left_trigger);
