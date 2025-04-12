@@ -5,6 +5,8 @@ public class contourProperties {
     private double distance;
     private double angle;
     private int area;
+    private double centerX;
+    private double centerY;
 
     public enum BlockColor
     {
@@ -40,4 +42,5 @@ public class contourProperties {
     {
         return area;
     }
+
 }

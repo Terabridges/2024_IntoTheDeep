@@ -74,6 +74,7 @@ public class OpenCVColor extends LinearOpMode {
     // will be used to calculate distance
     public static final double objectWidthInRealWorld = 1.5; // this is the width of the sample, change if incorrect
     public static final double focalLength = 2.3; //replace with the actual length, as I have no idea what it is.
+    private ColorBlobLocatorProcessor currentContour;
 
     // Constructor where the current color we are on can be inputted
       public OpenCVColor(contourProperties.BlockColor currColor)
@@ -187,6 +188,8 @@ public class OpenCVColor extends LinearOpMode {
                 double dist = getDistance(widthOfContour);
                 double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
                 double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
+                double centerXOfBlob = boxFit.center.x;
+                double centerYOfBlob = boxFit.center.y;
                 telemetry.addData("width", widthOfContour); // add all telemetry like width, height, and other things
                 telemetry.addData("height", heightOfContour);
                 telemetry.addData("distance", dist);
@@ -217,6 +220,7 @@ public class OpenCVColor extends LinearOpMode {
                 telemetry.addData("Angle", angleFromCenter);
                 redArea = b.getContourArea();
                 contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.RED, dist, angleFromCenter, redArea));
+
                 //if (dist < smallestRedDistanceFromContour) // locates the closest color
                 //  smallestRedDistanceFromContour = dist;
 
@@ -241,7 +245,6 @@ public class OpenCVColor extends LinearOpMode {
                 contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.YELLOW, dist, angleFromCenter, yellowArea));
                 //if (dist != smallestYellowDistanceFromContour) // locates the closest color
                 //  smallestYellowDistanceFromContour = dist;
-
                 telemetry.addData("Yellow is detected", "!");
             }
 

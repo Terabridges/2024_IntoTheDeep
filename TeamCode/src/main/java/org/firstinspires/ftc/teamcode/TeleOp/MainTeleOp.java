@@ -201,6 +201,8 @@ public class MainTeleOp extends LinearOpMode {
 
             telemetry.addData("CURRENT STATE", robot.currentState);
             telemetry.addData("OuttakeSlidesPos", robot.outtakeSystem.outtakeMiddleVertical.getCurrentPosition());
+            telemetry.addData("Lane", robot.visionSystem.determineLane());
+            telemetry.addData("Contour Props", robot.visionSystem.decideColorForPickup());
             telemetry.update();
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

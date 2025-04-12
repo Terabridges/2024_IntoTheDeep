@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import android.util.Size;
 import android.view.contentcapture.DataRemovalRequest;
 
+import java.util.Optional;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -73,6 +74,7 @@ public class VisionSystem implements Subsystem {
     private boolean obstructionIsFound = false;
     private contourProperties.BlockColor currColor = contourProperties.BlockColor.BLUE;
     public boolean runCamera = true;
+    public int indexOfCurrentYellowContour;
 
     ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
@@ -257,7 +259,7 @@ public class VisionSystem implements Subsystem {
             if (contourPropsList.get(index).getColor() != currColor
                     && contourPropsList.get(index).getColor() != contourProperties.BlockColor.YELLOW) {
                 if ((Math.abs(currAngle - contourPropsList.get(index).getAngle()) <= 2.50) // checks if the yellow is obstructed
-                        && Math.abs(currDistance - contourPropsList.get(index).getDistance()) <= 6.00) {
+                        && contourPropsList.get(index).getDistance() > 26.0) {
                     obstructionIsFound = true;
                     break;
                 } else {
@@ -276,8 +278,9 @@ public class VisionSystem implements Subsystem {
             contourPropsList.add(prop); // add the props to the treemap
             int indexOfCurrentYellowContour = contourPropsList.indexOf(prop);
 
-            if (prop != null && prop.getDistance() < 30 &&
-                    (prop.getColor() == contourProperties.BlockColor.YELLOW // checks if the contour is red or yellow;
+            if (prop != null && prop.getDistance() < 46.0
+                    && prop.getDistance() > 26
+                    && (prop.getColor() == contourProperties.BlockColor.YELLOW // checks if the contour is red or yellow;
                             || prop.getColor() == currColor)) {
                 logicForPickup(prop);
                 if (!obstructionIsFound) {
@@ -291,6 +294,11 @@ public class VisionSystem implements Subsystem {
             }
         }
         return "No possible block to Pickup from here. Move over. ";
+    }
+
+    public double getContourAngle()
+    {
+        return currAngle - 5.0;
     }
 
     // code to determine lane the robot should go to during bucket auto.
@@ -371,15 +379,16 @@ public class VisionSystem implements Subsystem {
             // Display the size (area) and center location for each Blob.
             for (ColorBlobLocatorProcessor.Blob b : blobsBlue) {
                 RotatedRect boxFit = b.getBoxFit();
-                widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
-                heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
-                double dist = getDistance(widthOfContour);
-                double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
-                double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
-                blueArea = b.getContourArea();
-                contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
-                // if (dist < smallestBlueDistanceFromContour)
-                //   smallestBlueDistanceFromContour = dist; // locates the closest color
+                if (boxFit.size != null) {
+                    widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
+                    heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
+                    double dist = getDistance(widthOfContour);
+                    double blueEdgeDistanceFromCenter = (getDistanceFromCenter((boxFit.center.y) - (CAMERA_HEIGHT / 2.0))); // gets dist from center
+                    double angleFromCenter = angleFromCenter(blueEdgeDistanceFromCenter, dist); // calculates angle
+                    blueArea = b.getContourArea();
+                    contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
+
+                }
 
 
             }
@@ -399,6 +408,7 @@ public class VisionSystem implements Subsystem {
             }
 
             for (ColorBlobLocatorProcessor.Blob b : blobsYellow) {
+                //Only run below code if blob b is not null
                 RotatedRect boxFit = b.getBoxFit();
                 widthOfContour = Math.min(boxFit.size.width, boxFit.size.height);
                 heightOfContour = Math.min(boxFit.size.width, boxFit.size.height); // locates a portion of the whole contour
