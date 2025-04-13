@@ -182,6 +182,7 @@ public class MainTeleOp extends LinearOpMode {
             outtakeMachine.update();
             transferMachine.update();
             specimenMachine.update();
+            robot.visionSystem.updateVision();
 
             if (currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
                 hangMacro();
@@ -203,6 +204,7 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("OuttakeSlidesPos", robot.outtakeSystem.outtakeMiddleVertical.getCurrentPosition());
             telemetry.addData("Lane", robot.visionSystem.determineLane());
             telemetry.addData("Contour Props", robot.visionSystem.decideColorForPickup());
+            telemetry.addData("Distance to move sideways", robot.visionSystem.translateDistance);
             telemetry.update();
         }
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -75,6 +75,7 @@ public class VisionSystem implements Subsystem {
     private contourProperties.BlockColor currColor = contourProperties.BlockColor.BLUE;
     public boolean runCamera = true;
     public int indexOfCurrentYellowContour;
+    public double translateDistance;
 
     ArrayList<contourProperties> contourPropsList = new ArrayList<>();
 
@@ -238,6 +239,13 @@ public class VisionSystem implements Subsystem {
         double angle = (Math.asin(adjacent / hypotenuse));
         return angle * (180.0 / Math.PI);
     }
+
+    public double translateSideways(double hypotenuse, double angle)
+    {
+        angle = angle * (Math.PI / 180);
+        return hypotenuse * Math.sin(angle);
+    }
+
     // allows the current color to be set in Bucket Auto
     public void setColor(boolean isRed)
     {
@@ -268,7 +276,6 @@ public class VisionSystem implements Subsystem {
                 }
             }
         }
-
     }
 
     // for this function, acceptable color is also red
@@ -284,6 +291,9 @@ public class VisionSystem implements Subsystem {
                             || prop.getColor() == currColor)) {
                 logicForPickup(prop);
                 if (!obstructionIsFound) {
+                    translateDistance = translateSideways
+                            (contourPropsList.get(indexOfCurrentYellowContour).getDistance(),
+                                    contourPropsList.get(indexOfCurrentYellowContour).getAngle());
                     return "Go to "
                             + contourPropsList.get(indexOfCurrentYellowContour).getColor()
                             + " at distance : "
@@ -319,6 +329,17 @@ public class VisionSystem implements Subsystem {
             return 3;
         }
         return 0;
+    }
+
+    public void updateVision()
+    {
+        decideColorForPickup();
+    }
+
+    public void stopPortalStreaming()
+    {
+        portal.stopLiveView();
+        portal.stopStreaming();
     }
 
 
@@ -389,8 +410,6 @@ public class VisionSystem implements Subsystem {
                     contourPropMap.put(dist, new contourProperties(contourProperties.BlockColor.BLUE, dist, angleFromCenter, blueArea)); // add the properties to the treemap
 
                 }
-
-
             }
 
             for (ColorBlobLocatorProcessor.Blob b : blobsRed) {
