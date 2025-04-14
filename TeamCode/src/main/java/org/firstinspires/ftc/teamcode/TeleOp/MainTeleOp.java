@@ -439,6 +439,7 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.outtakeSlidesAutoScore1();
                     outtake.wristAutoScore();
                     outtake.outtakeSwivelAutoScore();
+                    drive.useSlowMode = false;
                 })
                 .transition(()->leftBumpPressed(), specimenStates2.SCORE2)
 
@@ -452,7 +453,6 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.outtakeSlidesRest();
                     outtake.outtakeSwivelTransfer();
                     outtake.wristTransfer();
-                    drive.useSlowMode = false;
                 })
 
                 .build();
