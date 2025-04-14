@@ -58,7 +58,7 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_TRANSFER = 210;
     private int OUTTAKE_SWIVEL_GRAB = 160;
     private int OUTTAKE_SWIVEL_LOCK = 115;
-    private int OUTTAKE_SWIVEL_AUTO = 232;
+    private int OUTTAKE_SWIVEL_AUTO = 239;
     private int OUTTAKE_SWIVEL_AUTO_SCORE = 445; //106;
 
     //SLIDES

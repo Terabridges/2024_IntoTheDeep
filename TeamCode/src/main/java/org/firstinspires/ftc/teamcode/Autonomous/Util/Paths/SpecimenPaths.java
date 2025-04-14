@@ -10,30 +10,30 @@ public class SpecimenPaths extends PathUtil
 {
     Pose startPose = new Pose(AConstants.BOT_CENTER_X, 48+ AConstants.BOT_CENTER_Y, Math.toRadians(180));
 
-    Pose preloadPose = new Pose(28, 60, Math.toRadians(180));
-    Pose preloadPoseb = new Pose(37.8, 60, Math.toRadians(180));
-    Pose score1b = new Pose(38.8, 63.5, Math.toRadians(180));
-    Pose score2b = new Pose(38.8, 67, Math.toRadians(180));
-    Pose score3b = new Pose(38.8, 70.5, Math.toRadians(180));
-    Pose score1 = new Pose(33, 63.5, Math.toRadians(180));
-    Pose score2 = new Pose(33, 67, Math.toRadians(180));
-    Pose score3 = new Pose(33, 70.5, Math.toRadians(180));
+    Pose preloadPose = new Pose(28.5, 60, Math.toRadians(180));
+    Pose preloadPoseb = new Pose(37.65, 60, Math.toRadians(180));
+    Pose score1b = new Pose(38.95, 63.5, Math.toRadians(180));
+    Pose score2b = new Pose(38.95, 67, Math.toRadians(180));
+    Pose score3b = new Pose(38.95, 70.5, Math.toRadians(180));
+    Pose score1 = new Pose(31, 63.5, Math.toRadians(180));
+    Pose score2 = new Pose(31, 67, Math.toRadians(180));
+    Pose score3 = new Pose(31, 70.5, Math.toRadians(180));
 
     Pose start1 = new Pose(55, 24.5, Math.toRadians(180));
-    Pose end1 = new Pose(20, 20.5, Math.toRadians(180));
+    Pose end1 = new Pose(20, 24.5, Math.toRadians(180));
     Pose start2 = new Pose(55, 16.5, Math.toRadians(180));
     Pose end2 = new Pose(20, 16.5, Math.toRadians(180));
     Pose start3 = new Pose(55, 7, Math.toRadians(180));
     Pose end3 = new Pose(20, 7, Math.toRadians(180));
 
-    Pose control1 = new Pose(24, 42, Math.toRadians(180));
+    Pose control1 = new Pose(15, 45, Math.toRadians(180));
     Pose control2 = new Pose(45, 35, Math.toRadians(180));
     Pose control3 = new Pose(45, 25, Math.toRadians(180));
     Pose controlBleh = new Pose(66, 31, Math.toRadians(180));
 
-    Pose prep = new Pose(20, 24, Math.toRadians(180));
-    Pose pick = new Pose(12, 24, Math.toRadians(180));
-    Pose pickb = new Pose(6, 24, Math.toRadians(180));
+    Pose prep = new Pose(21, 24, Math.toRadians(180));
+    Pose pick = new Pose(9, 24, Math.toRadians(180));
+    Pose pickb = new Pose(5.75, 24, Math.toRadians(180));
 
     public PathChain scorePreload, scorePreloadb, goPick, goPickb, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
     public PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6, goPark;

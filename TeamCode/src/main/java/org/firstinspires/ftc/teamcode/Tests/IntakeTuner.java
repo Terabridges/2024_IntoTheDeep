@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
-//@Disabled
+@Disabled
 @TeleOp(name="IntakeTuner", group="Test")
 @Config
 public class IntakeTuner extends LinearOpMode {

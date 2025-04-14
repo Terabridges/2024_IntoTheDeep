@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
 
-//@Disabled
+@Disabled
 @TeleOp(name="WristTuner", group="Test")
 @Config
 public class WristTuner extends LinearOpMode {

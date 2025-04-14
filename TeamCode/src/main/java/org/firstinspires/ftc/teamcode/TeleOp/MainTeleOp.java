@@ -77,8 +77,7 @@ public class MainTeleOp extends LinearOpMode {
         SLIDES_FALL,
         SLIDES_RISE,
         SCORE1,
-        SCOREHALF,
-        SCORE2,
+        SCORE2
     }
 
     public StateMachine intakeMachine;
@@ -433,15 +432,11 @@ public class MainTeleOp extends LinearOpMode {
                 .transition(()-> outtake.isSwivelAuto(), specimenStates2.SLIDES_RISE, ()-> outtake.outtakeSlidesDown())
 
                 .state(specimenStates2.SLIDES_RISE)
-                .transition(() -> leftBumpPressed(), specimenStates2.SCORE1, () -> {
-                    outtake.outtakeSlidesAutoScore1();
-                })
+                .transition(() -> leftBumpPressed(), specimenStates2.SCORE1)
 
                 .state(specimenStates2.SCORE1)
-                .transition(()->outtake.isSlidesAutoScore1(), specimenStates2.SCOREHALF)
-
-                .state(specimenStates2.SCOREHALF)
-                .onEnter(() -> {
+                .onEnter(()-> {
+                    outtake.outtakeSlidesAutoScore1();
                     outtake.wristAutoScore();
                     outtake.outtakeSwivelAutoScore();
                 })
@@ -449,7 +444,9 @@ public class MainTeleOp extends LinearOpMode {
 
                 .state(specimenStates2.SCORE2)
                 .onEnter(()->outtake.outtakeSlidesAutoScore2())
-                .transition(()->outtake.isSlidesAutoScore2(), specimenStates2.START, ()->{
+                .transition(()->outtake.isSlidesAutoScore2(), specimenStates2.START)
+                .transitionTimed(0.5, specimenStates2.START)
+                .onExit(()->{
                     outtake.openClaw();
                     outtake.isClawOpen = true;
                     outtake.outtakeSlidesRest();
