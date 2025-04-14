@@ -39,12 +39,16 @@ public class OuttakeSystem implements Subsystem {
 
     //Positions
     public double CLAW_OPEN = 0.5;
-    private double CLAW_CLOSE = 0.175;
+    private double CLAW_CLOSE = 0.168;
     private double WRIST_DOWN = 0.6;
+    private double WRIST_PARK = 0.7;
     private double WRIST_TRANSFER = 0.3;
     private double WRIST_UP = 0.9;
     private double WRIST_GRAB = 0.15;
     private double WRIST_LOCK = 0.55;
+    private double WRIST_AUTO = 1;
+    private double WRIST_AUTO_SCORE = 0.9; //0.65;
+
     //LIMIT BACK: 0
     //LIMIT FORWARD: 1
     //SPECIMEN LIMIT: 0.35
@@ -54,6 +58,9 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SWIVEL_TRANSFER = 210;
     private int OUTTAKE_SWIVEL_GRAB = 160;
     private int OUTTAKE_SWIVEL_LOCK = 115;
+    private int OUTTAKE_SWIVEL_AUTO = 232;
+    private int OUTTAKE_SWIVEL_AUTO_SCORE = 445; //106;
+
     //SLIDES
     private int OUTTAKE_SLIDES_HIGH = -1680;
     private int OUTTAKE_SLIDES_LOW = -870;
@@ -63,8 +70,11 @@ public class OuttakeSystem implements Subsystem {
     private int OUTTAKE_SLIDES_SCORE_1 = -875;
     private int OUTTAKE_SLIDES_SCORE_2 = -375;
 
-    private int OUTTAKE_SLIDES_PARK = -452;
-    private int OUTTAKE_SWIVEL_PARK = 283;
+    private int OUTTAKE_SLIDES_AUTO_SCORE_1 = -860;
+    private int OUTTAKE_SLIDES_AUTO_SCORE_2 = -1080;
+
+    private int OUTTAKE_SLIDES_PARK = -470;
+    private int OUTTAKE_SWIVEL_PARK = 277;
 
     public int outtakeCounter = 0;
     public int highLimit = -1700;
@@ -164,6 +174,14 @@ public class OuttakeSystem implements Subsystem {
         outtakeSlidesTarget = OUTTAKE_SLIDES_SCORE_2;
     }
 
+    public void outtakeSlidesAutoScore1() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_AUTO_SCORE_1;
+    }
+
+    public void outtakeSlidesAutoScore2() {
+        outtakeSlidesTarget = OUTTAKE_SLIDES_AUTO_SCORE_2;
+    }
+
     public void outtakeSwivelUp() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_UP;
     }
@@ -186,6 +204,10 @@ public class OuttakeSystem implements Subsystem {
 
     public void outtakeSwivelTransfer(){outtakeSwivelTarget = OUTTAKE_SWIVEL_TRANSFER;}
 
+    public void outtakeSwivelAuto(){outtakeSwivelTarget = OUTTAKE_SWIVEL_AUTO;}
+
+    public void outtakeSwivelAutoScore(){outtakeSwivelTarget = OUTTAKE_SWIVEL_AUTO_SCORE;}
+
     public void openClaw() {
         setClaw(CLAW_OPEN);
     }
@@ -202,11 +224,19 @@ public class OuttakeSystem implements Subsystem {
         setWrist(WRIST_DOWN);
     }
 
+    public void wristPark() {
+        setWrist(WRIST_PARK);
+    }
+
     public void wristTransfer() {setWrist(WRIST_TRANSFER);}
 
     public void wristGrab() {setWrist(WRIST_GRAB);}
 
     public void wristLock() {setWrist(WRIST_LOCK);}
+
+    public void wristAuto() {setWrist(WRIST_AUTO);}
+
+    public void wristAutoScore() {setWrist(WRIST_AUTO_SCORE);}
 
     public void outtakeSwivelPark() {
         outtakeSwivelTarget = OUTTAKE_SWIVEL_PARK;
@@ -254,9 +284,20 @@ public class OuttakeSystem implements Subsystem {
     public boolean isSlidesScore2(){
         return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_SCORE_2) <= motorOffset+30;
     }
+    public boolean isSlidesAutoScore1(){
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_AUTO_SCORE_1) <= motorOffset+50;
+    }
+
+    public boolean isSlidesAutoScore2(){
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_AUTO_SCORE_2) <= motorOffset+70;
+    }
 
     public boolean isSlidesLow(){
         return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_LOW) <= motorOffset;
+    }
+
+    public boolean isSlidesPark(){
+        return Math.abs(outtakeMiddleVertical.getCurrentPosition() - OUTTAKE_SLIDES_PARK) <= motorOffset;
     }
 
     public boolean isSwivelUp() {
@@ -272,6 +313,10 @@ public class OuttakeSystem implements Subsystem {
 
     public boolean isSwivelTransfer() {
         return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_TRANSFER) <= oServoOffset;
+    }
+
+    public boolean isSwivelAuto() {
+        return Math.abs(outtakeSwivelEnc.getCurrentPosition() - OUTTAKE_SWIVEL_AUTO) <= oServoOffset;
     }
 
     public void setOuttakeHigher(){

@@ -48,7 +48,7 @@ public class IntakeSystem implements Subsystem {
     private int INTAKE_SLIDES_SUPER_EXTEND = 275;
     //MAX 283.5
     private int INTAKE_SLIDES_HALF = 235;
-    private int INTAKE_SLIDES_QUARTER = 207;
+    private int INTAKE_SLIDES_QUARTER = 198;
     private int INTAKE_SLIDES_RETRACT = 186;
     //TODO make another one for auto
     private int INTAKE_SLIDES_SAM = 214; //220;
@@ -224,6 +224,10 @@ public class IntakeSystem implements Subsystem {
 
     public boolean isSwivelRest(){
         return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_REST) <= servoOffset;
+    }
+
+    public boolean isSwivelDown(){
+        return Math.abs(intakeSwivelEnc.getCurrentPosition() - INTAKE_SWIVEL_DOWN) <= servoOffset;
     }
 
     public void setIntakeHigher(){

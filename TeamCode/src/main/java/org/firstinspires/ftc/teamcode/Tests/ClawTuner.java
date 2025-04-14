@@ -3,34 +3,28 @@ package org.firstinspires.ftc.teamcode.Tests;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Utility.AbsoluteAnalogEncoder;
-
 @Disabled
-@TeleOp(name="SweeperTuner", group="Test")
+@TeleOp(name="ClawTuner", group="Test")
 @Config
-public class SweeperTuner extends LinearOpMode {
+public class ClawTuner extends LinearOpMode {
 
-    public Servo intakeSweeper;
+    public Servo outtakeClaw;
 
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
 
-    public static double SWEEPER_TARGET = 0;
+    public static double CLAW_TARGET = 0;
 
     @Override
     public void runOpMode(){
 
-        intakeSweeper = hardwareMap.get(Servo.class, "intake_sweeper");
+        outtakeClaw = hardwareMap.get(Servo.class, "outtake_claw");
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -41,7 +35,7 @@ public class SweeperTuner extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
 
             if (currentGamepad1.a && !previousGamepad1.a){
-                intakeSweeper.setPosition(SWEEPER_TARGET);
+                outtakeClaw.setPosition(CLAW_TARGET);
             }
 
         }

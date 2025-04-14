@@ -26,8 +26,21 @@ public class PathUtil
                 .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
                 .build();
     }
+
+    public PathChain buildCurvedPath(Pose start, Pose control1, Pose control2, Pose end) {
+        return new PathBuilder()
+                .addPath(bezierCurve(start, control1, control2, end))
+                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
+                .build();
+    }
+
     public BezierCurve bezierCurve(Pose start, Pose control, Pose end)
     {
         return new BezierCurve(new Point(start), new Point(control), new Point(end));
+    }
+
+    public BezierCurve bezierCurve(Pose start, Pose control1, Pose control2, Pose end)
+    {
+        return new BezierCurve(new Point(start), new Point(control1), new Point(control2), new Point(end));
     }
 }

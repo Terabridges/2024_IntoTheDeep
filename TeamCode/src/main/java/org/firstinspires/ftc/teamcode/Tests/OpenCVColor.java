@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 
-//@Disabled
+@Disabled
 @TeleOp(name = "OpenCvColor")
 public class OpenCVColor extends LinearOpMode {
     // initializes the width of the camera as well as its x and y direction

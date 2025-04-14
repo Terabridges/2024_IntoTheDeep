@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Disabled
 @TeleOp(name="ColorTest", group="Test")
 @Config
 public class ColorTest extends LinearOpMode {

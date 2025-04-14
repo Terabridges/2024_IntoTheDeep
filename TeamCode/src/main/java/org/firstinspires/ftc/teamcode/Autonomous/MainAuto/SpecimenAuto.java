@@ -57,6 +57,8 @@ public class SpecimenAuto extends LinearOpMode
     enum scoreStates
     {
         GO_TO_SCORE1,
+        WAIT_STATE,
+        FLIP,
         GO_TO_SCORE2,
         WAIT,
         CLIP,
@@ -89,6 +91,7 @@ public class SpecimenAuto extends LinearOpMode
     boolean isPreload = true;
     boolean endCheck = false;
     double pickPower = 0.5;
+    double grabResetTime = 1;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -107,7 +110,7 @@ public class SpecimenAuto extends LinearOpMode
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
 
-        FConstants.setTValue(.98);
+        FConstants.setTValue(.975);
 
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(s.getStartPose());
@@ -124,9 +127,11 @@ public class SpecimenAuto extends LinearOpMode
 
         runtime.reset();
         r.toInit();
+        o.outtakeSlidesRest();
+        o.wristAuto();
+        o.outtakeSwivelAuto();
+
         main.start();
-        i.intakeSlidesRetract();
-        i.intakeSwivelRest();
 
         //Main Loop
         while (opModeIsActive())
@@ -201,35 +206,41 @@ public class SpecimenAuto extends LinearOpMode
                         follower.followPath(s.scorePreload, AConstants.STANDARD_POWER, true);
                     else
                         follower.followPath(s.getScore(curSpec), AConstants.STANDARD_POWER, true);
-                    o.outtakeSlidesScore1();
-                    o.wristLock();
-                    o.outtakeSwivelLock();
+                    //o.outtakeSlidesRest();
                 })
-                .transition(() -> !follower.isBusy() && o.isSlidesScore1(), scoreStates.GO_TO_SCORE2)
+                .transitionTimed(0, scoreStates.WAIT_STATE)
+
+                .state(scoreStates.WAIT_STATE)
+                .onEnter(() -> {
+                    o.outtakeSlidesAutoScore1();
+                    o.wristAutoScore();
+                    o.outtakeSwivelAutoScore();
+                })
+                .transition(() -> !follower.isBusy(), scoreStates.GO_TO_SCORE2)
 
                 .state(scoreStates.GO_TO_SCORE2)
                 .onEnter(() ->
                 {
                     runtime.reset();
                     if (isPreload)
-                        follower.followPath(s.scorePreloadb, AConstants.LOW_POWER, true);
+                        follower.followPath(s.scorePreloadb, AConstants.MID_POWER, true);
                     else
-                        follower.followPath(s.getScoreB(curSpec), AConstants.MID_POWER, true);
+                        follower.followPath(s.getScoreB(curSpec), AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), scoreStates.WAIT)
 
                 .state(scoreStates.WAIT)
-                .transitionTimed(0.25, scoreStates.CLIP)
+                .transitionTimed(0.1, scoreStates.CLIP)
 
                 .state(scoreStates.CLIP)
                 .onEnter(() -> {
-                    o.outtakeSlidesScore2();
+                    o.outtakeSlidesAutoScore2();
                 })
                 //.transitionTimed(0.3, scoreStates.STOP)
-                .transition(() -> o.isSlidesScore2(), scoreStates.STOP)
+                .transition(() -> o.isSlidesAutoScore2(), scoreStates.STOP)
                 .onExit(() -> {
                     o.openClaw();
-                    o.outtakeSwivelDown();
+                    o.outtakeSwivelTransfer();
                 })
 
                 .state(scoreStates.STOP)
@@ -242,24 +253,24 @@ public class SpecimenAuto extends LinearOpMode
                     if (curSpec < 3)
                     {
                         follower.followPath(s.getPrep(curSpec), AConstants.STANDARD_POWER, true);
-                        o.wristGrab();
-                        o.outtakeSwivelGrab();
+                        o.wristAuto();
+                        o.outtakeSwivelAuto();
                         o.openClaw();
-                        i.intakeSwivelRest();
                     }
                     else
                         endCheck = true;
                 })
-                .transition(() -> !follower.isBusy() && i.isSwivelRest() && endCheck, grabStates.STOP)
-                .transition(() -> !follower.isBusy() && i.isSwivelRest(), grabStates.ADVANCE1)
+                .transition(() -> !follower.isBusy() && endCheck, grabStates.STOP)
+                .transition(() -> !follower.isBusy(), grabStates.ADVANCE1)
                 .onExit(() -> {
                     //follower.setMaxPower(pickPower-.05);
-                    o.outtakeSlidesGrab1();
+                    o.outtakeSlidesDown();
                 })
 
                 .state(grabStates.ADVANCE1)
                 .onEnter(() -> follower.followPath(s.goPick,  AConstants.MID_POWER,true))
                 .transition(() -> !follower.isBusy(), grabStates.STOP)
+                .transitionTimed(grabResetTime, grabStates.STOP, () -> follower.breakFollowing())
                 .onExit(() -> o.closeClaw())
 
                 .state(grabStates.ADVANCE2)
@@ -276,7 +287,7 @@ public class SpecimenAuto extends LinearOpMode
                 .onEnter(() -> {
                     o.outtakeSlidesRest();
                     o.outtakeSwivelDown();
-                    o.wristDown();
+                    o.wristTransfer();
                     follower.followPath(s.pushSamples1, AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), pushStates.PUSH2)

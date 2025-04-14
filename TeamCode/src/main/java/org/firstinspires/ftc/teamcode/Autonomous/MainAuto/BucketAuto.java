@@ -62,7 +62,7 @@ public class BucketAuto extends LinearOpMode
     enum scoreStates
     {
         GO_TO_SCORE,
-        EXTEND,
+        PRELOAD_WAIT,
         DUNK,
         OPEN_CLAW,
         STOP
@@ -81,11 +81,10 @@ public class BucketAuto extends LinearOpMode
     enum diveStates
     {
         GO_TO_SUB1,
-        CAMERA_SELECT1,
         GO_TO_SUB2,
         SWEEP,
-        CAMERA_SELECT2,
         EXTEND_INTAKE,
+        WAIT_EXTEND,
         EXTEND,
         DETECT_COLOR,
         SPIT,
@@ -108,8 +107,7 @@ public class BucketAuto extends LinearOpMode
     int curSample = 0;
     boolean failedPickup = false;
     boolean isRed = false;
-    int PreSelectedLane = 1;
-    int selectedLane = 1;
+    int selectedLane = 0;
     public double intakeTime = 1;
     double subResetTime = 1;
 
@@ -136,7 +134,7 @@ public class BucketAuto extends LinearOpMode
 
         follower.setMaxPower(AConstants.STANDARD_POWER);
 
-        b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+        b.buildPathsBucket(curSample, selectedLane);
         buildStateMachines();
 
         while (opModeInInit()){
@@ -166,7 +164,7 @@ public class BucketAuto extends LinearOpMode
         loopTime.reset();
         r.toInit();
         main.start();
-        r.visionSystem.setColor(isRed);
+        //r.visionSystem.setColor(isRed);
 
         //Main Loop
         while (opModeIsActive())
@@ -220,7 +218,7 @@ public class BucketAuto extends LinearOpMode
         score = new StateMachineBuilder()
                 .state(scoreStates.GO_TO_SCORE)
                 .onEnter(() -> {
-                    b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                    b.buildPathsBucket(curSample, selectedLane);
                     follower.followPath(b.goToScore, ( curSample == 0 ? AConstants.MID_POWER+.1 : ( curSample == 3 ? AConstants.MID_POWER-.1 : AConstants.LOW_POWER) ), true);
 
                     o.outtakeSlidesHigh();
@@ -235,7 +233,11 @@ public class BucketAuto extends LinearOpMode
                     }
                     i.intakeSlowSpinOut();
                 })
-                .transition(() -> o.isSlidesHigh() && !follower.isBusy(), scoreStates.DUNK)
+                .transition(() -> curSample != 0 && o.isSlidesHigh() && !follower.isBusy(), scoreStates.DUNK)
+                .transition(() -> curSample == 0 && o.isSlidesHigh() && !follower.isBusy(), scoreStates.PRELOAD_WAIT)
+
+                .state(scoreStates.PRELOAD_WAIT)
+                .transitionTimed(.2, scoreStates.DUNK)
 
                 .state(scoreStates.DUNK)
                 .onEnter(() -> {
@@ -263,7 +265,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     if (curSample == 3)
                     {
-                        b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                        b.buildPathsBucket(curSample, selectedLane);
                         follower.followPath(b.intakeSample, AConstants.MID_POWER, true);
                         o.outtakeSlidesRest();
                     }
@@ -275,7 +277,7 @@ public class BucketAuto extends LinearOpMode
                 .onEnter(() -> {
                     if (curSample != 3)
                     {
-                        b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                        b.buildPathsBucket(curSample, selectedLane);
                         follower.followPath(b.intakeSample, AConstants.MID_POWER-.05, true);
                     }
                     if (curSample == 3){
@@ -326,20 +328,19 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.GO_TO_SUB1)
                 .onEnter(() -> {
                     o.outtakeSlidesRest();
-                    b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                    b.buildPathsBucket(curSample, selectedLane);
                     follower.followPath(b.goToSub1, AConstants.STANDARD_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.GO_TO_SUB2)
-                .onExit(() -> selectedLane = r.visionSystem.determineLane())
 
                 .state(diveStates.GO_TO_SUB2)
                 .onEnter(() -> {
-                    b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                    b.buildPathsBucket(curSample, selectedLane);
                     follower.followPath(b.goToSub2, AConstants.MID_POWER, true);
                 })
                 .transition(() -> !follower.isBusy(), diveStates.SWEEP)
                 .transitionTimed(subResetTime, diveStates.SWEEP, () -> {
-                    b.buildPathsBucket(curSample, selectedLane, PreSelectedLane);
+                    b.buildPathsBucket(curSample, selectedLane);
                     follower.breakFollowing();
                 })
                 .onExit(() -> i.intakeSweeperOut())
@@ -352,10 +353,13 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.EXTEND_INTAKE)
                 .onEnter(() -> {
                     i.intakeSlidesQuarter();
-                    i.intakeSwivelDown();
                     i.intakeSpinIn();
                 })
-                .transition(() -> i.isIntakeQuarter(), diveStates.EXTEND)
+                .transitionTimed(0.3, diveStates.WAIT_EXTEND)
+
+                .state(diveStates.WAIT_EXTEND)
+                .onEnter(() -> i.intakeSwivelDown())
+                .transition(()-> i.isSwivelDown(), diveStates.EXTEND)
 
                 .state(diveStates.EXTEND)
                 .onEnter(() -> i.intakeSlidesExtend())
@@ -456,10 +460,10 @@ public class BucketAuto extends LinearOpMode
                 .state(diveStates.PARK)
                 .onEnter(() -> {
                     i.intakeStopSpin();
-//                    o.outtakeSlidesPark();
-//                    o.outtakeSwivelPark();
-//                    o.closeClaw();
-//                    o.wristDown();
+                    o.outtakeSlidesPark();
+                    o.outtakeSwivelPark();
+                    o.closeClaw();
+                    o.wristPark();
                 })
 
                 .state(diveStates.STOP)
@@ -486,8 +490,6 @@ public class BucketAuto extends LinearOpMode
         telemetry.addData("Loop Time", loopTime.milliseconds());
         telemetry.addData("aCOLOR", currColor);
         telemetry.addData("aColors", " " + r.visionSystem.colors.red + " " + r.visionSystem.colors.blue + " " + r.visionSystem.colors.green);
-        telemetry.addData("Properties of Contour Found", r.visionSystem.decideColorForPickup());
-        telemetry.addData("Lane", r.visionSystem.determineLane());
         telemetry.update();
         loopTime.reset();
     }
