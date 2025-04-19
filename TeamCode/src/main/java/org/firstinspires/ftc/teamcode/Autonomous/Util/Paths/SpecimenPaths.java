@@ -33,7 +33,7 @@ public class SpecimenPaths extends PathUtil
 
     Pose prep = new Pose(21, 24, Math.toRadians(180));
     Pose pick = new Pose(9, 24, Math.toRadians(180));
-    Pose pickb = new Pose(5.75, 24, Math.toRadians(180));
+    Pose pickb = new Pose(6.4, 24, Math.toRadians(180));
 
     public PathChain scorePreload, scorePreloadb, goPick, goPickb, goPrep1, goPrep2, goPrep3, goScore1, goScore2, goScore3, goScore1b, goScore2b, goScore3b;
     public PathChain pushSamples1, pushSamples2, pushSamples3, pushSamples4, pushSamples5, pushSamples6, goPark;

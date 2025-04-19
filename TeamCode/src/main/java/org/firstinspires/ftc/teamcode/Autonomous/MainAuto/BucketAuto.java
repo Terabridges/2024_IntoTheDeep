@@ -86,6 +86,7 @@ public class BucketAuto extends LinearOpMode
         EXTEND_INTAKE,
         WAIT_EXTEND,
         EXTEND,
+        SWIVEL,
         DETECT_COLOR,
         SPIT,
         PARK,
@@ -362,8 +363,11 @@ public class BucketAuto extends LinearOpMode
                 .transition(()-> i.isSwivelDown(), diveStates.EXTEND)
 
                 .state(diveStates.EXTEND)
-                .onEnter(() -> i.intakeSlidesExtend())
-                .transitionTimed(1.4, diveStates.LIL_SPIT, () -> {
+                .onEnter(() -> i.intakeSlidesSub())
+                .transitionTimed(1, diveStates.SWIVEL, ()->i.intakeSwivelDown())
+
+                .state(diveStates.SWIVEL)
+                .transitionTimed(1.2, diveStates.LIL_SPIT, () -> {
                     i.intakeStopSpin();
                     i.setIntakeSlidesPIDF((int)i.intakeSlidesEnc.getCurrentPosition());
                 })

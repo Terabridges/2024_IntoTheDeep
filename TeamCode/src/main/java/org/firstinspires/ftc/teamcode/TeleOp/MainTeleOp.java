@@ -453,6 +453,7 @@ public class MainTeleOp extends LinearOpMode {
                     outtake.outtakeSlidesRest();
                     outtake.outtakeSwivelTransfer();
                     outtake.wristTransfer();
+                    drive.useSlowMode = false;
                 })
 
                 .build();
