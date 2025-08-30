@@ -19,7 +19,7 @@ dependencies {
     implementation 'org.firstinspires.ftc:Vision:10.2.0'
     implementation 'com.pedropathing:pedro:1.0.9'
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.github.StateFactory-Dev:StateFactory:0.3.7'
+    implementation 'com.github.StateFactory-Dev:StateFactory:0.3.9'
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
 }
